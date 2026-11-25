@@ -1,0 +1,811 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+></p-toast>
+
+<div
+  class="min-h-screen w-full bg-[#f5f5f7] dark:bg-black text-[#1d1d1f] dark:text-[#f5f5f7] transition-colors duration-300"
+>
+  <div class="w-full max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-10 pb-24">
+    <header class="flex items-center justify-between mb-10 gap-4">
+      <div class="flex items-center gap-4">
+        <div
+          class="w-12 h-12 rounded-2xl bg-[#b8962e]/10 border border-[#b8962e]/25 flex items-center justify-center text-[#b8962e] shrink-0"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+        </div>
+        <div>
+          <h1
+            class="text-2xl sm:text-3xl font-bold tracking-tight leading-tight text-[#1d1d1f] dark:text-[#f5f5f7]"
+          >
+            Personal
+          </h1>
+          <p class="text-xs text-[#6e6e73] dark:text-[#86868b] mt-0.5">
+            {{ usuarios().length }} miembros en el equipo
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="isModalOpen = true"
+        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#b8962e] hover:bg-[#d4ad45] text-white text-sm font-semibold shadow-sm transition-all duration-200 hover:-translate-y-px active:scale-[0.97] whitespace-nowrap"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        Nuevo miembro
+      </button>
+    </header>
+
+    <div class="relative mb-10 max-w-md">
+      <svg
+        class="absolute left-4 top-1/2 -translate-y-1/2 text-[#6e6e73] dark:text-[#86868b] pointer-events-none"
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        type="text"
+        [value]="searchTerm()"
+        (input)="onSearchChange($event)"
+        placeholder="Buscar por nombre…"
+        class="w-full pl-10 pr-4 py-3 rounded-2xl border border-[#e5e5ea] dark:border-[#2c2c2e] bg-white dark:bg-[#1c1c1e] text-sm text-[#1d1d1f] dark:text-[#f5f5f7] placeholder-[#aeaeb2] dark:placeholder-[#48484a] outline-none focus:border-[#b8962e] transition-all duration-200"
+      />
+    </div>
+
+    <div class="flex flex-col gap-10 mb-12">
+      <ng-container
+        *ngFor="let role of ['admin', 'bodega', 'vendedor', 'patinador']"
+      >
+        <section *ngIf="(usuariosPorRol()[role]?.length || 0) > 0">
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2.5">
+              <span
+                class="w-1.5 h-1.5 rounded-full shrink-0"
+                [ngClass]="{
+                  'bg-[#b8962e]': role === 'admin',
+                  'bg-violet-500': role === 'bodega',
+                  'bg-emerald-500': role === 'vendedor',
+                  'bg-neutral-400': role === 'patinador',
+                }"
+              ></span>
+              <span
+                class="text-[11px] font-bold uppercase tracking-[0.12em] text-[#6e6e73] dark:text-[#86868b]"
+                >{{ rolReadable[role] }}</span
+              >
+            </div>
+            <span
+              class="text-[11px] font-semibold bg-[#e5e5ea] dark:bg-[#2c2c2e] text-[#6e6e73] dark:text-[#86868b] px-2.5 py-0.5 rounded-full"
+            >
+              {{ usuariosPorRol()[role]?.length || 0 }}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+              *ngFor="let user of usuariosPorRol()[role]"
+              class="bg-white dark:bg-[#1c1c1e] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-3xl p-5 flex flex-col gap-4 transition-all duration-200 hover:border-[#b8962e]/30 hover:shadow-lg hover:-translate-y-px"
+            >
+              <div class="flex items-start gap-3">
+                <div
+                  class="relative w-11 h-11 rounded-[14px] flex items-center justify-center text-base font-bold text-white shrink-0"
+                  [ngClass]="{
+                    'bg-gradient-to-br from-[#b8962e] to-[#d4ad45]':
+                      user.role === 'admin',
+                    'bg-gradient-to-br from-violet-500 to-violet-400':
+                      user.role === 'bodega',
+                    'bg-gradient-to-br from-emerald-600 to-emerald-400':
+                      user.role === 'vendedor',
+                    'bg-gradient-to-br from-neutral-500 to-neutral-400':
+                      user.role === 'patinador',
+                  }"
+                >
+                  {{ user.name.charAt(0) | uppercase }}
+                  <span
+                    class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-[#1c1c1e]"
+                    [ngClass]="
+                      user.active?.value ? 'bg-emerald-500' : 'bg-neutral-400'
+                    "
+                  ></span>
+                </div>
+
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap mb-0.5">
+                    <h3
+                      class="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight truncate"
+                    >
+                      {{ user.name }}
+                    </h3>
+                    <span
+                      class="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                      [ngClass]="
+                        user.active?.value
+                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400'
+                          : 'bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400'
+                      "
+                      >{{ user.active?.value ? "Activo" : "Inactivo" }}</span
+                    >
+                  </div>
+                  <p
+                    class="text-xs text-[#6e6e73] dark:text-[#86868b] truncate mb-2"
+                  >
+                    {{ user.email || "—" }}
+                  </p>
+
+                  <div class="flex flex-wrap gap-1.5">
+                    <span
+                      *ngIf="user.role === 'vendedor' || user.role === 'admin'"
+                      class="inline-flex items-center gap-1 text-[11px] font-medium text-[#6e6e73] dark:text-[#86868b] bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] px-2 py-0.5 rounded-md"
+                    >
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        class="text-[#b8962e]"
+                      >
+                        <path
+                          d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
+                        />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      Local {{ user.local || "N/A" }}
+                    </span>
+                    <span
+                      *ngIf="user.role === 'vendedor' || user.role === 'admin'"
+                      class="inline-flex items-center gap-1 text-[11px] font-medium text-[#6e6e73] dark:text-[#86868b] bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] px-2 py-0.5 rounded-md"
+                    >
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        class="text-[#b8962e]"
+                      >
+                        <rect x="1" y="4" width="22" height="16" rx="2" />
+                        <line x1="1" y1="10" x2="23" y2="10" />
+                      </svg>
+                      {{ user.prestamosActivos?.label || "Sin definir" }}
+                    </span>
+                    <span
+                      *ngIf="user.role === 'bodega'"
+                      class="inline-flex items-center gap-1 text-[11px] font-medium text-[#6e6e73] dark:text-[#86868b] bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] px-2 py-0.5 rounded-md"
+                    >
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        class="text-[#b8962e]"
+                      >
+                        <path
+                          d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                        />
+                      </svg>
+                      Bodega #{{ user.numeroBodega || "N/A" }}
+                    </span>
+                    <span
+                      *ngIf="user.accesoPremier"
+                      class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-[#b8962e] bg-[#b8962e]/10 border border-[#b8962e]/25 px-2 py-0.5 rounded-md"
+                    >
+                      <svg
+                        width="9"
+                        height="9"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                        />
+                      </svg>
+                      Premier
+                    </span>
+                    <span
+                      *ngIf="user.role === 'vendedor' && user.recolectorCaja"
+                      class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-md"
+                    >
+                      Recolector
+                    </span>
+                    <span
+                      *ngIf="
+                        user.role === 'vendedor' && user.restriccionesActivas
+                      "
+                      class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/25 px-2 py-0.5 rounded-md"
+                    >
+                      <svg
+                        width="9"
+                        height="9"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                      >
+                        <rect x="3" y="11" width="18" height="10" rx="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                      </svg>
+                      Restringido
+                    </span>
+                  </div>
+
+                  @if (user.role === "admin") {
+                    <div class="mt-3">
+                      @if (editandoEmailId !== user.id) {
+                        <div class="flex items-center gap-2">
+                          <div
+                            class="flex-1 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] min-w-0"
+                          >
+                            <svg
+                              width="11"
+                              height="11"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              class="text-[#b8962e] shrink-0"
+                            >
+                              <rect width="20" height="16" x="2" y="4" rx="2" />
+                              <path
+                                d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+                              />
+                            </svg>
+                            <span
+                              class="text-[11px] text-[#6e6e73] dark:text-[#86868b] truncate"
+                            >
+                              {{ user.emailReporte || "Sin email de reporte" }}
+                            </span>
+                          </div>
+                          <button
+                            (click)="abrirEditarEmail(user)"
+                            class="w-7 h-7 rounded-lg flex items-center justify-center text-[#6e6e73] dark:text-[#86868b] hover:text-[#b8962e] hover:bg-[#b8962e]/10 border border-[#e5e5ea] dark:border-[#3a3a3c] transition-all duration-150 active:scale-95 shrink-0"
+                            title="Editar email de reporte"
+                          >
+                            <svg
+                              width="11"
+                              height="11"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2.5"
+                              stroke-linecap="round"
+                            >
+                              <path
+                                d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                              />
+                              <path
+                                d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      } @else {
+                        <div class="flex flex-col gap-2">
+                          <div class="flex items-center gap-1.5">
+                            <svg
+                              width="11"
+                              height="11"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              class="text-[#b8962e] shrink-0"
+                            >
+                              <rect width="20" height="16" x="2" y="4" rx="2" />
+                              <path
+                                d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+                              />
+                            </svg>
+                            <span
+                              class="text-[10px] font-semibold text-[#b8962e] uppercase tracking-wide"
+                              >Email de reporte</span
+                            >
+                          </div>
+                          <input
+                            type="email"
+                            [(ngModel)]="emailEditando"
+                            placeholder="correo@ejemplo.com"
+                            (keydown.enter)="guardarEmail(user)"
+                            (keydown.escape)="cancelarEditarEmail()"
+                            class="w-full px-3 py-2 rounded-xl border border-[#b8962e]/40 bg-[#b8962e]/5 dark:bg-[#b8962e]/10 text-xs text-[#1d1d1f] dark:text-[#f5f5f7] placeholder-[#aeaeb2] dark:placeholder-[#48484a] outline-none focus:border-[#b8962e] transition-all duration-200"
+                            autofocus
+                          />
+                          <div class="flex gap-2">
+                            <button
+                              (click)="guardarEmail(user)"
+                              [disabled]="guardandoEmail"
+                              class="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-[11px] font-semibold bg-[#b8962e] hover:bg-[#d4ad45] text-white transition-all duration-150 active:scale-[0.97] disabled:opacity-50"
+                            >
+                              @if (guardandoEmail) {
+                                <svg
+                                  class="animate-spin w-3 h-3"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                >
+                                  <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    stroke-width="3"
+                                    stroke-dasharray="32"
+                                    stroke-dashoffset="12"
+                                  />
+                                </svg>
+                              } @else {
+                                <svg
+                                  width="11"
+                                  height="11"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2.5"
+                                  stroke-linecap="round"
+                                >
+                                  <path
+                                    d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+                                  />
+                                  <polyline points="17 21 17 13 7 13 7 21" />
+                                  <polyline points="7 3 7 8 15 8" />
+                                </svg>
+                              }
+                              {{ guardandoEmail ? "Guardando…" : "Guardar" }}
+                            </button>
+                            <button
+                              (click)="cancelarEditarEmail()"
+                              [disabled]="guardandoEmail"
+                              class="flex-1 inline-flex items-center justify-center py-1.5 rounded-xl text-[11px] font-semibold border border-[#e5e5ea] dark:border-[#3a3a3c] text-[#6e6e73] dark:text-[#86868b] hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e] transition-all duration-150 active:scale-[0.97] disabled:opacity-50"
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div
+                class="flex flex-wrap gap-2 pt-1 border-t border-[#e5e5ea] dark:border-[#2c2c2e]"
+              >
+                <button
+                  (click)="togglePremier(user)"
+                  class="flex-1 min-w-[calc(50%-0.25rem)] sm:min-w-[130px] inline-flex items-center justify-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl text-xs font-semibold border whitespace-nowrap transition-all duration-200 active:scale-[0.97]"
+                  [ngClass]="
+                    user.accesoPremier
+                      ? 'bg-[#b8962e]/10 border-[#b8962e]/30 text-[#b8962e]'
+                      : 'border-[#e5e5ea] dark:border-[#3a3a3c] text-[#6e6e73] dark:text-[#86868b] hover:border-[#b8962e]/30 hover:text-[#b8962e] hover:bg-[#b8962e]/5'
+                  "
+                >
+                  <svg
+                    class="shrink-0"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                    />
+                  </svg>
+                  Premier
+                </button>
+
+                <button
+                  *ngIf="user.role === 'vendedor'"
+                  (click)="toggleRecolector(user)"
+                  class="flex-1 min-w-[calc(50%-0.25rem)] sm:min-w-[130px] inline-flex items-center justify-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl text-xs font-semibold border whitespace-nowrap transition-all duration-200 active:scale-[0.97]"
+                  [ngClass]="
+                    user.recolectorCaja
+                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                      : 'border-[#e5e5ea] dark:border-[#3a3a3c] text-[#6e6e73] dark:text-[#86868b] hover:border-emerald-500/30 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/5'
+                  "
+                >
+                  <svg
+                    class="shrink-0"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <rect x="2" y="6" width="20" height="12" rx="2" />
+                    <circle cx="12" cy="12" r="2" />
+                  </svg>
+                  {{ user.recolectorCaja ? "Recolector" : "Recoger caja" }}
+                </button>
+
+                <button
+                  *ngIf="user.role === 'vendedor'"
+                  (click)="toggleRestricciones(user)"
+                  class="flex-1 min-w-[calc(50%-0.25rem)] sm:min-w-[130px] inline-flex items-center justify-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl text-xs font-semibold border whitespace-nowrap transition-all duration-200 active:scale-[0.97]"
+                  [ngClass]="
+                    user.restriccionesActivas
+                      ? 'bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400'
+                      : 'border-[#e5e5ea] dark:border-[#3a3a3c] text-[#6e6e73] dark:text-[#86868b] hover:border-red-500/30 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/5'
+                  "
+                >
+                  <svg
+                    class="shrink-0"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                  >
+                    <rect x="3" y="11" width="18" height="10" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                  {{
+                    user.restriccionesActivas
+                      ? "Restringido"
+                      : "Sin restricción"
+                  }}
+                </button>
+
+                <button
+                  (click)="abrirModalEditar(user)"
+                  class="flex-1 min-w-[calc(50%-0.25rem)] sm:min-w-[130px] inline-flex items-center justify-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl text-xs font-semibold border whitespace-nowrap border-[#e5e5ea] dark:border-[#3a3a3c] text-[#6e6e73] dark:text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-[#f5f5f7] hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e] hover:border-[#c7c7cc] transition-all duration-200 active:scale-[0.97]"
+                >
+                  <svg
+                    class="shrink-0"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                  >
+                    <path
+                      d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                    />
+                    <path
+                      d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                    />
+                  </svg>
+                  Editar
+                </button>
+
+                <button
+                  (click)="confirmarEliminarUsuario(user.id, user.name)"
+                  class="flex-1 min-w-[calc(50%-0.25rem)] sm:min-w-[130px] inline-flex items-center justify-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl text-xs font-semibold border whitespace-nowrap border-[#e5e5ea] dark:border-[#3a3a3c] text-[#6e6e73] dark:text-[#86868b] hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 dark:hover:border-red-500/30 transition-all duration-200 active:scale-[0.97]"
+                >
+                  <svg
+                    class="shrink-0"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                  >
+                    <polyline points="3 6 5 6 21 6" />
+                    <path
+                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    />
+                  </svg>
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </ng-container>
+
+      <div
+        *ngIf="filteredUsers().length === 0"
+        class="flex flex-col items-center justify-center py-24 gap-4 text-center"
+      >
+        <div
+          class="w-14 h-14 rounded-[18px] bg-white dark:bg-[#1c1c1e] border border-[#e5e5ea] dark:border-[#2c2c2e] flex items-center justify-center text-[#aeaeb2] dark:text-[#48484a]"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+          </svg>
+        </div>
+        <p class="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+          Sin resultados
+        </p>
+        <p class="text-xs text-[#6e6e73] dark:text-[#86868b]">
+          Ajusta el término de búsqueda
+        </p>
+      </div>
+    </div>
+
+    <section
+      class="bg-white dark:bg-[#1c1c1e] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-3xl p-6 flex flex-col gap-5"
+    >
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <div
+            class="w-9 h-9 rounded-xl bg-[#b8962e]/10 border border-[#b8962e]/20 flex items-center justify-center text-[#b8962e] shrink-0"
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <div>
+            <h2
+              class="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight"
+            >
+              Control de registro de entrada
+            </h2>
+            <p class="text-xs text-[#6e6e73] dark:text-[#86868b] mt-0.5">
+              Personal exento de registrar su llegada
+            </p>
+          </div>
+        </div>
+        <button
+          (click)="guardarSinActivacion()"
+          [disabled]="guardandoActivacion"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed bg-[#b8962e] hover:bg-[#d4ad45] text-white hover:-translate-y-px active:scale-[0.97]"
+        >
+          <svg
+            *ngIf="!guardandoActivacion"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          <svg
+            *ngIf="guardandoActivacion"
+            class="animate-spin"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-dasharray="32"
+              stroke-dashoffset="12"
+            />
+          </svg>
+          {{ guardandoActivacion ? "Guardando…" : "Guardar" }}
+        </button>
+      </div>
+
+      <div
+        class="flex items-start gap-2.5 p-3.5 rounded-xl bg-[#b8962e]/5 border border-[#b8962e]/15"
+      >
+        <svg
+          class="text-[#b8962e] shrink-0 mt-0.5"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        <span
+          class="text-xs text-[#6e6e73] dark:text-[#86868b] leading-relaxed"
+        >
+          El personal marcado aquí
+          <strong class="text-[#1d1d1f] dark:text-[#f5f5f7]"
+            >no necesitará registrar su llegada</strong
+          >
+          al iniciar sesión.
+        </span>
+      </div>
+
+      <div
+        class="border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl overflow-hidden"
+      >
+        <div
+          class="grid grid-cols-[1fr_auto_auto] gap-4 px-5 py-3 bg-[#f5f5f7] dark:bg-[#2c2c2e] border-b border-[#e5e5ea] dark:border-[#2c2c2e]"
+        >
+          <span
+            class="text-[10px] font-bold uppercase tracking-[0.12em] text-[#6e6e73] dark:text-[#86868b]"
+            >Usuario</span
+          >
+          <span
+            class="text-[10px] font-bold uppercase tracking-[0.12em] text-[#6e6e73] dark:text-[#86868b]"
+            >Rol</span
+          >
+          <span
+            class="text-[10px] font-bold uppercase tracking-[0.12em] text-[#6e6e73] dark:text-[#86868b]"
+            >Exento</span
+          >
+        </div>
+
+        <div
+          *ngFor="let user of usuariosActivables(); let last = last"
+          class="grid grid-cols-[1fr_auto_auto] gap-4 items-center px-5 py-3.5 hover:bg-[#f5f5f7] dark:hover:bg-[#2c2c2e] transition-colors"
+          [class.border-b]="!last"
+          [class.border-[#e5e5ea]]="!last"
+          [class.dark:border-[#2c2c2e]]="!last"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div
+              class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white shrink-0"
+              [ngClass]="{
+                'bg-gradient-to-br from-[#b8962e] to-[#d4ad45]':
+                  user.role === 'admin',
+                'bg-gradient-to-br from-violet-500 to-violet-400':
+                  user.role === 'bodega',
+                'bg-gradient-to-br from-emerald-600 to-emerald-400':
+                  user.role === 'vendedor',
+                'bg-gradient-to-br from-neutral-500 to-neutral-400':
+                  user.role === 'patinador',
+              }"
+            >
+              {{ user.name.charAt(0) | uppercase }}
+            </div>
+            <div class="min-w-0">
+              <p
+                class="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] truncate"
+              >
+                {{ user.name }}
+              </p>
+              <p
+                class="text-[11px] text-[#6e6e73] dark:text-[#86868b] truncate"
+              >
+                {{ user.email || "—" }}
+              </p>
+            </div>
+          </div>
+          <span
+            class="text-[10px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap"
+            [ngClass]="{
+              'bg-[#b8962e]/10 text-[#b8962e]': user.role === 'admin',
+              'bg-violet-100 text-violet-600 dark:bg-violet-500/15 dark:text-violet-400':
+                user.role === 'bodega',
+              'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400':
+                user.role === 'vendedor',
+            }"
+            >{{ rolReadable[user.role] }}</span
+          >
+          <label
+            class="relative inline-flex items-center cursor-pointer select-none"
+          >
+            <input
+              type="checkbox"
+              class="sr-only peer"
+              [checked]="idsSinActivacion.includes(user.id)"
+              (change)="toggleSinActivacion(user.id)"
+            />
+            <div
+              class="w-10 h-6 rounded-full bg-[#d2d2d7] dark:bg-[#3a3a3c] peer-checked:bg-[#b8962e] transition-colors duration-200 relative"
+            >
+              <span
+                class="absolute top-[3px] left-[3px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform duration-200"
+                [class.translate-x-4]="idsSinActivacion.includes(user.id)"
+              ></span>
+            </div>
+          </label>
+        </div>
+
+        <div
+          *ngIf="usuariosActivables().length === 0"
+          class="py-10 flex flex-col items-center gap-2 text-[#6e6e73] dark:text-[#86868b]"
+        >
+          <p class="text-sm">No hay personal activo para configurar</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-[#6e6e73] dark:text-[#86868b]">
+        <span class="font-semibold text-[#b8962e]">{{
+          idsSinActivacion.length
+        }}</span>
+        {{
+          idsSinActivacion.length === 1 ? "persona exenta" : "personas exentas"
+        }}
+        del registro de entrada
+      </p>
+    </section>
+  </div>
+</div>
+
+<button
+  (click)="scrollToTop()"
+  class="fixed bottom-4 right-5 z-50 w-11 h-11 rounded-full bg-[#b8962e] text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
+>
+  <svg
+    class="w-4 h-4"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+    stroke-linecap="round"
+  >
+    <polyline points="18 15 12 9 6 15" />
+  </svg>
+</button>
+
+<app-modal-agregar-usuario
+  *ngIf="isModalOpen"
+  [usuario]="usuarioSeleccionado"
+  [esEdicion]="esEdicion"
+  (onClose)="cerrarModal()"
+  (onAddUser)="addUser($event)"
+  (onUpdateUser)="actualizarUsuario(usuarioSeleccionado?.id!, $event)"
+></app-modal-agregar-usuario>
+
+<p-confirmDialog></p-confirmDialog>

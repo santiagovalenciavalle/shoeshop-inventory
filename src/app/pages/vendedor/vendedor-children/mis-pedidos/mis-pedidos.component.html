@@ -1,0 +1,235 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '64px' },
+  }"
+></p-toast>
+
+<div
+  class="bg-white dark:bg-black border-b border-neutral-100 dark:border-neutral-900"
+>
+  <div
+    class="max-w-6xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-center"
+  >
+    <span
+      class="text-sm font-semibold text-black dark:text-white tracking-tight"
+      >Mis Pedidos</span
+    >
+    <div class="w-12"></div>
+  </div>
+</div>
+
+<div
+  *ngIf="visibilityService.reconectando$ | async"
+  class="bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-700 px-5 py-2 flex items-center justify-center gap-2"
+>
+  <app-ia-spinner class="text-yellow-500 text-xs"></app-ia-spinner>
+  <span class="text-xs font-medium text-yellow-700 dark:text-yellow-400">
+    Actualizando pedidos desde el servidor…
+  </span>
+</div>
+
+<div
+  class="min-h-screen bg-neutral-50 dark:bg-black px-5 sm:px-8 lg:px-14 py-10"
+>
+  <div class="max-w-6xl mx-auto flex flex-col gap-12">
+    <div class="flex flex-col gap-2 ped-fade" style="--d: 0s">
+      <div class="flex items-center gap-3">
+        <span class="w-5 h-px bg-yellow-500"></span>
+        <span
+          class="text-[10px] uppercase tracking-[0.3em] font-semibold text-neutral-400 dark:text-neutral-500"
+          >Bodega</span
+        >
+      </div>
+      <h1
+        class="font-display text-3xl sm:text-4xl font-bold text-black dark:text-white leading-tight"
+      >
+        Mis pedidos a bodega
+      </h1>
+    </div>
+
+    <div
+      *ngIf="noHayPedidos"
+      class="flex flex-col items-center justify-center py-28 gap-4 text-center ped-fade"
+      style="--d: 0.1s"
+    >
+      <div
+        class="w-14 h-14 rounded-[18px] bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center"
+      >
+        <i
+          class="pi pi-box text-2xl text-neutral-400 dark:text-neutral-600"
+        ></i>
+      </div>
+      <div>
+        <p class="text-sm font-semibold text-black dark:text-white">
+          Sin pedidos disponibles
+        </p>
+        <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+          Cuando realices un pedido aparecerá aquí
+        </p>
+      </div>
+    </div>
+
+    <ng-container *ngIf="loading">
+      <div
+        class="flex flex-col items-center justify-center py-28 gap-4 text-center ped-fade"
+        style="--d: 0.1s"
+      >
+        <div
+          class="w-14 h-14 rounded-[18px] bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center"
+        >
+          <i
+            class="pi pi-box text-2xl text-neutral-400 dark:text-neutral-600"
+          ></i>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-black dark:text-white">
+            Cargando los pedidos...
+          </p>
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+            Espera un momento por favor
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+    <section
+      *ngFor="let seccion of seccionesPedidos; let i = index"
+      class="flex flex-col gap-5 ped-fade"
+      [style]="'--d:' + (i * 0.08 + 0.1) + 's'"
+    >
+      <ng-container *ngIf="seccion.pedidos.length > 0 && !loading">
+        <div
+          *ngIf="i > 0"
+          class="w-full h-px bg-neutral-100 dark:bg-neutral-900 my-2"
+        ></div>
+
+        <div class="flex items-center gap-3">
+          <span
+            class="w-2 h-2 rounded-full shrink-0"
+            [ngClass]="{
+              'bg-yellow-500': seccion.estado === 'Pendiente',
+              'bg-emerald-500': seccion.estado === 'Recibido',
+              'bg-neutral-400': seccion.estado === 'Devuelto',
+            }"
+          ></span>
+          <span
+            class="text-[10px] uppercase tracking-[0.3em] font-semibold text-neutral-400 dark:text-neutral-500"
+          >
+            {{ seccion.estado }}s
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div *ngFor="let pedido of seccion.pedidos">
+            <app-pedido-card
+              [pedido]="pedido"
+              [procesando]="procesandoAccion"
+              [reconectando]="
+                (visibilityService.reconectando$ | async) ?? false
+              "
+              (recibido)="marcarRecibido(pedido)"
+              (vender)="realizarVenta(pedido)"
+              (prestamo)="realizarPrestamo(pedido)"
+              (devolver)="realizarDevolucion(pedido)"
+              (cambio)="realizarCambio(pedido, $event)"
+              (bono)="aplicarBono(pedido)"
+            ></app-pedido-card>
+          </div>
+        </div>
+      </ng-container>
+    </section>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalCambio && pedidoSeleccionado"
+  class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0 modal-overlay-in"
+  (click)="cerrarModalCambio()"
+>
+  <div
+    class="w-full sm:max-w-3xl bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] h-[90vh] overflow-y-auto shadow-2xl modal-sheet-in"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-cambios
+      [pedido]="pedidoSeleccionado"
+      (procesarCambio)="manejarProcesarCambio($event)"
+      (cancelar)="cerrarModalCambio()"
+    ></app-cambios>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalVenta"
+  class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0 modal-overlay-in"
+  (click)="cerrarModalVenta()"
+>
+  <div
+    class="w-full sm:max-w-xl bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] max-h-[90vh] overflow-y-auto shadow-2xl modal-sheet-in"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-modal-venta
+      [visible]="mostrarModalVenta"
+      [pedido]="pedidoSeleccionado"
+      [validarPrecioMinimoProducto]="validarRestriccionPrecio"
+      (cerrar)="cerrarModalVenta()"
+      (confirmar)="confirmarVenta($event)"
+    ></app-modal-venta>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalPrestamo"
+  class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0 modal-overlay-in"
+  (click)="cerrarModalPrestamo()"
+>
+  <div
+    class="w-full sm:max-w-xl bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] max-h-[90vh] overflow-y-auto shadow-2xl modal-sheet-in"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-modal-prestamo
+      [visible]="mostrarModalPrestamo"
+      [pedido]="pedidoSeleccionado"
+      [plMinimo]="plSeleccionado"
+      (cerrar)="cerrarModalPrestamo()"
+      (confirmar)="confirmarPrestamo($event)"
+    ></app-modal-prestamo>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalBono"
+  class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0 modal-overlay-in"
+  (click)="cerrarModalBono()"
+>
+  <div
+    class="w-full sm:max-w-lg bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] max-h-[90vh] overflow-y-auto shadow-2xl modal-sheet-in"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-modal-bono
+      [display]="mostrarModalBono"
+      (cerrar)="cerrarModalBono()"
+      (bonoRedimido)="onBonoRedimido($event)"
+    ></app-modal-bono>
+  </div>
+</div>

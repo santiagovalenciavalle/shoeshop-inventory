@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+.font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+@keyframes overlayIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.mv-overlay {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: overlayIn 0.25s ease-out forwards;
+}
+
+@keyframes sheetIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mv-panel {
+  animation: sheetIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mv-scroll {
+  scrollbar-width: none;
+}
+
+.mv-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+select.mv-input,
+select.appearance-none {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a3a3a3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.mv-input[type='number']::-webkit-inner-spin-button,
+.mv-input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.mv-input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.mv-inputnumber .p-inputtext {
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 14px !important;
+  border-color: #e5e5e5 !important;
+  background: #fafafa !important;
+  font-size: 0.875rem !important;
+  font-family: 'DM Sans', sans-serif !important;
+}
+
+.mv-inputnumber .p-inputtext:focus {
+  border-color: #EAB308 !important;
+  box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.2) !important;
+  outline: none !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mv-inputnumber .p-inputtext {
+    background: #0a0a0a !important;
+    border-color: #262626 !important;
+    color: #fff !important;
+  }
+}
+
+@keyframes dotPulse {
+
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.7);
+  }
+
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.dot-pulse {
+  display: inline-block;
+  animation: dotPulse 1.2s ease-in-out infinite;
+  animation-delay: var(--dp, 0s);
+}
+
+.mv-input:focus-visible {
+  outline: 2px solid #EAB308;
+  outline-offset: 2px;
+}

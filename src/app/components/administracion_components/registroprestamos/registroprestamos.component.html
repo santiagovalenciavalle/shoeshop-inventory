@@ -1,0 +1,862 @@
+<style>
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .fade-up {
+    animation: fadeUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  .fade-up-1 {
+    animation-delay: 0.05s;
+  }
+  .fade-up-2 {
+    animation-delay: 0.12s;
+  }
+  .fade-up-3 {
+    animation-delay: 0.18s;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .modal-enter {
+    animation: slideUp 0.35s cubic-bezier(0.34, 1.26, 0.64, 1) both;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .overlay-enter {
+    animation: fadeIn 0.25s ease both;
+  }
+
+  .card-lift {
+    transition:
+      transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 0.28s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .row-hover {
+    transition: background-color 0.18s ease;
+  }
+
+  .ios-select {
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -468px 0;
+    }
+    100% {
+      background-position: 468px 0;
+    }
+  }
+  .skeleton {
+    background-image: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.06) 0px,
+      rgba(0, 0, 0, 0.12) 40px,
+      rgba(0, 0, 0, 0.06) 80px
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+  .dark .skeleton {
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.12) 40px,
+      rgba(255, 255, 255, 0.05) 80px
+    );
+  }
+
+  .mini-bar-segment {
+    transition:
+      flex-basis 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      opacity 0.2s ease;
+  }
+
+  .ios-select {
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+  .ios-select option {
+    background-color: #fff;
+    color: #171717;
+  }
+  .dark .ios-select option {
+    background-color: #262626;
+    color: #fafafa;
+  }
+</style>
+
+<div
+  *ngIf="loadingPantalla"
+  class="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white"
+>
+  <header
+    class="sticky top-0 z-40 bg-white/80 dark:bg-neutral-950/80 backdrop-blur-xl border-b border-neutral-200 dark:border-white/10"
+  >
+    <div
+      class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between"
+    >
+      <div class="flex items-center gap-3">
+        <div class="skeleton w-9 h-9 rounded-lg"></div>
+        <div class="skeleton w-40 h-4 rounded"></div>
+      </div>
+      <div class="skeleton w-24 h-8 rounded-lg hidden sm:block"></div>
+    </div>
+  </header>
+
+  <section class="max-w-6xl mx-auto px-5 sm:px-8 py-6">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <div
+        *ngFor="let i of [0, 1, 2, 3]"
+        class="rounded-2xl border border-neutral-200 dark:border-white/10 p-4 bg-neutral-50 dark:bg-white/[0.03]"
+      >
+        <div class="skeleton w-16 h-3 rounded mb-3"></div>
+        <div class="skeleton w-20 h-6 rounded"></div>
+      </div>
+    </div>
+
+    <div
+      class="rounded-2xl border border-neutral-200 dark:border-white/10 p-5 sm:p-6 mb-6 bg-neutral-50 dark:bg-white/[0.03]"
+    >
+      <div class="skeleton w-24 h-3 rounded mb-5"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="skeleton h-11 rounded-xl"></div>
+        <div class="skeleton h-11 rounded-xl"></div>
+        <div class="skeleton h-11 rounded-xl"></div>
+      </div>
+    </div>
+
+    <div class="space-y-3">
+      <div
+        *ngFor="let i of [0, 1, 2, 3, 4]"
+        class="flex items-center gap-4 rounded-2xl border border-neutral-200 dark:border-white/10 p-4"
+      >
+        <div class="skeleton w-12 h-12 rounded-xl flex-shrink-0"></div>
+        <div class="flex-1 space-y-2">
+          <div class="skeleton w-1/3 h-3.5 rounded"></div>
+          <div class="skeleton w-1/4 h-3 rounded"></div>
+        </div>
+        <div class="skeleton w-16 h-3.5 rounded hidden sm:block"></div>
+        <div class="skeleton w-20 h-3.5 rounded"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div
+  *ngIf="!loadingPantalla"
+  class="sf min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-white"
+>
+  <header
+    class="sticky top-0 z-40 bg-white/85 dark:bg-neutral-950/85 backdrop-blur-xl border-b border-neutral-200 dark:border-white/10"
+  >
+    <div
+      class="max-w-6xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-lg bg-amber-500/10 dark:bg-amber-500/15 flex items-center justify-center"
+        >
+          <i
+            class="pi pi-briefcase text-amber-600 dark:text-amber-400 text-sm"
+          ></i>
+        </div>
+        <div>
+          <h1 class="text-sm font-semibold tracking-tight leading-none">
+            Préstamos de Tennis
+          </h1>
+          <p class="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5">
+            Panel de control · {{ prestamosFiltrados.length }} registros
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="hidden sm:flex items-center gap-2 text-xs font-medium text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-white/[0.06] rounded-lg px-3 py-1.5"
+      >
+        <span
+          class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"
+        ></span>
+        En vivo
+      </div>
+    </div>
+  </header>
+
+  <section class="max-w-6xl mx-auto px-5 sm:px-8 pt-6 fade-up fade-up-1">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div
+        class="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-4"
+      >
+        <p
+          class="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-1.5"
+        >
+          Total préstamos
+        </p>
+        <p class="text-xl font-semibold tabular-nums">
+          {{ prestamosFiltrados.length }}
+        </p>
+      </div>
+
+      <div
+        class="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-4"
+      >
+        <p
+          class="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-1.5"
+        >
+          Valor en préstamos
+        </p>
+        <p
+          class="text-xl font-semibold tabular-nums text-amber-600 dark:text-amber-400"
+        >
+          {{ valorTotalFiltrado | currency: "COP" : "symbol" : "1.0-0" }}
+        </p>
+      </div>
+
+      <div
+        class="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-4"
+      >
+        <p
+          class="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-1.5"
+        >
+          Días con actividad
+        </p>
+        <p class="text-xl font-semibold tabular-nums">
+          {{ gruposPrestamos.length }}
+        </p>
+      </div>
+
+      <div
+        class="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.04] p-4"
+      >
+        <p
+          class="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-1.5"
+        >
+          Vendedores activos
+        </p>
+        <p class="text-xl font-semibold tabular-nums">
+          {{ vendedoresDisponibles.length }}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-5 sm:px-8 py-6 fade-up fade-up-2">
+    <div
+      class="bg-white dark:bg-white/[0.04] rounded-2xl border border-neutral-200 dark:border-white/10 p-5 sm:p-6"
+    >
+      <div class="flex items-center justify-between mb-5">
+        <p
+          class="text-xs font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500"
+        >
+          Filtros
+        </p>
+        <button
+          (click)="resetFilters()"
+          class="flex items-center gap-1.5 text-xs font-medium text-neutral-400 dark:text-neutral-500 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200"
+        >
+          <i class="pi pi-times-circle text-[11px]"></i>
+          Limpiar
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label
+            class="text-xs font-medium text-neutral-500 dark:text-neutral-400 pl-0.5"
+            >Local</label
+          >
+          <select
+            [(ngModel)]="filtroLocal"
+            (change)="filtrarPrestamos()"
+            class="ios-select w-full rounded-xl bg-neutral-50 dark:bg-white/[0.06] border border-neutral-200 dark:border-white/10 px-4 py-2.5 text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 transition"
+          >
+            <option value="">Todos los locales</option>
+            <option
+              *ngFor="let local of localesDisponibles"
+              [value]="local.value"
+            >
+              {{ local.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label
+            class="text-xs font-medium text-neutral-500 dark:text-neutral-400 pl-0.5"
+            >Vendedor</label
+          >
+          <select
+            [(ngModel)]="filtroVendedor"
+            (change)="filtrarPrestamos()"
+            class="ios-select w-full rounded-xl bg-neutral-50 dark:bg-white/[0.06] border border-neutral-200 dark:border-white/10 px-4 py-2.5 text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 transition"
+          >
+            <option value="">Todos los vendedores</option>
+            <option
+              *ngFor="let vendedor of vendedoresDisponibles"
+              [value]="vendedor.name"
+            >
+              {{ vendedor.name
+              }}<span *ngIf="vendedor.role === 'admin'"> (Admin)</span>
+            </option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label
+            class="text-xs font-medium text-neutral-500 dark:text-neutral-400 pl-0.5"
+            >Fecha</label
+          >
+          <p-datepicker
+            [(ngModel)]="filtroFecha"
+            (onSelect)="filtrarPrestamos()"
+            dateFormat="dd/mm/yy"
+            showIcon
+            [readonlyInput]="true"
+            styleClass="w-full"
+            appendTo="body"
+          ></p-datepicker>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="max-w-6xl mx-auto px-5 sm:px-8 pb-20 fade-up fade-up-3">
+    <div
+      *ngIf="gruposPrestamos.length === 0"
+      class="flex flex-col items-center justify-center py-28 text-center"
+    >
+      <div
+        class="w-14 h-14 rounded-2xl bg-neutral-100 dark:bg-white/[0.06] flex items-center justify-center mb-4"
+      >
+        <i class="pi pi-inbox text-2xl text-neutral-400"></i>
+      </div>
+      <p class="text-sm font-medium text-neutral-400 dark:text-neutral-500">
+        No hay préstamos disponibles
+      </p>
+    </div>
+
+    <div *ngFor="let grupo of gruposPrestamos" class="mb-10 last:mb-0">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3"
+      >
+        <div class="flex items-center gap-2.5">
+          <span
+            class="text-sm font-semibold tracking-tight"
+            [class.text-amber-600]="grupo.esHoy"
+            [class.dark:text-amber-400]="grupo.esHoy"
+          >
+            {{ grupo.etiqueta }}
+          </span>
+          <span
+            *ngIf="grupo.esHoy"
+            class="text-[10px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400 px-2 py-0.5 rounded-full"
+          >
+            Actual
+          </span>
+          <span class="text-xs text-neutral-400 dark:text-neutral-500">
+            {{ grupo.totalUnidades }} préstamo{{
+              grupo.totalUnidades === 1 ? "" : "s"
+            }}
+            ·
+            {{ grupo.totalValor | currency: "COP" : "symbol" : "1.0-0" }}
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="hidden lg:block rounded-2xl border border-neutral-200 dark:border-white/10 overflow-hidden bg-white dark:bg-white/[0.04]"
+      >
+        <table class="w-full text-sm">
+          <thead>
+            <tr
+              class="border-b border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03]"
+            >
+              <th
+                class="text-left font-semibold text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 px-5 py-3"
+              >
+                Producto
+              </th>
+              <th
+                class="text-left font-semibold text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 px-5 py-3"
+              >
+                Local inicio
+              </th>
+              <th
+                class="text-left font-semibold text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 px-5 py-3"
+              >
+                Prestado a
+              </th>
+              <th
+                class="text-left font-semibold text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 px-5 py-3"
+              >
+                Vendedor
+              </th>
+              <th
+                class="text-right font-semibold text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 px-5 py-3"
+              >
+                Precio
+              </th>
+              <th
+                class="text-right font-semibold text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 px-5 py-3"
+              >
+                Fecha
+              </th>
+              <th class="px-5 py-3 w-10"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-100 dark:divide-white/[0.06]">
+            <tr
+              *ngFor="let prestamo of grupo.prestamos"
+              (click)="abrirDetalle(prestamo)"
+              class="row-hover cursor-pointer hover:bg-amber-500/[0.04] dark:hover:bg-amber-500/[0.06]"
+            >
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                  <img
+                    [src]="prestamo.imagen"
+                    class="w-10 h-10 rounded-lg object-cover flex-shrink-0"
+                    alt="{{ prestamo.marca }}"
+                  />
+                  <div class="min-w-0">
+                    <p
+                      class="font-medium text-neutral-900 dark:text-white truncate"
+                    >
+                      {{ prestamo.marca }}
+                    </p>
+                    <p
+                      class="text-xs text-neutral-400 dark:text-neutral-500 truncate"
+                    >
+                      {{ prestamo.referencia }} · T{{ prestamo.talla }}
+                    </p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-neutral-600 dark:text-neutral-300">
+                {{ prestamo.localInicio || "Sin local" }}
+              </td>
+              <td class="px-5 py-3 text-neutral-600 dark:text-neutral-300">
+                {{ prestamo.localPrestado || "Ninguno" }}
+              </td>
+              <td class="px-5 py-3 text-neutral-600 dark:text-neutral-300">
+                {{ prestamo.vendedor || "Sin vendedor" }}
+              </td>
+              <td
+                class="px-5 py-3 text-right font-semibold tabular-nums text-neutral-900 dark:text-white"
+              >
+                {{ prestamo.precio | currency: "COP" : "symbol" : "1.0-0" }}
+              </td>
+              <td
+                class="px-5 py-3 text-right text-neutral-400 dark:text-neutral-500 tabular-nums"
+              >
+                {{ prestamo.fechaPrestamo | date: "dd/MM/yy" }}
+              </td>
+              <td class="px-5 py-3 text-right">
+                <i
+                  class="pi pi-chevron-right text-xs text-neutral-300 dark:text-neutral-600"
+                ></i>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="lg:hidden space-y-3">
+        <div
+          *ngFor="let prestamo of grupo.prestamos"
+          (click)="abrirDetalle(prestamo)"
+          class="card-lift group flex items-center gap-4 bg-white dark:bg-white/[0.04] border border-neutral-200 dark:border-white/[0.08] rounded-2xl p-4 cursor-pointer hover:border-amber-500/30 dark:hover:border-amber-500/20 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/30 transition-all duration-300"
+        >
+          <div class="relative flex-shrink-0">
+            <img
+              [src]="prestamo.imagen"
+              class="w-14 h-14 rounded-xl object-cover"
+              alt="{{ prestamo.marca }}"
+            />
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <p
+                  class="text-sm font-semibold text-neutral-900 dark:text-white leading-tight"
+                >
+                  {{ prestamo.marca }} · {{ prestamo.referencia }}
+                </p>
+                <p
+                  class="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5"
+                >
+                  Prestado a:
+                  <span class="text-neutral-600 dark:text-neutral-300">{{
+                    prestamo.localPrestado || "Ninguno"
+                  }}</span>
+                </p>
+              </div>
+              <div class="text-right flex-shrink-0">
+                <p
+                  class="text-sm font-semibold text-neutral-900 dark:text-white"
+                >
+                  {{ prestamo.precio | currency: "COP" : "symbol" : "1.0-0" }}
+                </p>
+                <p
+                  class="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5"
+                >
+                  {{ prestamo.fechaPrestamo | date: "dd/MM/yy" }}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4 mt-2">
+              <span
+                class="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500"
+              >
+                <i class="pi pi-map-marker text-[10px]"></i>
+                {{ prestamo.localInicio || "Sin local" }}
+              </span>
+              <span
+                class="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500"
+              >
+                <i class="pi pi-user text-[10px]"></i>
+                {{ prestamo.vendedor || "Sin vendedor" }}
+              </span>
+            </div>
+          </div>
+
+          <i
+            class="pi pi-chevron-right text-xs text-neutral-300 dark:text-neutral-600 group-hover:text-amber-500 transition-colors duration-200 flex-shrink-0"
+          ></i>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <button
+    *ngIf="mostrarBotonScroll"
+    (click)="scrollToTop()"
+    aria-label="Volver arriba"
+    class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-amber-600 hover:bg-amber-500 text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
+  >
+    <svg
+      class="w-5 h-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+    >
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+</div>
+
+<div
+  *ngIf="modalVisible"
+  class="overlay-enter fixed inset-0 z-50 flex items-end sm:items-center justify-center px-0 sm:px-4 bg-black/50 backdrop-blur-sm"
+  (click)="cerrarModal()"
+>
+  <div
+    class="modal-enter w-full sm:max-w-sm bg-white dark:bg-neutral-900 rounded-t-3xl sm:rounded-3xl overflow-y-auto max-h-[90vh] shadow-2xl border border-transparent dark:border-white/10"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex justify-center pt-3 pb-1 sm:hidden">
+      <div class="w-9 h-1 rounded-full bg-neutral-300 dark:bg-white/20"></div>
+    </div>
+
+    <div class="px-5 pt-4" *ngIf="detalleSeleccionado">
+      <div
+        class="relative rounded-2xl overflow-hidden bg-neutral-100 dark:bg-white/[0.06]"
+      >
+        <img
+          [src]="detalleSeleccionado.imagen || '/logo.svg'"
+          class="w-full h-36 object-cover"
+          alt="Producto"
+        />
+        <div
+          class="absolute top-2.5 left-2.5 flex items-center gap-1.5 bg-white/95 dark:bg-neutral-900/95 backdrop-blur text-neutral-700 dark:text-neutral-200 text-xs font-medium px-2.5 py-1 rounded-lg border border-neutral-200/60 dark:border-white/10"
+        >
+          <i class="pi pi-clock text-[11px]"></i>
+          {{ diasPrestado(detalleSeleccionado.fechaPrestamo) }}
+          {{
+            diasPrestado(detalleSeleccionado.fechaPrestamo) === 1
+              ? "día"
+              : "días"
+          }}
+          prestado
+        </div>
+      </div>
+
+      <div class="pt-4">
+        <p
+          class="text-[11px] font-medium text-neutral-400 dark:text-neutral-500 tracking-wide"
+        >
+          {{ detalleSeleccionado.marca }} · ref.
+          {{ detalleSeleccionado.referencia }}
+        </p>
+        <h3
+          class="text-lg font-semibold text-neutral-900 dark:text-white leading-tight mt-0.5"
+        >
+          {{ detalleSeleccionado.marca }} {{ detalleSeleccionado.referencia }}
+        </h3>
+        <div
+          class="flex items-center gap-2.5 mt-2 text-sm text-neutral-500 dark:text-neutral-400"
+        >
+          <span>Talla {{ detalleSeleccionado.talla }}</span>
+          <span
+            class="w-[3px] h-[3px] rounded-full bg-neutral-300 dark:bg-neutral-600"
+          ></span>
+          <span>Cód. {{ detalleSeleccionado.zapatoId }}</span>
+        </div>
+      </div>
+
+      <div class="mt-5 pt-4 border-t border-neutral-100 dark:border-white/10">
+        <p
+          class="text-[11px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-2.5"
+        >
+          Movimiento
+        </p>
+        <div class="flex items-center gap-2.5">
+          <div
+            class="flex-1 bg-neutral-50 dark:bg-white/[0.05] rounded-xl px-3 py-2.5"
+          >
+            <p
+              class="text-[11px] text-neutral-400 dark:text-neutral-500 mb-0.5"
+            >
+              Origen
+            </p>
+            <p
+              class="text-sm font-medium text-neutral-900 dark:text-white truncate"
+            >
+              {{ detalleSeleccionado.localInicio || "Sin local" }}
+            </p>
+          </div>
+          <i
+            class="pi pi-arrow-right text-neutral-300 dark:text-neutral-600 text-sm flex-shrink-0"
+          ></i>
+          <div
+            class="flex-1 bg-neutral-50 dark:bg-white/[0.05] rounded-xl px-3 py-2.5"
+          >
+            <p
+              class="text-[11px] text-neutral-400 dark:text-neutral-500 mb-0.5"
+            >
+              Prestado a
+            </p>
+            <p
+              class="text-sm font-medium text-neutral-900 dark:text-white truncate"
+            >
+              {{ detalleSeleccionado.localPrestado || "N/A" }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 grid grid-cols-2 gap-2.5">
+        <div class="bg-neutral-50 dark:bg-white/[0.05] rounded-xl px-3.5 py-3">
+          <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+            Precio
+          </p>
+          <p
+            class="text-lg font-semibold text-amber-600 dark:text-amber-400 tabular-nums"
+          >
+            {{
+              detalleSeleccionado.precio | currency: "COP" : "symbol" : "1.0-0"
+            }}
+          </p>
+        </div>
+        <div class="bg-neutral-50 dark:bg-white/[0.05] rounded-xl px-3.5 py-3">
+          <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+            Vendedor
+          </p>
+          <p
+            class="text-sm font-semibold text-neutral-900 dark:text-white truncate"
+          >
+            {{ detalleSeleccionado.vendedor || "Sin vendedor" }}
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="mt-4 flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500"
+      >
+        <i class="pi pi-calendar text-[11px]"></i>
+        Prestado el {{ detalleSeleccionado.fechaPrestamo | date: "dd/MM/yyyy" }}
+      </div>
+
+      <div
+        *ngIf="detalleSeleccionado.comentario"
+        class="mt-3 bg-neutral-50 dark:bg-white/[0.05] rounded-xl px-3.5 py-3"
+      >
+        <p class="text-[11px] text-neutral-400 dark:text-neutral-500 mb-1">
+          Comentario
+        </p>
+        <p
+          class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed"
+        >
+          {{ detalleSeleccionado.comentario }}
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-2 mt-6 pb-5">
+        <button
+          (click)="registrarVenta(detalleSeleccionado)"
+          class="w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 active:scale-[0.98] text-white dark:text-neutral-950 font-semibold text-sm py-3 rounded-xl transition-all duration-200"
+        >
+          <i class="pi pi-dollar text-sm"></i>
+          Registrar Venta
+        </button>
+
+        <button
+          (click)="confirmarDevolucion(detalleSeleccionado)"
+          class="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 active:scale-[0.98] text-red-500 dark:text-red-400 font-semibold text-sm py-3 rounded-xl transition-all duration-200"
+        >
+          <i class="pi pi-reply text-sm"></i>
+          Devolver a bodega
+        </button>
+
+        <button
+          *ngIf="detalleSeleccionado?.localOrigenId"
+          (click)="confirmarDevolucionLocal(detalleSeleccionado)"
+          class="w-full flex items-center justify-center gap-2 bg-amber-500/10 hover:bg-amber-500/20 active:scale-[0.98] text-amber-600 dark:text-amber-400 font-semibold text-sm py-3 rounded-xl transition-all duration-200"
+        >
+          <i class="pi pi-arrow-right-arrow-left text-sm"></i>
+          Devolver a {{ detalleSeleccionado?.localSalido }}
+        </button>
+
+        <button
+          (click)="cerrarModal()"
+          class="w-full text-sm font-medium text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 py-2.5 rounded-xl transition-colors duration-200"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalVenta"
+  class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0 overlay-enter"
+  (click)="cerrarModalVenta()"
+>
+  <div
+    class="w-full sm:max-w-xl bg-white dark:bg-neutral-900 rounded-t-[28px] sm:rounded-[28px] max-h-[90vh] overflow-y-auto shadow-2xl border border-transparent dark:border-white/10 modal-enter"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-modal-venta
+      [visible]="mostrarModalVenta"
+      [pedido]="prestamoSeleccionado"
+      (cerrar)="cerrarModalVenta()"
+      (confirmar)="confirmarVenta($event)"
+    ></app-modal-venta>
+  </div>
+</div>
+
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+></p-toast>
+
+<div
+  *ngIf="mostrarConfirmacion"
+  class="overlay-enter fixed inset-0 z-50 flex items-center justify-center px-5 bg-black/50 backdrop-blur-sm"
+>
+  <div
+    class="modal-enter w-full sm:max-w-sm max-h-[90vh] bg-white dark:bg-neutral-900 rounded-t-3xl sm:rounded-3xl overflow-y-auto shadow-2xl border border-transparent dark:border-white/10"
+  >
+    <div class="pt-8 pb-4 flex flex-col items-center gap-2 px-6">
+      <div
+        class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/10 flex items-center justify-center mb-1"
+      >
+        <i
+          class="pi pi-exclamation-triangle text-red-500 dark:text-red-400 text-lg"
+        ></i>
+      </div>
+      <h2
+        class="text-base font-semibold text-neutral-900 dark:text-white text-center"
+      >
+        {{
+          tipoDevolucion === "local"
+            ? "Confirmar devolución a local"
+            : "Confirmar Devolución"
+        }}
+      </h2>
+      <p
+        class="text-sm text-center text-neutral-500 dark:text-neutral-400 leading-relaxed"
+      >
+        ¿Devolver
+        <strong class="text-neutral-900 dark:text-white"
+          >{{ detalleSeleccionado?.marca }}
+          {{ detalleSeleccionado?.referencia }}</strong
+        >, talla
+        <strong class="text-neutral-900 dark:text-white">{{
+          detalleSeleccionado?.talla
+        }}</strong
+        >,
+        {{
+          tipoDevolucion === "local"
+            ? "de vuelta a " + detalleSeleccionado?.localSalido + "?"
+            : "prestado al local " +
+              detalleSeleccionado?.localPrestado +
+              ", a bodega?"
+        }}
+      </p>
+      <p class="text-xs text-neutral-400 dark:text-neutral-500">
+        Código: {{ detalleSeleccionado?.zapatoId }}
+      </p>
+    </div>
+
+    <div class="h-px bg-neutral-100 dark:bg-white/[0.08] mx-0"></div>
+
+    <div class="flex divide-x divide-neutral-100 dark:divide-white/[0.08]">
+      <button
+        (click)="cancelarDevolucion()"
+        class="flex-1 py-4 text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-white/[0.04] active:scale-[0.98] transition-all duration-150"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="aceptarDevolucion()"
+        [disabled]="
+          detalleSeleccionado &&
+          botonesDeshabilitados.has(detalleSeleccionado.id)
+        "
+        class="flex-1 py-4 text-sm font-semibold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/[0.06] active:scale-[0.98] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        Devolver
+      </button>
+    </div>
+  </div>
+</div>

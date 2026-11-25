@@ -1,0 +1,23 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+textarea.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+
+textarea.scrollbar-none {
+    scrollbar-width: none;
+}
+
+.ia-messages::-webkit-scrollbar,
+main::-webkit-scrollbar {
+    width: 3px;
+}
+
+.ia-messages::-webkit-scrollbar-thumb,
+main::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.2);
+    border-radius: 4px;
+}

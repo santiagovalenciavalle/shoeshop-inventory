@@ -1,0 +1,160 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+></p-toast>
+
+<div
+  *ngIf="visible"
+  class="z-50 flex items-end sm:items-center justify-center px-0 sm:px-5 mv-overlay"
+  (click)="cerrarModal()"
+>
+  <div
+    class="mv-panel w-full sm:max-w-lg bg-white dark:bg-neutral-950 sm:rounded-[28px] rounded-t-[28px] max-h-[92vh] flex flex-col shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 shrink-0">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-800"
+      ></div>
+    </div>
+
+    <div
+      class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 shrink-0"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-[12px] bg-black dark:bg-white flex items-center justify-center shrink-0"
+        >
+          <i class="pi pi-share-alt text-white dark:text-black text-sm"></i>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold text-black dark:text-white">
+            Registrar préstamo
+          </h2>
+          <p class="text-[11px] text-neutral-400 dark:text-neutral-500">
+            Completa los datos del préstamo
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="cerrarModal()"
+        class="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-700 active:scale-95 transition-all duration-200"
+      >
+        <i
+          class="pi pi-times text-[10px] text-neutral-500 dark:text-neutral-400"
+        ></i>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5 mv-scroll">
+      <div
+        class="flex items-center gap-4 p-4 rounded-[16px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800"
+      >
+        <img
+          [src]="pedido?.imagen"
+          [alt]="pedido?.marca"
+          class="w-14 h-14 rounded-[12px] object-cover shrink-0 bg-neutral-200 dark:bg-neutral-800"
+        />
+        <div class="min-w-0">
+          <p class="text-sm font-semibold text-black dark:text-white truncate">
+            {{ pedido?.marca }}
+          </p>
+          <p class="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5">
+            Ref {{ pedido?.referencia }} · Talla {{ pedido?.talla }}
+          </p>
+        </div>
+      </div>
+
+      <div *ngIf="exhibicion" class="flex flex-col gap-1.5">
+        <label
+          class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+          >Local de venta</label
+        >
+        <input
+          type="text"
+          [value]="localSeleccionado"
+          readonly
+          class="mv-input w-full px-4 py-3 rounded-[14px] bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 text-sm cursor-default"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+          >Local al que se prestará</label
+        >
+        <input
+          type="text"
+          [(ngModel)]="local"
+          placeholder="Ingresa el local de destino"
+          class="mv-input w-full px-4 py-3 rounded-[14px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-black dark:text-white text-sm placeholder-neutral-300 dark:placeholder-neutral-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+          >Precio de préstamo (COP)</label
+        >
+        <p-inputnumber
+          inputId="integeronly"
+          [(ngModel)]="precio"
+          placeholder="0"
+          class="mv-inputnumber w-full"
+        ></p-inputnumber>
+        <p
+          *ngIf="precioPorDebajoDelPl && !sinRestriccionPrecio"
+          class="text-[11px] text-red-500 dark:text-red-400 mt-0.5"
+        >
+          El precio no puede ser menor al precio local (${{
+            plMinimo?.toLocaleString("es-CO")
+          }}).
+        </p>
+        <p
+          *ngIf="precioEsPl && !sinRestriccionPrecio"
+          class="text-[11px] text-blue-500 dark:text-blue-400 mt-0.5"
+        >
+          Este préstamo quedará registrado a precio local.
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+          >Comentario
+          <span class="normal-case tracking-normal">(opcional)</span></label
+        >
+        <textarea
+          [(ngModel)]="comentario"
+          rows="3"
+          placeholder="Observaciones del préstamo..."
+          class="mv-input w-full px-4 py-3 rounded-[14px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-black dark:text-white text-sm placeholder-neutral-300 dark:placeholder-neutral-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200 resize-none"
+        ></textarea>
+      </div>
+    </div>
+
+    <div
+      class="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 flex gap-3 shrink-0"
+    >
+      <button
+        (click)="cerrarModal()"
+        class="flex-1 py-3 rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 text-sm font-medium hover:border-neutral-400 active:scale-[0.98] transition-all duration-200"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="onConfirmar()"
+        [disabled]="cargando || precioPorDebajoDelPl"
+        class="flex-1 py-3 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+      >
+        <span *ngIf="!cargando">Confirmar préstamo</span>
+        <span *ngIf="cargando" class="flex items-center justify-center gap-2">
+          <app-ia-spinner class="w-4 h-4"></app-ia-spinner>
+          Procesando
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

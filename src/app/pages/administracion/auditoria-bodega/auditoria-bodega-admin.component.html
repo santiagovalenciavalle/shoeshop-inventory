@@ -1,0 +1,1945 @@
+<div class="min-h-screen bg-slate-50 dark:bg-slate-950">
+  <header
+    class="sticky top-0 z-40 border-b border-slate-200/60 dark:border-slate-800/50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl"
+  >
+    <div
+      class="max-w-5xl mx-auto px-4 sm:px-8 h-14 flex items-center justify-between gap-4"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded-lg bg-indigo-600 dark:bg-indigo-500 flex items-center justify-center shadow-md shadow-indigo-500/30"
+        >
+          <svg
+            class="w-4 h-4 text-white"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </div>
+        <div>
+          <p
+            class="text-[13px] font-bold text-slate-900 dark:text-slate-50 leading-none"
+          >
+            Auditoría de Bodega
+          </p>
+          <p
+            class="text-[10px] text-slate-400 dark:text-slate-500 tracking-widest uppercase mt-0.5"
+          >
+            Panel Admin
+          </p>
+        </div>
+      </div>
+      @if (sesion()?.estado === "en_progreso") {
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 text-[11px] font-semibold text-indigo-700 dark:text-indigo-300"
+        >
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"
+          ></span>
+          En progreso · {{ progresoGeneral() }}%
+        </span>
+      }
+      @if (sesion()?.estado === "esperando") {
+        <span
+          class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/40 text-[11px] font-semibold text-amber-700 dark:text-amber-300"
+        >
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"
+          ></span>
+          Esperando trabajador
+        </span>
+      }
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-8 py-8 space-y-8">
+    @if (vista() === "inicio") {
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div
+          class="sm:col-span-2 relative rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-900 dark:to-slate-950 border border-slate-700/60 p-8 shadow-xl"
+        >
+          <div
+            class="absolute inset-0 opacity-[0.07]"
+            style="
+              background-image: radial-gradient(
+                circle at 1px 1px,
+                rgb(255 255 255) 1px,
+                transparent 0
+              );
+              background-size: 22px 22px;
+            "
+          ></div>
+          <div
+            class="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-indigo-600/20 blur-3xl pointer-events-none"
+          ></div>
+          <div class="relative">
+            <div
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/25 mb-6"
+            >
+              <span
+                class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"
+              ></span>
+              <span
+                class="text-[10px] font-bold tracking-widest uppercase text-indigo-300"
+                >Sistema de inventario</span
+              >
+            </div>
+            <h1
+              class="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight mb-3"
+            >
+              Control de<br /><span class="text-indigo-400">Bodega.</span>
+            </h1>
+            <p class="text-sm text-slate-400 max-w-sm leading-relaxed">
+              Auditoría sistemática por filas. El trabajador cuenta físicamente
+              cada referencia; el sistema detecta diferencias al instante.
+            </p>
+          </div>
+        </div>
+        <div class="grid grid-rows-2 gap-4">
+          <div
+            class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-5 flex flex-col justify-between"
+          >
+            <svg
+              class="w-5 h-5 text-indigo-500"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="1" y="3" width="15" height="13" />
+              <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+              <circle cx="5.5" cy="18.5" r="2.5" />
+              <circle cx="18.5" cy="18.5" r="2.5" />
+            </svg>
+            <div class="mt-3">
+              @if (cargandoFilas()) {
+                <div
+                  class="h-8 w-12 rounded bg-slate-100 dark:bg-slate-800 animate-pulse"
+                ></div>
+              } @else {
+                <p
+                  class="text-3xl font-black text-slate-900 dark:text-slate-50 tabular-nums"
+                >
+                  {{ filas().length }}
+                </p>
+              }
+              <p
+                class="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mt-1"
+              >
+                Filas a auditar
+              </p>
+            </div>
+          </div>
+          <div
+            class="rounded-2xl bg-indigo-600 dark:bg-indigo-700 border border-indigo-500/30 p-5 flex flex-col justify-between"
+          >
+            <svg
+              class="w-5 h-5 text-indigo-200"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M9 11l3 3L22 4" />
+              <path
+                d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+              />
+            </svg>
+            <div class="mt-3">
+              <p class="text-3xl font-black text-white tabular-nums">100%</p>
+              <p
+                class="text-[10px] font-semibold tracking-widest uppercase text-indigo-200 mt-1"
+              >
+                Precisión IA
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      @if (!cargandoFilas() && filas().length > 0) {
+        <section
+          class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-6"
+        >
+          <p
+            class="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-4"
+          >
+            Filas detectadas
+          </p>
+          <div class="flex flex-wrap gap-2">
+            @for (fila of filas(); track fila) {
+              <span
+                class="px-3 py-1.5 rounded-lg text-xs font-bold tabular-nums border bg-slate-50 dark:bg-slate-800/60 border-slate-200/70 dark:border-slate-700/60 text-slate-700 dark:text-slate-300"
+                >Fila {{ fila }}</span
+              >
+            }
+          </div>
+        </section>
+      }
+
+      <div class="flex justify-end">
+        <button
+          (click)="mostrarModalModo()"
+          [disabled]="iniciando() || cargandoFilas() || filas().length === 0"
+          class="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] text-white text-sm font-bold shadow-lg shadow-indigo-500/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+        >
+          @if (iniciando()) {
+            <app-ia-spinner class="w-4 h-4 text-white"></app-ia-spinner>
+            <span>Preparando…</span>
+          } @else {
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+            <span>Iniciar auditoría</span>
+          }
+        </button>
+      </div>
+    }
+
+    @if (vista() === "esperando") {
+      <section class="grid sm:grid-cols-2 gap-6 items-start">
+        <div
+          class="rounded-2xl border-2 border-dashed border-indigo-300 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-950/20 p-8 text-center"
+        >
+          <div
+            class="w-14 h-14 rounded-2xl bg-indigo-100 dark:bg-indigo-900/60 flex items-center justify-center mx-auto mb-5"
+          >
+            <svg
+              class="w-7 h-7 text-indigo-600 dark:text-indigo-400"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+            </svg>
+          </div>
+          <p
+            class="text-[11px] font-bold tracking-widest uppercase text-indigo-500 mb-2"
+          >
+            Código de sesión
+          </p>
+          <p
+            class="text-xs text-slate-500 dark:text-slate-400 mb-6 leading-relaxed"
+          >
+            Comparte este código con los trabajadores para que inicien el conteo
+          </p>
+          <div class="flex items-center justify-center gap-3">
+            <code
+              class="text-2xl font-black font-mono tracking-[0.3em] px-5 py-3 rounded-xl bg-white dark:bg-slate-900 border border-indigo-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 select-all shadow-sm"
+              >{{ sesionId() }}</code
+            >
+            <button
+              (click)="copiarCodigo()"
+              class="w-11 h-11 rounded-xl flex items-center justify-center border transition-all duration-200 active:scale-90"
+              [class]="
+                copiado()
+                  ? 'bg-green-50 dark:bg-green-950/40 border-green-300 dark:border-green-700 text-green-600'
+                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-indigo-600'
+              "
+            >
+              @if (copiado()) {
+                <svg
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              } @else {
+                <svg
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" />
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  />
+                </svg>
+              }
+            </button>
+          </div>
+          <div
+            class="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold border"
+            [class]="
+              sesion()?.modoConteo === 'cantidad'
+                ? 'bg-violet-50 dark:bg-violet-950/30 border-violet-200/60 dark:border-violet-800/40 text-violet-700 dark:text-violet-400'
+                : 'bg-sky-50 dark:bg-sky-950/30 border-sky-200/60 dark:border-sky-800/40 text-sky-700 dark:text-sky-400'
+            "
+          >
+            {{
+              sesion()?.modoConteo === "cantidad"
+                ? "📦 Modo cantidad"
+                : "📐 Modo tallas"
+            }}
+          </div>
+          <button
+            (click)="cancelarAuditoria()"
+            class="mt-8 text-xs font-semibold text-red-500 hover:text-red-600 dark:text-red-400 transition-colors block mx-auto"
+          >
+            Cancelar auditoría
+          </button>
+        </div>
+        <div class="space-y-3">
+          <div
+            class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-5"
+          >
+            <p
+              class="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-4"
+            >
+              Filas que se auditarán
+            </p>
+            <div class="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
+              @for (fila of filas(); track fila) {
+                <span
+                  class="px-2.5 py-1 rounded-lg text-xs font-bold tabular-nums bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                  >Fila {{ fila }}</span
+                >
+              }
+            </div>
+          </div>
+          <div
+            class="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 p-4"
+          >
+            <div class="flex gap-3">
+              <svg
+                class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <p
+                class="text-xs text-amber-700 dark:text-amber-400 leading-relaxed"
+              >
+                Los trabajadores deben ingresar el código desde su dispositivo
+                para comenzar. Pueden elegir su fila libremente.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+
+    @if (vista() === "en_progreso") {
+      <section class="space-y-6">
+        <div
+          class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-5"
+        >
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <p
+                class="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-1"
+              >
+                Código de sesión
+              </p>
+              <p class="text-xs text-slate-400">
+                Compártelo con otros trabajadores
+              </p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span
+                class="text-[10px] font-bold px-2.5 py-1 rounded-full border"
+                [class]="
+                  sesion()?.modoConteo === 'cantidad'
+                    ? 'bg-violet-50 dark:bg-violet-950/30 border-violet-200/60 text-violet-700 dark:text-violet-400'
+                    : 'bg-sky-50 dark:bg-sky-950/30 border-sky-200/60 text-sky-700 dark:text-sky-400'
+                "
+              >
+                {{
+                  sesion()?.modoConteo === "cantidad"
+                    ? "📦 Cantidad"
+                    : "📐 Tallas"
+                }}
+              </span>
+              <code
+                class="text-xl font-black font-mono tracking-[0.3em] px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 select-all"
+                >{{ sesionId() }}</code
+              >
+              <button
+                (click)="copiarCodigo()"
+                class="w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-200 active:scale-90"
+                [class]="
+                  copiado()
+                    ? 'bg-green-50 border-green-300 text-green-600'
+                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-indigo-600'
+                "
+              >
+                @if (copiado()) {
+                  <svg
+                    class="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                } @else {
+                  <svg
+                    class="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                    <path
+                      d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                    />
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+
+        @if (trabajadoresActivos().length > 0) {
+          <div
+            class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-5"
+          >
+            <p
+              class="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-4"
+            >
+              Trabajadores conectados · {{ trabajadoresActivos().length }}
+            </p>
+            <div class="grid sm:grid-cols-2 gap-3">
+              @for (t of trabajadoresActivos(); track t.id) {
+                <div
+                  class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60"
+                >
+                  <div
+                    class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/60 flex items-center justify-center flex-shrink-0"
+                  >
+                    <span
+                      class="text-sm font-black text-indigo-600 dark:text-indigo-400"
+                    >
+                      {{ t.nombre.charAt(0).toUpperCase() }}
+                    </span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p
+                      class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate"
+                    >
+                      {{ t.nombre }}
+                    </p>
+                  </div>
+                  <span
+                    class="w-2 h-2 rounded-full flex-shrink-0"
+                    [class]="
+                      t.filaActual
+                        ? 'bg-green-400'
+                        : 'bg-slate-300 dark:bg-slate-600'
+                    "
+                  ></span>
+                </div>
+              }
+            </div>
+            @if (sesion()?.finalizadoPorNombre) {
+              <div
+                class="mt-3 flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/40"
+              >
+                <svg
+                  class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M9 11l3 3L22 4" />
+                </svg>
+                <p
+                  class="text-xs text-indigo-700 dark:text-indigo-400 font-semibold"
+                >
+                  Finalizado por {{ sesion()!.finalizadoPorNombre }}
+                </p>
+              </div>
+            }
+          </div>
+        }
+
+        <div
+          class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-6"
+        >
+          <div class="flex items-center justify-between mb-4 gap-4">
+            <div>
+              <p
+                class="text-[11px] font-bold tracking-widest uppercase text-slate-400"
+              >
+                Progreso general
+              </p>
+              <h2
+                class="text-2xl font-black text-slate-900 dark:text-slate-50 mt-1"
+              >
+                {{ sesion()?.productosContados ?? 0 }}
+                <span class="text-slate-400 font-normal text-lg">/</span>
+                {{ sesion()?.totalProductos ?? 0 }}
+                <span class="text-base font-semibold text-slate-500 ml-1"
+                  >productos</span
+                >
+              </h2>
+            </div>
+            <p
+              class="text-3xl font-black text-indigo-600 dark:text-indigo-400 tabular-nums"
+            >
+              {{ progresoGeneral() }}%
+            </p>
+          </div>
+          <div
+            class="h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden"
+          >
+            <div
+              class="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-indigo-500 to-indigo-400"
+              [style.width.%]="progresoGeneral()"
+            ></div>
+          </div>
+        </div>
+
+        <div
+          class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-6"
+        >
+          <p
+            class="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-4"
+          >
+            Estado por fila · Tiempo real
+          </p>
+          <div class="space-y-2">
+            @for (detalle of detalleFilas(); track detalle.fila) {
+              <div
+                class="flex items-center gap-4 p-3 rounded-xl border transition-colors"
+                [class]="
+                  detalle.completada
+                    ? 'bg-green-50 dark:bg-green-950/20 border-green-200/60 dark:border-green-800/40'
+                    : detalle.enUsoPor
+                      ? 'bg-indigo-50 dark:bg-indigo-950/20 border-indigo-200/60 dark:border-indigo-800/40'
+                      : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200/60 dark:border-slate-700/60'
+                "
+              >
+                <div
+                  class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                  [class]="
+                    detalle.completada
+                      ? 'bg-green-100 dark:bg-green-900/40'
+                      : detalle.enUsoPor
+                        ? 'bg-indigo-100 dark:bg-indigo-900/40'
+                        : 'bg-slate-100 dark:bg-slate-800'
+                  "
+                >
+                  @if (detalle.completada) {
+                    <svg
+                      class="w-4 h-4 text-green-500"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  } @else if (detalle.enUsoPor) {
+                    <span
+                      class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"
+                    ></span>
+                  } @else {
+                    <svg
+                      class="w-4 h-4 text-slate-400"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                  }
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p
+                      class="text-sm font-bold text-slate-900 dark:text-slate-100"
+                    >
+                      Fila {{ detalle.fila }}
+                    </p>
+                    @if (detalle.completada) {
+                      <span
+                        class="text-[10px] font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-full"
+                      >
+                        Completada
+                      </span>
+                    } @else if (detalle.enUsoPor) {
+                      <span
+                        class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/40 px-2 py-0.5 rounded-full"
+                      >
+                        {{ detalle.enUsoPor }}
+                      </span>
+                    }
+                  </div>
+                  @if (detalle.total > 0) {
+                    <div class="flex items-center gap-2 mt-1">
+                      <div
+                        class="flex-1 h-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden"
+                      >
+                        <div
+                          class="h-full rounded-full transition-all duration-500"
+                          [class]="
+                            detalle.completada
+                              ? 'bg-green-400'
+                              : 'bg-indigo-400'
+                          "
+                          [style.width.%]="
+                            (detalle.contados / detalle.total) * 100
+                          "
+                        ></div>
+                      </div>
+                      <span
+                        class="text-[10px] text-slate-400 tabular-nums flex-shrink-0"
+                      >
+                        {{ detalle.contados }}/{{ detalle.total }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div
+            class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-5"
+          >
+            <p
+              class="text-2xl font-black text-indigo-600 dark:text-indigo-400 tabular-nums"
+            >
+              {{ filasAuditadasCount() }}
+            </p>
+            <p
+              class="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mt-1.5"
+            >
+              Filas contadas
+            </p>
+          </div>
+          <div
+            class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-5"
+          >
+            <p
+              class="text-2xl font-black text-slate-900 dark:text-slate-50 tabular-nums"
+            >
+              {{ filas().length - filasAuditadasCount() }}
+            </p>
+            <p
+              class="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mt-1.5"
+            >
+              Filas pendientes
+            </p>
+          </div>
+          <div
+            class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 p-5"
+          >
+            <p
+              class="text-2xl font-black text-slate-900 dark:text-slate-50 tabular-nums"
+            >
+              {{ trabajadoresActivos().length }}
+            </p>
+            <p
+              class="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mt-1.5"
+            >
+              Trabajadores
+            </p>
+          </div>
+          <div class="rounded-2xl bg-slate-900 dark:bg-slate-800 p-5">
+            @if (sesion()?.filaActual) {
+              <p class="text-2xl font-black text-white tabular-nums">
+                {{ sesion()?.filaActual }}
+              </p>
+              <p
+                class="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mt-1.5"
+              >
+                Fila activa
+              </p>
+            } @else {
+              <div class="flex items-center gap-2 h-full">
+                <span
+                  class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"
+                ></span>
+                <p class="text-xs text-slate-400">En espera…</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button
+            (click)="cancelarAuditoria()"
+            class="px-4 py-2 rounded-xl text-xs font-bold text-red-500 border border-red-200/60 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+          >
+            Cancelar auditoría
+          </button>
+        </div>
+      </section>
+    }
+
+    @if (vista() === "resultado" && reporte()) {
+      <section class="space-y-6">
+        <div
+          class="flex flex-col sm:flex-row sm:items-start justify-between gap-5"
+        >
+          <div>
+            <p
+              class="text-[11px] font-bold tracking-widest uppercase text-slate-400 mb-2"
+            >
+              Resultado final
+            </p>
+            <h2
+              class="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-slate-50"
+            >
+              Auditoría completada
+            </h2>
+            @if (sesion()?.finalizadoPorNombre) {
+              <p class="text-sm text-slate-500 mt-1.5">
+                Finalizada por
+                <span class="font-semibold text-slate-700 dark:text-slate-300">
+                  {{ sesion()!.finalizadoPorNombre }}
+                </span>
+              </p>
+            }
+            @if (trabajadoresActivos().length > 0) {
+              <div class="flex flex-wrap gap-1.5 mt-3">
+                @for (t of trabajadoresActivos(); track t.id) {
+                  <span
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-400"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                    {{ t.nombre }}
+                  </span>
+                }
+              </div>
+            }
+            <span
+              class="inline-block mt-2 text-[10px] font-bold px-2.5 py-1 rounded-full border"
+              [class]="
+                sesion()?.modoConteo === 'cantidad'
+                  ? 'bg-violet-50 border-violet-200/60 text-violet-700 dark:bg-violet-950/30 dark:border-violet-800/40 dark:text-violet-400'
+                  : 'bg-sky-50 border-sky-200/60 text-sky-700 dark:bg-sky-950/30 dark:border-sky-800/40 dark:text-sky-400'
+              "
+            >
+              {{
+                sesion()?.modoConteo === "cantidad"
+                  ? "📦 Modo cantidad"
+                  : "📐 Modo tallas"
+              }}
+            </span>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap flex-shrink-0">
+            <button
+              (click)="descargarExcel()"
+              [disabled]="descargandoExcel()"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md shadow-green-500/25 disabled:opacity-40 active:scale-[0.97] transition-all"
+            >
+              <svg
+                class="w-3.5 h-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="12" y1="18" x2="12" y2="12" />
+                <polyline points="9 15 12 18 15 15" />
+              </svg>
+              {{ descargandoExcel() ? "Generando…" : "Excel" }}
+            </button>
+            <button
+              (click)="descargarPDF()"
+              [disabled]="descargandoPDF()"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-md shadow-red-500/25 disabled:opacity-40 active:scale-[0.97] transition-all"
+            >
+              <svg
+                class="w-3.5 h-3.5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
+              {{ descargandoPDF() ? "Generando…" : "PDF" }}
+            </button>
+            <button
+              (click)="nuevaAuditoria()"
+              class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-900 dark:bg-slate-100 text-slate-50 dark:text-slate-900 hover:opacity-90 active:scale-[0.97] transition-all"
+            >
+              Nueva auditoría
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 overflow-hidden"
+        >
+          <div
+            class="px-6 pt-5 pb-4 border-b border-slate-100 dark:border-slate-800"
+          >
+            <p
+              class="text-[11px] font-bold tracking-widest uppercase text-slate-400"
+            >
+              Resumen de unidades
+            </p>
+          </div>
+          <div
+            class="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800"
+          >
+            <div class="px-6 py-5 text-center">
+              <p
+                class="text-3xl font-black text-slate-900 dark:text-slate-50 tabular-nums"
+              >
+                {{ totalEsperado() }}
+              </p>
+              <p
+                class="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mt-1.5"
+              >
+                Esperadas
+              </p>
+            </div>
+            <div class="px-6 py-5 text-center">
+              <p
+                class="text-3xl font-black text-slate-900 dark:text-slate-50 tabular-nums"
+              >
+                {{ totalContadoGlobal() }}
+              </p>
+              <p
+                class="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mt-1.5"
+              >
+                Contadas
+              </p>
+            </div>
+            <div class="px-6 py-5 text-center">
+              <p
+                class="text-3xl font-black tabular-nums"
+                [class]="
+                  totalDiferencia() < 0
+                    ? 'text-red-600 dark:text-red-400'
+                    : totalDiferencia() > 0
+                      ? 'text-indigo-600 dark:text-indigo-400'
+                      : 'text-green-600 dark:text-green-400'
+                "
+              >
+                {{ totalDiferencia() > 0 ? "+" : "" }}{{ totalDiferencia() }}
+              </p>
+              <p
+                class="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mt-1.5"
+              >
+                Diferencia
+              </p>
+            </div>
+          </div>
+          <div class="px-6 pb-5">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-xs text-slate-500">Cobertura del conteo</p>
+              <p
+                class="text-xs font-bold tabular-nums"
+                [class]="
+                  porcentajeContado() >= 95
+                    ? 'text-green-600 dark:text-green-400'
+                    : porcentajeContado() >= 70
+                      ? 'text-amber-600 dark:text-amber-400'
+                      : 'text-red-600 dark:text-red-400'
+                "
+              >
+                {{ porcentajeContado() }}%
+              </p>
+            </div>
+            <div
+              class="h-2.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden"
+            >
+              <div
+                class="h-full rounded-full transition-all duration-700"
+                [class]="
+                  porcentajeContado() >= 95
+                    ? 'bg-green-400'
+                    : porcentajeContado() >= 70
+                      ? 'bg-amber-400'
+                      : 'bg-red-400'
+                "
+                [style.width.%]="porcentajeContado()"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        @if (reporte()!.faltantes.length > 0) {
+          <div
+            class="rounded-2xl overflow-hidden border border-red-200/60 dark:border-red-800/40"
+          >
+            <button
+              (click)="toggleAcordeon('faltantes')"
+              class="w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-red-50 to-transparent dark:from-red-950/30 dark:to-transparent hover:from-red-100/60 transition-colors"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/40 flex items-center justify-center flex-shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-red-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
+                  </svg>
+                </div>
+                <div class="text-left">
+                  <p class="text-sm font-bold text-red-700 dark:text-red-400">
+                    Faltantes
+                  </p>
+                  <p class="text-xs text-red-500/80 mt-0.5">
+                    {{ reporte()!.faltantes.length }} registros ·
+                    {{ totalUnidadesFaltantes() }} unidades
+                  </p>
+                </div>
+              </div>
+              <svg
+                class="w-4 h-4 text-red-400 transition-transform duration-300 flex-shrink-0"
+                [class.rotate-180]="acordeon() === 'faltantes'"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            @if (acordeon() === "faltantes") {
+              <div
+                class="bg-white dark:bg-slate-900/40 divide-y divide-slate-100/60 dark:divide-slate-800/40"
+              >
+                @for (item of reporte()!.faltantes; track item.productoId) {
+                  <div
+                    class="px-5 py-3.5 hover:bg-slate-50/50 transition-colors"
+                  >
+                    <div class="flex items-start justify-between gap-4">
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span
+                            class="text-[10px] font-black font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+                          >
+                            #{{ item.zapatoId }}
+                          </span>
+                          <p
+                            class="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate"
+                          >
+                            {{ item.marca }} · {{ item.referencia }}
+                          </p>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-0.5">
+                          Fila {{ item.fila }}
+                        </p>
+
+                        @if (
+                          sesion()?.modoConteo !== "cantidad" &&
+                          item.tallasDetalle?.length
+                        ) {
+                          <div class="flex flex-wrap gap-1.5 mt-2">
+                            @for (t of item.tallasDetalle; track t.talla) {
+                              <span
+                                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border"
+                                [class]="
+                                  t.diferencia < 0
+                                    ? 'bg-red-50 dark:bg-red-950/30 border-red-200/60 dark:border-red-800/40 text-red-700 dark:text-red-400'
+                                    : t.diferencia > 0
+                                      ? 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200/60 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-400'
+                                      : 'bg-green-50 dark:bg-green-950/30 border-green-200/60 dark:border-green-800/40 text-green-600 dark:text-green-400'
+                                "
+                              >
+                                T{{ t.talla }}:
+                                <span>{{ t.contado }}/{{ t.esperado }}</span>
+                                @if (t.diferencia !== 0) {
+                                  <span
+                                    >({{ t.diferencia > 0 ? "+" : ""
+                                    }}{{ t.diferencia }})</span
+                                  >
+                                }
+                              </span>
+                            }
+                          </div>
+                        }
+
+                        @if (sesion()?.modoConteo === "cantidad") {
+                          <p class="text-xs text-slate-400 mt-1">
+                            Esperado: {{ item.esperado }} · Contado:
+                            {{ item.contado }}
+                          </p>
+                        }
+                      </div>
+                      <span
+                        class="flex-shrink-0 text-[11px] font-black text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200/60 dark:border-red-800/40 px-2.5 py-1 rounded-lg tabular-nums"
+                      >
+                        {{ item.diferencia }}
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        @if (reporte()!.sobrantes.length > 0) {
+          <div
+            class="rounded-2xl overflow-hidden border border-indigo-200/60 dark:border-indigo-800/40"
+          >
+            <button
+              (click)="toggleAcordeon('sobrantes')"
+              class="w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-indigo-50 to-transparent dark:from-indigo-950/30 dark:to-transparent hover:from-indigo-100/60 transition-colors"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center flex-shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-indigo-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
+                  </svg>
+                </div>
+                <div class="text-left">
+                  <p
+                    class="text-sm font-bold text-indigo-700 dark:text-indigo-400"
+                  >
+                    Sobrantes
+                  </p>
+                  <p class="text-xs text-indigo-500/80 mt-0.5">
+                    {{ reporte()!.sobrantes.length }} registros · +{{
+                      totalUnidadesSobrantes()
+                    }}
+                    unidades
+                  </p>
+                </div>
+              </div>
+              <svg
+                class="w-4 h-4 text-indigo-400 transition-transform duration-300 flex-shrink-0"
+                [class.rotate-180]="acordeon() === 'sobrantes'"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            @if (acordeon() === "sobrantes") {
+              <div
+                class="bg-white dark:bg-slate-900/40 divide-y divide-slate-100/60 dark:divide-slate-800/40"
+              >
+                @for (
+                  item of reporte()!.sobrantes;
+                  track item.productoId + "-" + item.talla
+                ) {
+                  <div
+                    class="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50/50 transition-colors"
+                  >
+                    <div class="min-w-0">
+                      <p
+                        class="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate"
+                      >
+                        {{ item.marca }} · {{ item.referencia }}
+                      </p>
+                      <p class="text-xs text-slate-400 mt-0.5">
+                        Fila {{ item.fila }}
+                        @if (sesion()?.modoConteo !== "cantidad") {
+                          · T{{ item.talla }}
+                        }
+                        · Esperado: {{ item.esperado }} · Contado:
+                        {{ item.contado }}
+                      </p>
+                    </div>
+                    <span
+                      class="flex-shrink-0 ml-4 text-[11px] font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 px-2.5 py-1 rounded-lg tabular-nums"
+                    >
+                      +{{ item.diferencia }}
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        @if (reporte()!.correctos.length > 0) {
+          <div
+            class="rounded-2xl overflow-hidden border border-green-200/60 dark:border-green-800/40"
+          >
+            <button
+              (click)="toggleAcordeon('correctos')"
+              class="w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-green-50 to-transparent dark:from-green-950/30 dark:to-transparent hover:from-green-100/60 transition-colors"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center flex-shrink-0"
+                >
+                  <svg
+                    class="w-4 h-4 text-green-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="9 12 11 14 15 10" />
+                  </svg>
+                </div>
+                <div class="text-left">
+                  <p
+                    class="text-sm font-bold text-green-700 dark:text-green-400"
+                  >
+                    En orden
+                  </p>
+                  <p
+                    class="text-xs text-green-600/80 dark:text-green-500/80 mt-0.5"
+                  >
+                    {{ reporte()!.correctos.length }} registros correctos
+                  </p>
+                </div>
+              </div>
+              <svg
+                class="w-4 h-4 text-green-400 transition-transform duration-300 flex-shrink-0"
+                [class.rotate-180]="acordeon() === 'correctos'"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            @if (acordeon() === "correctos") {
+              <div
+                class="bg-white dark:bg-slate-900/40 grid sm:grid-cols-2 gap-px bg-slate-100/60 dark:bg-slate-800/40"
+              >
+                @for (item of reporte()!.correctos; track item.productoId) {
+                  <div
+                    class="flex items-center gap-3 px-5 py-3.5 bg-white dark:bg-slate-900/60 hover:bg-slate-50/50 transition-colors"
+                  >
+                    <svg
+                      class="w-3.5 h-3.5 text-green-500 flex-shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <div class="min-w-0">
+                      <div class="flex items-center gap-1.5">
+                        <span
+                          class="text-[9px] font-black font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700"
+                        >
+                          #{{ item.zapatoId }}
+                        </span>
+                        <p
+                          class="text-sm font-medium text-slate-900 dark:text-slate-100 truncate"
+                        >
+                          {{ item.marca }}
+                          @if (
+                            sesion()?.modoConteo !== "cantidad" &&
+                            item.tallasDetalle?.length
+                          ) {
+                            <span
+                              class="text-slate-400 font-normal text-xs ml-1"
+                            >
+                              ({{ item.tallasDetalle!.length }} talla{{
+                                item.tallasDetalle!.length !== 1 ? "s" : ""
+                              }})
+                            </span>
+                          }
+                        </p>
+                      </div>
+                      <p class="text-xs text-slate-400 truncate">
+                        {{ item.referencia }} · Fila {{ item.fila }}
+                      </p>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
+    }
+
+    <section class="pb-10">
+      <button
+        (click)="toggleHistorial()"
+        class="group w-full flex items-center justify-between px-5 py-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 shadow-sm"
+      >
+        <div class="flex items-center gap-3.5">
+          <div
+            class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center"
+          >
+            <svg
+              class="w-4 h-4 text-slate-500"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <div class="text-left">
+            <p class="text-sm font-bold text-slate-900 dark:text-slate-100">
+              Historial de auditorías
+            </p>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Sesiones finalizadas anteriores
+            </p>
+          </div>
+        </div>
+        <svg
+          class="w-4 h-4 text-slate-400 transition-transform duration-300 flex-shrink-0"
+          [class.rotate-180]="historialAbierto()"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      @if (historialAbierto()) {
+        <div class="mt-4 space-y-3">
+          @if (cargandoHistorial()) {
+            <div class="flex items-center gap-3 justify-center py-10">
+              <app-ia-spinner class="w-5 h-5 text-slate-900 dark:text-slate-100"></app-ia-spinner>
+              <p class="text-sm text-slate-400">Cargando historial…</p>
+            </div>
+          }
+          @if (!cargandoHistorial() && historial().length === 0) {
+            <div
+              class="rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/40 p-12 text-center"
+            >
+              <p class="text-sm font-semibold text-slate-500">
+                Sin auditorías previas
+              </p>
+            </div>
+          }
+
+          @for (s of historial(); track s.id) {
+            <div
+              class="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 overflow-hidden"
+            >
+              <button
+                (click)="toggleSesionHistorial(s.id!)"
+                class="w-full flex items-start justify-between gap-4 p-5 text-left hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors"
+              >
+                <div>
+                  <div class="flex items-center gap-2 flex-wrap mb-1">
+                    <p
+                      class="text-sm font-bold text-slate-900 dark:text-slate-100"
+                    >
+                      · Cerrado por {{ s.finalizadoPorNombre }}
+                    </p>
+                  </div>
+                  <p class="text-xs text-slate-400">
+                    {{ formatFecha(s.fechaFin) }} · {{ s.productosContados }} de
+                    {{ s.totalProductos }} productos
+                  </p>
+
+                  @if (
+                    s.trabajadores && objectKeys(s.trabajadores).length > 0
+                  ) {
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                      @for (
+                        entry of objectEntries(s.trabajadores);
+                        track entry[0]
+                      ) {
+                        <span
+                          class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-400"
+                        >
+                          <span
+                            class="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0"
+                          ></span>
+                          {{ entry[1].nombre }}
+                          @if (entry[1].filas?.length > 0) {
+                            <span
+                              class="text-slate-400 dark:text-slate-500 font-normal"
+                            >
+                              · {{ entry[1].filas.length }} fila{{
+                                entry[1].filas.length !== 1 ? "s" : ""
+                              }}
+                            </span>
+                          }
+                        </span>
+                      }
+                    </div>
+                  }
+
+                  <div class="flex items-center gap-2 mt-1.5 flex-wrap"></div>
+                </div>
+              </button>
+
+              @if (sesionHistorialExpandida() === s.id) {
+                <div class="border-t border-slate-100 dark:border-slate-800">
+                  @if (esCargandoReporte(s.id!)) {
+                    <div class="flex items-center gap-3 justify-center py-8">
+                      <app-ia-spinner class="w-4 h-4 text-indigo-600"></app-ia-spinner>
+                      <p class="text-sm text-slate-400">Calculando reporte…</p>
+                    </div>
+                  }
+
+                  @if (!esCargandoReporte(s.id!)) {
+                    @let r = obtenerReporteHistorial(s.id!);
+                    @if (r) {
+                      <div
+                        class="px-5 py-4 flex items-center justify-between gap-4 flex-wrap bg-slate-50/50 dark:bg-slate-800/30"
+                      >
+                        <div class="flex items-center gap-4">
+                          <div class="text-center">
+                            <p
+                              class="text-lg font-black text-slate-900 dark:text-slate-50 tabular-nums"
+                            >
+                              {{ reporteHistorialTotal(r, "esperado") }}
+                            </p>
+                            <p
+                              class="text-[9px] font-semibold tracking-widest uppercase text-slate-400"
+                            >
+                              Esperadas
+                            </p>
+                          </div>
+                          <div class="text-center">
+                            <p
+                              class="text-lg font-black text-slate-900 dark:text-slate-50 tabular-nums"
+                            >
+                              {{ reporteHistorialTotal(r, "contado") }}
+                            </p>
+                            <p
+                              class="text-[9px] font-semibold tracking-widest uppercase text-slate-400"
+                            >
+                              Contadas
+                            </p>
+                          </div>
+                          <div class="text-center">
+                            <p
+                              class="text-lg font-black tabular-nums"
+                              [class]="
+                                diferenciaHistorial(r) < 0
+                                  ? 'text-red-600 dark:text-red-400'
+                                  : diferenciaHistorial(r) > 0
+                                    ? 'text-indigo-600 dark:text-indigo-400'
+                                    : 'text-green-600 dark:text-green-400'
+                              "
+                            >
+                              {{ diferenciaHistorial(r) > 0 ? "+" : ""
+                              }}{{ diferenciaHistorial(r) }}
+                            </p>
+                            <p
+                              class="text-[9px] font-semibold tracking-widest uppercase text-slate-400"
+                            >
+                              Diferencia
+                            </p>
+                          </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <button
+                            (click)="descargarExcelHistorial(s)"
+                            [disabled]="descargandoExcelHistorial() === s.id"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-sm disabled:opacity-40 active:scale-[0.97] transition-all"
+                          >
+                            <svg
+                              class="w-3 h-3"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <path
+                                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                              />
+                              <polyline points="14 2 14 8 20 8" />
+                              <line x1="12" y1="18" x2="12" y2="12" />
+                              <polyline points="9 15 12 18 15 15" />
+                            </svg>
+                            {{
+                              descargandoExcelHistorial() === s.id
+                                ? "Generando…"
+                                : "Excel"
+                            }}
+                          </button>
+                          <button
+                            (click)="descargarPDFHistorial(s)"
+                            [disabled]="descargandoPDFHistorial() === s.id"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm disabled:opacity-40 active:scale-[0.97] transition-all"
+                          >
+                            <svg
+                              class="w-3 h-3"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <path
+                                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                              />
+                              <polyline points="14 2 14 8 20 8" />
+                              <line x1="16" y1="13" x2="8" y2="13" />
+                              <line x1="16" y1="17" x2="8" y2="17" />
+                            </svg>
+                            {{
+                              descargandoPDFHistorial() === s.id
+                                ? "Generando…"
+                                : "PDF"
+                            }}
+                          </button>
+                        </div>
+                      </div>
+
+                      @if (r.faltantes.length > 0) {
+                        <div
+                          class="border-t border-slate-100 dark:border-slate-800"
+                        >
+                          <button
+                            (click)="
+                              toggleAcordeonHistorial(s.id!, 'faltantes')
+                            "
+                            class="w-full flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-red-50 to-transparent dark:from-red-950/20 hover:from-red-100/60 transition-colors"
+                          >
+                            <div class="flex items-center gap-2.5">
+                              <div
+                                class="w-6 h-6 rounded-lg bg-red-100 dark:bg-red-900/40 flex items-center justify-center flex-shrink-0"
+                              >
+                                <svg
+                                  class="w-3.5 h-3.5 text-red-500"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2.5"
+                                >
+                                  <circle cx="12" cy="12" r="10" />
+                                  <line x1="15" y1="9" x2="9" y2="15" />
+                                  <line x1="9" y1="9" x2="15" y2="15" />
+                                </svg>
+                              </div>
+                              <div class="text-left">
+                                <p
+                                  class="text-xs font-bold text-red-700 dark:text-red-400"
+                                >
+                                  Faltantes
+                                </p>
+                                <p class="text-[10px] text-red-500/70">
+                                  {{ r.faltantes.length }} registros
+                                </p>
+                              </div>
+                            </div>
+                            <svg
+                              class="w-3.5 h-3.5 text-red-400 transition-transform duration-300 flex-shrink-0"
+                              [class.rotate-180]="
+                                acordeonHistorial().get(s.id!) === 'faltantes'
+                              "
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2.5"
+                            >
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                          </button>
+                          @if (acordeonHistorial().get(s.id!) === "faltantes") {
+                            <div
+                              class="divide-y divide-slate-100/60 dark:divide-slate-800/40"
+                            >
+                              @for (
+                                item of r.faltantes;
+                                track item.productoId
+                              ) {
+                                <div
+                                  class="px-5 py-3 hover:bg-slate-50/50 transition-colors"
+                                >
+                                  <div
+                                    class="flex items-start justify-between gap-3"
+                                  >
+                                    <div class="min-w-0 flex-1">
+                                      <div
+                                        class="flex items-center gap-1.5 flex-wrap"
+                                      >
+                                        <span
+                                          class="text-[9px] font-black font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700"
+                                        >
+                                          #{{ item.zapatoId }}
+                                        </span>
+                                        <p
+                                          class="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate"
+                                        >
+                                          {{ item.marca }} ·
+                                          {{ item.referencia }}
+                                        </p>
+                                      </div>
+                                      <p
+                                        class="text-[10px] text-slate-400 mt-0.5"
+                                      >
+                                        Fila {{ item.fila }}
+                                      </p>
+                                      @if (
+                                        s.modoConteo !== "cantidad" &&
+                                        item.tallasDetalle?.length
+                                      ) {
+                                        <div
+                                          class="flex flex-wrap gap-1 mt-1.5"
+                                        >
+                                          @for (
+                                            t of item.tallasDetalle;
+                                            track t.talla
+                                          ) {
+                                            <span
+                                              class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold border"
+                                              [class]="
+                                                t.diferencia < 0
+                                                  ? 'bg-red-50 dark:bg-red-950/30 border-red-200/60 dark:border-red-800/40 text-red-700 dark:text-red-400'
+                                                  : t.diferencia > 0
+                                                    ? 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200/60 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-400'
+                                                    : 'bg-green-50 dark:bg-green-950/30 border-green-200/60 dark:border-green-800/40 text-green-600 dark:text-green-400'
+                                              "
+                                            >
+                                              T{{ t.talla }}: {{ t.contado }}/{{
+                                                t.esperado
+                                              }}
+                                              @if (t.diferencia !== 0) {
+                                                ({{ t.diferencia > 0 ? "+" : ""
+                                                }}{{ t.diferencia }})
+                                              }
+                                            </span>
+                                          }
+                                        </div>
+                                      }
+                                    </div>
+                                    <span
+                                      class="flex-shrink-0 text-[10px] font-black text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200/60 px-2 py-0.5 rounded-lg tabular-nums"
+                                    >
+                                      {{ item.diferencia }}
+                                    </span>
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+
+                      @if (r.sobrantes.length > 0) {
+                        <div
+                          class="border-t border-slate-100 dark:border-slate-800"
+                        >
+                          <button
+                            (click)="
+                              toggleAcordeonHistorial(s.id!, 'sobrantes')
+                            "
+                            class="w-full flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-indigo-50 to-transparent dark:from-indigo-950/20 hover:from-indigo-100/60 transition-colors"
+                          >
+                            <div class="flex items-center gap-2.5">
+                              <div
+                                class="w-6 h-6 rounded-lg bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center flex-shrink-0"
+                              >
+                                <svg
+                                  class="w-3.5 h-3.5 text-indigo-500"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2.5"
+                                >
+                                  <circle cx="12" cy="12" r="10" />
+                                  <line x1="12" y1="8" x2="12" y2="16" />
+                                  <line x1="8" y1="12" x2="16" y2="12" />
+                                </svg>
+                              </div>
+                              <div class="text-left">
+                                <p
+                                  class="text-xs font-bold text-indigo-700 dark:text-indigo-400"
+                                >
+                                  Sobrantes
+                                </p>
+                                <p class="text-[10px] text-indigo-500/70">
+                                  {{ r.sobrantes.length }} registros
+                                </p>
+                              </div>
+                            </div>
+                            <svg
+                              class="w-3.5 h-3.5 text-indigo-400 transition-transform duration-300 flex-shrink-0"
+                              [class.rotate-180]="
+                                acordeonHistorial().get(s.id!) === 'sobrantes'
+                              "
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2.5"
+                            >
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                          </button>
+                          @if (acordeonHistorial().get(s.id!) === "sobrantes") {
+                            <div
+                              class="divide-y divide-slate-100/60 dark:divide-slate-800/40"
+                            >
+                              @for (
+                                item of r.sobrantes;
+                                track item.productoId
+                              ) {
+                                <div
+                                  class="px-5 py-3 hover:bg-slate-50/50 transition-colors"
+                                >
+                                  <div
+                                    class="flex items-start justify-between gap-3"
+                                  >
+                                    <div class="min-w-0 flex-1">
+                                      <div
+                                        class="flex items-center gap-1.5 flex-wrap"
+                                      >
+                                        <span
+                                          class="text-[9px] font-black font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700"
+                                        >
+                                          #{{ item.zapatoId }}
+                                        </span>
+                                        <p
+                                          class="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate"
+                                        >
+                                          {{ item.marca }} ·
+                                          {{ item.referencia }}
+                                        </p>
+                                      </div>
+                                      <p
+                                        class="text-[10px] text-slate-400 mt-0.5"
+                                      >
+                                        Fila {{ item.fila }}
+                                      </p>
+                                      @if (
+                                        s.modoConteo !== "cantidad" &&
+                                        item.tallasDetalle?.length
+                                      ) {
+                                        <div
+                                          class="flex flex-wrap gap-1 mt-1.5"
+                                        >
+                                          @for (
+                                            t of item.tallasDetalle;
+                                            track t.talla
+                                          ) {
+                                            <span
+                                              class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-bold border"
+                                              [class]="
+                                                t.diferencia < 0
+                                                  ? 'bg-red-50 dark:bg-red-950/30 border-red-200/60 dark:border-red-800/40 text-red-700 dark:text-red-400'
+                                                  : t.diferencia > 0
+                                                    ? 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-200/60 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-400'
+                                                    : 'bg-green-50 dark:bg-green-950/30 border-green-200/60 dark:border-green-800/40 text-green-600 dark:text-green-400'
+                                              "
+                                            >
+                                              T{{ t.talla }}: {{ t.contado }}/{{
+                                                t.esperado
+                                              }}
+                                              @if (t.diferencia !== 0) {
+                                                ({{ t.diferencia > 0 ? "+" : ""
+                                                }}{{ t.diferencia }})
+                                              }
+                                            </span>
+                                          }
+                                        </div>
+                                      }
+                                    </div>
+                                    <span
+                                      class="flex-shrink-0 text-[10px] font-black text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/60 px-2 py-0.5 rounded-lg tabular-nums"
+                                    >
+                                      +{{ item.diferencia }}
+                                    </span>
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+
+                      @if (r.correctos.length > 0) {
+                        <div
+                          class="border-t border-slate-100 dark:border-slate-800"
+                        >
+                          <button
+                            (click)="
+                              toggleAcordeonHistorial(s.id!, 'correctos')
+                            "
+                            class="w-full flex items-center justify-between px-5 py-3.5 bg-gradient-to-r from-green-50 to-transparent dark:from-green-950/20 hover:from-green-100/60 transition-colors"
+                          >
+                            <div class="flex items-center gap-2.5">
+                              <div
+                                class="w-6 h-6 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center flex-shrink-0"
+                              >
+                                <svg
+                                  class="w-3.5 h-3.5 text-green-500"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2.5"
+                                >
+                                  <circle cx="12" cy="12" r="10" />
+                                  <polyline points="9 12 11 14 15 10" />
+                                </svg>
+                              </div>
+                              <div class="text-left">
+                                <p
+                                  class="text-xs font-bold text-green-700 dark:text-green-400"
+                                >
+                                  En orden
+                                </p>
+                                <p class="text-[10px] text-green-600/70">
+                                  {{ r.correctos.length }} registros
+                                </p>
+                              </div>
+                            </div>
+                            <svg
+                              class="w-3.5 h-3.5 text-green-400 transition-transform duration-300 flex-shrink-0"
+                              [class.rotate-180]="
+                                acordeonHistorial().get(s.id!) === 'correctos'
+                              "
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2.5"
+                            >
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                          </button>
+                          @if (acordeonHistorial().get(s.id!) === "correctos") {
+                            <div
+                              class="grid sm:grid-cols-2 gap-px bg-slate-100/60 dark:bg-slate-800/40"
+                            >
+                              @for (
+                                item of r.correctos;
+                                track item.productoId
+                              ) {
+                                <div
+                                  class="flex items-center gap-2.5 px-5 py-3 bg-white dark:bg-slate-900/60 hover:bg-slate-50/50 transition-colors"
+                                >
+                                  <svg
+                                    class="w-3 h-3 text-green-500 flex-shrink-0"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2.5"
+                                  >
+                                    <polyline points="20 6 9 17 4 12" />
+                                  </svg>
+                                  <div class="min-w-0">
+                                    <div class="flex items-center gap-1">
+                                      <span
+                                        class="text-[9px] font-black font-mono px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700"
+                                      >
+                                        #{{ item.zapatoId }}
+                                      </span>
+                                      <p
+                                        class="text-xs font-medium text-slate-900 dark:text-slate-100 truncate"
+                                      >
+                                        {{ item.marca }}
+                                      </p>
+                                    </div>
+                                    <p
+                                      class="text-[10px] text-slate-400 truncate"
+                                    >
+                                      {{ item.referencia }} · Fila
+                                      {{ item.fila }}
+                                    </p>
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+                    }
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </section>
+  </main>
+</div>
+
+@if (modalModoVisible()) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center px-4"
+    style="background: rgba(0, 0, 0, 0.6)"
+    (click)="modalModoVisible.set(false)"
+  >
+    <div
+      class="w-full max-w-sm rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/60 shadow-2xl p-7"
+      (click)="$event.stopPropagation()"
+    >
+      <h3 class="text-xl font-black text-slate-900 dark:text-slate-50 mb-2">
+        ¿Cómo quieres hacer el conteo?
+      </h3>
+      <p
+        class="text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed"
+      >
+        Elige el modo antes de iniciar. No se puede cambiar durante la
+        auditoría.
+      </p>
+
+      <div class="space-y-3 mb-7">
+        <button
+          (click)="modoConteoElegido.set('tallas')"
+          class="w-full text-left p-4 rounded-2xl border-2 transition-all duration-200"
+          [class]="
+            modoConteoElegido() === 'tallas'
+              ? 'bg-sky-50 dark:bg-sky-950/30 border-sky-400 dark:border-sky-600'
+              : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+          "
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              [class]="
+                modoConteoElegido() === 'tallas'
+                  ? 'bg-sky-100 dark:bg-sky-900/40'
+                  : 'bg-slate-100 dark:bg-slate-800'
+              "
+            >
+              <span class="text-lg">📐</span>
+            </div>
+            <div>
+              <p class="text-sm font-black text-slate-900 dark:text-slate-50">
+                Por tallas
+              </p>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Se ingresa la cantidad física por cada talla del producto
+              </p>
+            </div>
+            @if (modoConteoElegido() === "tallas") {
+              <svg
+                class="w-5 h-5 text-sky-500 ml-auto flex-shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            }
+          </div>
+        </button>
+
+        <button
+          (click)="modoConteoElegido.set('cantidad')"
+          class="w-full text-left p-4 rounded-2xl border-2 transition-all duration-200"
+          [class]="
+            modoConteoElegido() === 'cantidad'
+              ? 'bg-violet-50 dark:bg-violet-950/30 border-violet-400 dark:border-violet-600'
+              : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+          "
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              [class]="
+                modoConteoElegido() === 'cantidad'
+                  ? 'bg-violet-100 dark:bg-violet-900/40'
+                  : 'bg-slate-100 dark:bg-slate-800'
+              "
+            >
+              <span class="text-lg">📦</span>
+            </div>
+            <div>
+              <p class="text-sm font-black text-slate-900 dark:text-slate-50">
+                Solo cantidad
+              </p>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Se ingresa únicamente el total de pares encontrados por
+                referencia
+              </p>
+            </div>
+            @if (modoConteoElegido() === "cantidad") {
+              <svg
+                class="w-5 h-5 text-violet-500 ml-auto flex-shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            }
+          </div>
+        </button>
+      </div>
+
+      <div class="flex gap-3">
+        <button
+          (click)="modalModoVisible.set(false)"
+          class="flex-1 py-3.5 rounded-2xl text-sm font-bold text-slate-500 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+        >
+          Cancelar
+        </button>
+        <button
+          (click)="iniciarConModo()"
+          class="flex-1 py-3.5 rounded-2xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-500/25 transition-all active:scale-[0.98]"
+        >
+          Iniciar →
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<p-toast position="top-right"></p-toast>
+<button
+  (click)="scrollToTop()"
+  aria-label="Volver arriba"
+  class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-yellow-600 hover:bg-yellow-500 text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
+>
+  <svg
+    class="w-5 h-5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+  >
+    <polyline points="18 15 12 9 6 15"></polyline>
+  </svg>
+</button>

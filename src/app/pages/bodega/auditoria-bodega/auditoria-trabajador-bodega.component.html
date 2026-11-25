@@ -1,0 +1,1063 @@
+@if (vista() === "login") {
+  <div
+    class="min-h-screen flex flex-col items-center justify-center px-6 bg-slate-50 dark:bg-slate-950 relative overflow-hidden"
+  >
+    <div
+      class="absolute inset-0 opacity-[0.35] dark:opacity-[0.12]"
+      style="
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          rgb(148 163 184) 1px,
+          transparent 0
+        );
+        background-size: 24px 24px;
+      "
+    ></div>
+    <div
+      class="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"
+    ></div>
+    <div
+      class="relative z-10 w-full max-w-xs flex flex-col items-center text-center"
+    >
+      <div class="relative mb-10">
+        <div
+          class="absolute inset-0 w-20 h-20 -m-1 rounded-3xl bg-indigo-500/20 blur-xl"
+        ></div>
+        <div
+          class="relative w-[72px] h-[72px] rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-100 dark:to-white flex items-center justify-center shadow-2xl shadow-slate-900/30"
+        >
+          <svg
+            class="w-9 h-9 text-white dark:text-slate-900"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+          <span
+            class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-indigo-500 ring-2 ring-slate-50 dark:ring-slate-950"
+          >
+            <span
+              class="absolute inset-0 rounded-full bg-indigo-400 animate-ping opacity-70"
+            ></span>
+          </span>
+        </div>
+      </div>
+      <h1
+        class="text-3xl font-black tracking-tight text-slate-900 dark:text-slate-50 mb-2"
+      >
+        Conteo de Bodega
+      </h1>
+      <p
+        class="text-sm text-slate-500 dark:text-slate-400 mb-10 leading-relaxed max-w-[240px]"
+      >
+        Ingresa el código que te compartió el administrador
+      </p>
+      <div class="w-full space-y-3">
+        <input
+          type="text"
+          [ngModel]="codigoInput()"
+          (ngModelChange)="codigoInput.set($event)"
+          (keyup.enter)="unirse()"
+          placeholder="Código de sesión"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          class="w-full px-5 py-4 rounded-2xl text-center font-mono text-base tracking-[0.3em] bg-white/90 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800/60 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/60 transition-all shadow-sm"
+        />
+        @if (errorCodigo()) {
+          <p
+            class="text-xs text-red-500 dark:text-red-400 text-center animate-shake"
+          >
+            {{ errorCodigo() }}
+          </p>
+        }
+        <button
+          (click)="unirse()"
+          [disabled]="!codigoInput().trim() || uniendose()"
+          class="w-full py-4 rounded-2xl text-sm font-bold bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white shadow-lg shadow-indigo-500/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2"
+        >
+          @if (uniendose()) {
+            <app-ia-spinner class="w-4 h-4 text-white"></app-ia-spinner>
+            <span>Conectando…</span>
+          } @else {
+            <span>Iniciar conteo →</span>
+          }
+        </button>
+      </div>
+      <p
+        class="mt-14 text-[10px] text-slate-400 dark:text-slate-600 tracking-widest uppercase"
+      >
+        ShoeShop · Bodega
+      </p>
+    </div>
+  </div>
+}
+
+<!-- ── ELEGIR FILA ─────────────────────────────────────────────────────── -->
+@if (vista() === "elegir_fila") {
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+    <header
+      class="sticky top-0 z-30 border-b border-slate-200/60 dark:border-slate-800/50 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl px-5 pt-4 pb-3"
+    >
+      <h2 class="text-xl font-black text-slate-900 dark:text-slate-50">
+        Elige tu fila
+      </h2>
+      <p class="text-xs text-slate-400 mt-0.5">
+        Selecciona una fila disponible para comenzar
+      </p>
+    </header>
+
+    <!-- Progreso de compañeros -->
+    @if (companeros().length > 0) {
+      <div class="px-4 pt-4 space-y-2">
+        @for (c of companeros(); track c.nombre) {
+          <div
+            class="flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/40"
+          >
+            <div
+              class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/60 flex items-center justify-center flex-shrink-0"
+            >
+              <span
+                class="text-xs font-black text-indigo-600 dark:text-indigo-400"
+                >{{ c.nombre.charAt(0).toUpperCase() }}</span
+              >
+            </div>
+            <div class="min-w-0">
+              <p
+                class="text-xs font-bold text-slate-700 dark:text-slate-300 truncate"
+              >
+                {{ c.nombre }}
+              </p>
+              <p class="text-[10px] text-slate-400">
+                {{
+                  c.filaActual
+                    ? "Trabajando en Fila " + c.filaActual
+                    : "Sin fila asignada"
+                }}
+              </p>
+            </div>
+            @if (c.filaActual) {
+              <span
+                class="flex-shrink-0 w-2 h-2 rounded-full bg-indigo-400 animate-pulse"
+              ></span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <div
+      class="flex-1 px-4 py-4 space-y-2 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]"
+    >
+      @for (fila of filasDisponibles(); track fila) {
+        @let auditada = filasAuditadas().includes(fila);
+        @let enUso = filasEnUso()[fila];
+        <button
+          (click)="!auditada && !enUso ? elegirFila(fila) : null"
+          [disabled]="auditada || !!enUso"
+          class="w-full text-left rounded-2xl border p-4 flex items-center gap-4 transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed"
+          [class]="
+            auditada
+              ? 'bg-green-50 dark:bg-green-950/20 border-green-200/60 dark:border-green-800/40 opacity-70'
+              : enUso
+                ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-800/40 opacity-80'
+                : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800/60 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md'
+          "
+        >
+          <div
+            class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+            [class]="
+              auditada
+                ? 'bg-green-100 dark:bg-green-900/40'
+                : enUso
+                  ? 'bg-amber-100 dark:bg-amber-900/40'
+                  : 'bg-indigo-50 dark:bg-indigo-950/30'
+            "
+          >
+            @if (auditada) {
+              <svg
+                class="w-6 h-6 text-green-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            } @else if (enUso) {
+              <svg
+                class="w-5 h-5 text-amber-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            } @else {
+              <svg
+                class="w-5 h-5 text-indigo-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="1" y="3" width="15" height="13" />
+                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                <circle cx="5.5" cy="18.5" r="2.5" />
+                <circle cx="18.5" cy="18.5" r="2.5" />
+              </svg>
+            }
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-base font-black text-slate-900 dark:text-slate-50">
+              Fila {{ fila }}
+            </p>
+            @if (auditada) {
+              <p
+                class="text-xs text-green-600 dark:text-green-400 font-semibold"
+              >
+                Completada ✓
+              </p>
+            } @else if (enUso) {
+              <p
+                class="text-xs text-amber-600 dark:text-amber-400 font-semibold"
+              >
+                En uso — {{ enUso }}
+              </p>
+            } @else {
+              <p class="text-xs text-slate-400">Disponible</p>
+            }
+          </div>
+          @if (!auditada && !enUso) {
+            <svg
+              class="w-5 h-5 text-slate-300 flex-shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- Botón buscar agotados -->
+    <div
+      class="sticky bottom-0 px-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pt-3 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md border-t border-slate-200/60 dark:border-slate-800/50 flex gap-3"
+    >
+      <button
+        (click)="busquedaVisible.set(true)"
+        class="flex-1 py-3.5 rounded-2xl text-sm font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
+      >
+        <svg
+          class="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        Buscar por código
+      </button>
+      <button
+        (click)="confirmarFin.set(true)"
+        class="px-5 py-3.5 rounded-2xl text-sm font-bold bg-slate-900 dark:bg-slate-100 text-slate-50 dark:text-slate-900 transition-all active:scale-[0.97]"
+      >
+        Finalizar
+      </button>
+    </div>
+  </div>
+}
+
+<!-- ── CONTANDO ────────────────────────────────────────────────────────── -->
+@if (vista() === "contando" && cargandoFila()) {
+  <div
+    class="min-h-screen flex flex-col items-center justify-center gap-5 bg-slate-50 dark:bg-slate-950"
+  >
+    <div class="relative w-12 h-12">
+      <div
+        class="absolute inset-0 rounded-full border-2 border-slate-200 dark:border-slate-800"
+      ></div>
+      <div
+        class="absolute inset-0 rounded-full border-2 border-transparent border-t-indigo-600 dark:border-t-indigo-400 animate-spin"
+      ></div>
+    </div>
+    <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+      Cargando Fila {{ filaActualNombre() }}
+    </p>
+  </div>
+}
+
+@if (vista() === "contando" && !cargandoFila()) {
+  <div class="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
+    <header
+      class="sticky top-0 z-30 border-b border-slate-200/60 dark:border-slate-800/50 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl"
+    >
+      <div class="px-5 pt-4 pb-3">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <p
+              class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+            >
+              Fila actual
+            </p>
+            <h2
+              class="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-50 leading-none"
+            >
+              Fila {{ filaActualNombre() }}
+            </h2>
+          </div>
+          <div class="text-right">
+            <p
+              class="text-2xl font-black text-indigo-600 dark:text-indigo-400 tabular-nums"
+            >
+              {{ productoActualIndex() }}/{{ totalProductosFila() }}
+            </p>
+            <p class="text-[10px] text-slate-400 tracking-wide">productos</p>
+          </div>
+        </div>
+        <div
+          class="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden"
+        >
+          <div
+            class="h-full rounded-full bg-indigo-500 transition-all duration-500"
+            [style.width.%]="
+              (productoActualIndex() / totalProductosFila()) * 100
+            "
+          ></div>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+          <button
+            (click)="vista.set('elegir_fila')"
+            class="text-[10px] text-indigo-500 font-semibold"
+          >
+            ← Cambiar fila
+          </button>
+          <p class="text-[10px] font-semibold text-indigo-500 tabular-nums">
+            {{ progresoPorcentaje() }}% total
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div
+      class="flex-1 overflow-y-auto px-4 py-4 space-y-3 pb-[calc(5rem+env(safe-area-inset-bottom,0px))]"
+    >
+      @for (prod of productosFilaActual(); track prod.id; let i = $index) {
+        <button
+          (click)="abrirModalProducto(i, i < productoIndex())"
+          class="w-full text-left rounded-2xl border transition-all duration-200 active:scale-[0.98] group"
+          [class]="
+            i === productoIndex()
+              ? 'bg-indigo-50 dark:bg-indigo-950/30 border-indigo-300 dark:border-indigo-700 shadow-md shadow-indigo-500/10'
+              : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800/60 hover:border-slate-300'
+          "
+        >
+          <div class="flex items-center gap-4 p-4">
+            <div
+              class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-800"
+            >
+              @if (prod.imagen) {
+                <img
+                  [src]="prod.imagen"
+                  [alt]="prod.referencia"
+                  class="w-full h-full object-cover"
+                />
+              } @else {
+                <div class="w-full h-full flex items-center justify-center">
+                  <svg
+                    class="w-7 h-7 text-slate-300 dark:text-slate-600"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                </div>
+              }
+            </div>
+            <div class="flex-1 min-w-0">
+              <p
+                class="text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500 mb-0.5"
+              >
+                #{{ prod.id }}
+              </p>
+              <p
+                class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate"
+              >
+                {{ prod.marca.trim() }}
+              </p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 truncate">
+                {{ prod.referencia }}
+              </p>
+            </div>
+            <div class="flex-shrink-0">
+              @if (i < productoIndex()) {
+                <div
+                  class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-4 h-4 text-green-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+              } @else if (i === productoIndex()) {
+                <div
+                  class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center"
+                >
+                  <svg
+                    class="w-4 h-4 text-indigo-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </div>
+              } @else {
+                <div
+                  class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center"
+                >
+                  <span class="text-[11px] font-bold text-slate-400">{{
+                    i + 1
+                  }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </button>
+      }
+    </div>
+
+    <!-- Footer con búsqueda y finalizar -->
+    <div
+      class="sticky bottom-0 px-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pt-3 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md border-t border-slate-200/60 dark:border-slate-800/50 flex gap-3"
+    >
+      <button
+        (click)="busquedaVisible.set(true)"
+        class="flex items-center gap-1.5 px-4 py-3 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-indigo-300 transition-colors"
+      >
+        <svg
+          class="w-3.5 h-3.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        Buscar
+      </button>
+      <button
+        (click)="confirmarFin.set(true)"
+        class="flex-1 py-3 rounded-xl text-xs font-bold bg-slate-900 dark:bg-slate-100 text-slate-50 dark:text-slate-900 transition-all active:scale-[0.97]"
+      >
+        Finalizar sesión
+      </button>
+    </div>
+  </div>
+}
+
+<!-- ── FINALIZADO ─────────────────────────────────────────────────────── -->
+@if (vista() === "finalizado") {
+  <div
+    class="min-h-screen flex flex-col items-center justify-center px-6 bg-slate-50 dark:bg-slate-950 text-center relative overflow-hidden"
+  >
+    <div
+      class="absolute inset-0 opacity-[0.3] dark:opacity-[0.1]"
+      style="
+        background-image: radial-gradient(
+          circle at 1px 1px,
+          rgb(148 163 184) 1px,
+          transparent 0
+        );
+        background-size: 24px 24px;
+      "
+    ></div>
+    <div class="relative z-10 flex flex-col items-center">
+      <div
+        class="w-28 h-28 rounded-full bg-gradient-to-br from-indigo-500/20 to-indigo-500/5 border border-indigo-500/30 flex items-center justify-center mb-7 shadow-2xl shadow-indigo-500/20 ring-8 ring-indigo-500/10"
+      >
+        <svg
+          class="w-14 h-14 text-indigo-500"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      </div>
+      <h2
+        class="text-4xl font-black tracking-tight text-slate-900 dark:text-slate-50 mb-2"
+      >
+        ¡Listo!
+      </h2>
+      <p
+        class="text-sm text-slate-500 dark:text-slate-400 max-w-[260px] leading-relaxed mb-10"
+      >
+        El administrador ya recibió todos los datos.
+      </p>
+      <div
+        class="w-full max-w-[290px] rounded-3xl bg-white/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/60 p-7 text-center shadow-xl backdrop-blur-md"
+      >
+        <p
+          class="text-6xl font-black text-indigo-600 dark:text-indigo-400 tabular-nums leading-none mb-2"
+        >
+          {{ totalContado() }}
+        </p>
+        <p class="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          productos contados
+        </p>
+        <div
+          class="my-4 h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-800 to-transparent"
+        ></div>
+        <p class="text-xs text-slate-400 tabular-nums">
+          {{ filasAuditadas().length }} filas auditadas
+        </p>
+      </div>
+      <p
+        class="mt-10 text-[10px] text-slate-400 dark:text-slate-600 tracking-widest uppercase"
+      >
+        ShoeShop · Auditoría de Bodega
+      </p>
+    </div>
+  </div>
+}
+
+<!-- ── MODAL CONTEO ───────────────────────────────────────────────────── -->
+@if (modalAbierto() && productoActual()) {
+  <div
+    class="fixed inset-0 z-50 flex flex-col justify-end"
+    style="background: rgba(0, 0, 0, 0.6)"
+    (click)="cerrarModal()"
+  >
+    <div
+      class="modal-slide relative w-full rounded-t-[28px] overflow-hidden bg-white dark:bg-slate-900 border-t border-slate-200/60 dark:border-slate-800/50 shadow-2xl max-h-[92dvh] flex flex-col"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex justify-center pt-3 pb-1 flex-shrink-0">
+        <div class="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+      </div>
+
+      @if (esEdicion()) {
+        <div
+          class="mx-5 mt-2 mb-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40"
+        >
+          <svg
+            class="w-3.5 h-3.5 text-amber-500 flex-shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+            />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          <span class="text-[11px] font-bold text-amber-700 dark:text-amber-400"
+            >Editando conteo anterior</span
+          >
+        </div>
+      }
+
+      <div
+        class="overflow-y-auto flex-1 overscroll-contain pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]"
+      >
+        <!-- Cabecera producto -->
+        <div
+          class="flex gap-4 px-5 pt-4 pb-5 border-b border-slate-100 dark:border-slate-800"
+        >
+          <div
+            class="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-100 dark:bg-slate-800 shadow-sm"
+          >
+            @if (productoActual()!.imagen) {
+              <img
+                [src]="productoActual()!.imagen"
+                [alt]="productoActual()!.referencia"
+                class="w-full h-full object-cover"
+              />
+            } @else {
+              <div class="w-full h-full flex items-center justify-center">
+                <svg
+                  class="w-8 h-8 text-slate-300 dark:text-slate-600"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
+                </svg>
+              </div>
+            }
+          </div>
+          <div class="flex-1 min-w-0">
+            <span
+              class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold tracking-widest uppercase bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 mb-1.5"
+            >
+              #{{ productoActual()!.id }} · Fila
+              {{ productoActual()!.fila ?? filaActualNombre() }}
+            </span>
+            <p
+              class="text-base font-black text-slate-900 dark:text-slate-50 truncate leading-tight"
+            >
+              {{ productoActual()!.marca.trim() }}
+            </p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 truncate">
+              {{ productoActual()!.referencia }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Título -->
+        <div class="px-5 pt-5 pb-3">
+          <h3 class="text-base font-black text-slate-900 dark:text-slate-50">
+            ¿Cuántos hay físicamente?
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            @if (modoConteo() === "cantidad") {
+              Ingresa la cantidad total encontrada
+            } @else {
+              Ingresa la cantidad real por talla
+            }
+          </p>
+        </div>
+
+        <!-- MODO CANTIDAD -->
+        @if (modoConteo() === "cantidad") {
+          <div class="px-5 pb-5">
+            <div
+              class="flex items-center gap-4 p-5 rounded-2xl border border-slate-200/60 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-800/50"
+            >
+              <button
+                (click)="decrementarCantidad()"
+                class="w-12 h-12 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 active:scale-90 transition-all touch-manipulation"
+              >
+                <svg
+                  class="w-5 h-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+              <div class="flex-1 text-center">
+                <p
+                  class="text-5xl font-black tabular-nums text-indigo-600 dark:text-indigo-400"
+                >
+                  {{ cantidadSimple() }}
+                </p>
+                <p class="text-xs text-slate-400 mt-1">unidades encontradas</p>
+              </div>
+              <button
+                (click)="incrementarCantidad()"
+                class="w-12 h-12 rounded-xl flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/30 active:scale-90 transition-all touch-manipulation"
+              >
+                <svg
+                  class="w-5 h-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- MODO TALLAS -->
+        @if (modoConteo() === "tallas") {
+          <div class="px-5 space-y-3 pb-5">
+            @for (talla of tallasProducto(); track talla.talla) {
+              <div
+                class="flex items-center gap-4 p-4 rounded-2xl border transition-colors"
+                [ngClass]="
+                  talla.contado > 0
+                    ? 'bg-indigo-50 dark:bg-indigo-950/20 border-indigo-300 dark:border-indigo-700'
+                    : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200/60 dark:border-slate-700/60'
+                "
+              >
+                <div class="w-14 flex-shrink-0">
+                  <p
+                    class="text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500"
+                  >
+                    Talla
+                  </p>
+                  <p
+                    class="text-xl font-black text-slate-900 dark:text-slate-50 tabular-nums"
+                  >
+                    {{ talla.talla }}
+                  </p>
+                </div>
+                <svg
+                  class="w-5 h-5 text-slate-300 dark:text-slate-600 flex-shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+                <div class="flex items-center gap-2 flex-1 justify-end">
+                  <button
+                    (click)="decrementarTalla(talla.talla)"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 active:scale-90 transition-all touch-manipulation"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </button>
+                  <div
+                    class="w-14 h-10 rounded-xl flex items-center justify-center bg-white dark:bg-slate-800 border-2 transition-colors"
+                    [ngClass]="
+                      talla.contado > 0
+                        ? 'border-indigo-400 dark:border-indigo-600'
+                        : 'border-slate-200 dark:border-slate-700'
+                    "
+                  >
+                    <span
+                      class="text-lg font-black tabular-nums"
+                      [class]="
+                        talla.contado > 0
+                          ? 'text-indigo-600 dark:text-indigo-400'
+                          : 'text-slate-400 dark:text-slate-500'
+                      "
+                    >
+                      {{ talla.contado }}
+                    </span>
+                  </div>
+                  <button
+                    (click)="incrementarTalla(talla.talla)"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/30 active:scale-90 transition-all touch-manipulation"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Botón guardar -->
+        <div class="px-5 pb-6">
+          @if (conteoGuardado()) {
+            <div
+              class="w-full py-4 rounded-2xl flex items-center justify-center gap-2 bg-green-50 dark:bg-green-950/30 border border-green-200/60 dark:border-green-800/40"
+            >
+              <svg
+                class="w-5 h-5 text-green-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <span
+                class="text-sm font-bold text-green-600 dark:text-green-400"
+              >
+                {{
+                  esEdicion()
+                    ? "Actualizado ✓"
+                    : "Guardado — pasando al siguiente…"
+                }}
+              </span>
+            </div>
+          } @else {
+            <button
+              (click)="guardarConteo()"
+              [disabled]="guardando()"
+              class="w-full py-4 rounded-2xl text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 active:scale-[0.98] transition-all duration-200 disabled:opacity-30 flex items-center justify-center gap-2"
+            >
+              @if (guardando()) {
+                <app-ia-spinner class="w-4 h-4 text-white"></app-ia-spinner>
+                <span>Guardando…</span>
+              } @else if (esEdicion()) {
+                <svg
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <path
+                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                  />
+                  <path
+                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                  />
+                </svg>
+                <span>Actualizar conteo</span>
+              } @else {
+                <svg
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+                <span>Aceptar y continuar</span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── BÚSQUEDA AGOTADOS ───────────────────────────────────────────────── -->
+@if (busquedaVisible()) {
+  <div
+    class="fixed inset-0 z-50 flex flex-col justify-end"
+    style="background: rgba(0, 0, 0, 0.6)"
+    (click)="cerrarModal()"
+  >
+    <div
+      class="sheet-slide relative w-full rounded-t-[28px] bg-white dark:bg-slate-900 border-t border-slate-200/60 dark:border-slate-800/50 px-6 pb-[max(2rem,env(safe-area-inset-bottom))] shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex justify-center pt-3 mb-5">
+        <div class="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+      </div>
+      <h3 class="text-lg font-black text-slate-900 dark:text-slate-50 mb-1">
+        Buscar por código
+      </h3>
+      <p class="text-xs text-slate-400 mb-5 leading-relaxed">
+        Busca productos agotados en el sistema para incluirlos en el conteo
+        físico
+      </p>
+      <div class="flex gap-2 mb-4">
+        <input
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          [ngModel]="busquedaId()"
+          (ngModelChange)="busquedaId.set($event)"
+          (keyup.enter)="buscarProducto()"
+          placeholder="ID del producto"
+          class="flex-1 px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 text-sm outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/60 transition-all"
+        />
+        <button
+          (click)="buscarProducto()"
+          [disabled]="buscando() || !busquedaId()"
+          class="px-4 py-3 rounded-xl bg-indigo-600 text-white text-sm font-bold disabled:opacity-40 transition-all active:scale-90"
+        >
+          @if (buscando()) {
+            <app-ia-spinner class="w-4 h-4 inline-block text-white"></app-ia-spinner>
+          } @else {
+            Buscar
+          }
+        </button>
+      </div>
+      @if (errorBusqueda()) {
+        <p class="text-xs text-red-500 mb-3">{{ errorBusqueda() }}</p>
+      }
+      @if (busquedaProducto()) {
+        <div
+          class="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 p-4 mb-5 flex items-center gap-4"
+        >
+          <div
+            class="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-slate-200 dark:bg-slate-700"
+          >
+            @if (busquedaProducto()!.imagen) {
+              <img
+                [src]="busquedaProducto()!.imagen"
+                class="w-full h-full object-cover"
+              />
+            }
+          </div>
+          <div class="flex-1 min-w-0">
+            <p
+              class="text-[10px] font-bold tracking-widest uppercase text-slate-400"
+            >
+              #{{ busquedaProducto()!.id }} · Fila
+              {{ busquedaProducto()!.fila }}
+            </p>
+            <p
+              class="text-sm font-black text-slate-900 dark:text-slate-50 truncate"
+            >
+              {{ busquedaProducto()!.marca.trim() }}
+            </p>
+            <p class="text-xs text-slate-500 truncate">
+              {{ busquedaProducto()!.referencia }}
+            </p>
+          </div>
+        </div>
+        <button
+          (click)="abrirModalBusqueda()"
+          class="w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md shadow-indigo-500/25 active:scale-[0.98] transition-all"
+        >
+          Ingresar conteo →
+        </button>
+      }
+    </div>
+  </div>
+}
+
+<!-- ── CONFIRMAR FINALIZAR ─────────────────────────────────────────────── -->
+@if (confirmarFin()) {
+  <div
+    class="fixed inset-0 z-50 flex flex-col justify-end"
+    style="background: rgba(0, 0, 0, 0.65)"
+    (click)="confirmarFin.set(false)"
+  >
+    <div
+      class="sheet-slide relative w-full rounded-t-[28px] bg-white dark:bg-slate-900 border-t border-slate-200/60 dark:border-slate-800/50 px-6 pb-[max(2rem,env(safe-area-inset-bottom))] shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex justify-center pt-3 mb-7">
+        <div class="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+      </div>
+      <div
+        class="w-14 h-14 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center mx-auto mb-5"
+      >
+        <svg
+          class="w-7 h-7 text-indigo-600 dark:text-indigo-400"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M9 11l3 3L22 4" />
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+        </svg>
+      </div>
+      <h3
+        class="text-xl font-black text-slate-900 dark:text-slate-50 text-center tracking-tight mb-2"
+      >
+        ¿Finalizar auditoría?
+      </h3>
+      <p
+        class="text-sm text-slate-500 dark:text-slate-400 text-center leading-relaxed mb-1"
+      >
+        Contaste
+        <strong class="text-slate-800 dark:text-slate-200 font-bold">{{
+          totalContado()
+        }}</strong>
+        productos.
+      </p>
+      <p class="text-xs text-slate-400 text-center mb-2">
+        Las filas no completadas se registrarán con cantidad 0.
+      </p>
+      <p class="text-xs text-red-500 dark:text-red-400 text-center mb-8">
+        Esto cerrará la sesión en todos los dispositivos.
+      </p>
+      <div class="flex flex-col gap-3">
+        <button
+          (click)="finalizar()"
+          [disabled]="finalizando()"
+          class="w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md shadow-indigo-500/25 disabled:opacity-40 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+        >
+          @if (finalizando()) {
+            <app-ia-spinner class="w-4 h-4 text-white"></app-ia-spinner>
+            <span>Finalizando…</span>
+          } @else {
+            <span>Sí, finalizar sesión</span>
+          }
+        </button>
+        <button
+          (click)="confirmarFin.set(false)"
+          [disabled]="finalizando()"
+          class="w-full py-3.5 rounded-2xl text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60 disabled:opacity-40 transition-colors"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<style>
+  .modal-slide {
+    animation: slideUp 300ms cubic-bezier(0.34, 1.12, 0.64, 1) forwards;
+  }
+  .sheet-slide {
+    animation: slideUp 280ms cubic-bezier(0.34, 1.1, 0.64, 1) forwards;
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0.4;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20%,
+    60% {
+      transform: translateX(-4px);
+    }
+    40%,
+    80% {
+      transform: translateX(4px);
+    }
+  }
+  .animate-shake {
+    animation: shake 400ms ease-in-out;
+  }
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(203 213 225 / 0.5);
+    border-radius: 4px;
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgb(51 65 85 / 0.6);
+  }
+</style>

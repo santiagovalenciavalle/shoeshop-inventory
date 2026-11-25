@@ -1,0 +1,101 @@
+@keyframes camFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes camFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes camOverlayIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes camSheetIn {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cam-fade-in {
+    animation: camFadeUp 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.cam-overlay-in {
+    animation: camOverlayIn 0.2s ease both;
+}
+
+.cam-sheet-in {
+    animation: camSheetIn 0.3s cubic-bezier(0.34, 1.04, 0.64, 1) both;
+}
+
+.cam-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.cam-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+::ng-deep .cam-inputnumber.p-inputnumber {
+    width: 100%;
+}
+
+::ng-deep .cam-inputnumber .p-inputtext {
+    width: 100% !important;
+    background: #f5f5f5 !important;
+    border: none !important;
+    border-radius: 14px !important;
+    padding: 12px 16px !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    transition: box-shadow 0.15s ease;
+}
+
+::ng-deep .cam-inputnumber .p-inputtext:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.3) !important;
+}
+
+.dark ::ng-deep .cam-inputnumber .p-inputtext {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #fff !important;
+}
+
+.cam-metodo-btn:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+.cam-metodo-btn:not(:disabled):active {
+    transform: scale(0.97);
+}

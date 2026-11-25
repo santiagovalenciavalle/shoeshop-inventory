@@ -1,0 +1,487 @@
+<style>
+  .ios-scroll {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .ios-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .apf-input {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    font-weight: 400;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    outline: none;
+    transition: all 0.2s ease;
+    -moz-appearance: textfield;
+  }
+
+  .apf-input::placeholder {
+    color: #d4d4d4;
+  }
+
+  .apf-input:focus {
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 3px rgba(212, 168, 67, 0.1);
+  }
+
+  .apf-input::-webkit-outer-spin-button,
+  .apf-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .apf-talla-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 10px 6px 8px;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+    cursor: text;
+  }
+
+  .apf-talla-card:focus-within {
+    box-shadow:
+      0 0 0 2px #d4a843,
+      0 2px 8px rgba(212, 168, 67, 0.12);
+  }
+
+  .apf-talla-input {
+    width: 100%;
+    text-align: center;
+    padding: 4px 2px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    outline: none;
+  }
+
+  .apf-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 980px;
+    background: #f0f0f0;
+    color: #4a4a4a;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+  }
+  .apf-upload-btn:hover {
+    background: #e8e8e8;
+    border-color: rgba(212, 168, 67, 0.4);
+  }
+
+  .apf-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 24px;
+    border-radius: 980px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .apf-btn:active {
+    transform: scale(0.97);
+  }
+  .apf-btn:disabled {
+    opacity: 0.35;
+  }
+
+  .apf-btn-primary {
+    background: #cca947;
+    color: #fff;
+  }
+
+  .apf-btn-cancel {
+    background: transparent;
+    color: #8a8a8a;
+    border: 1px solid #e5e5e5;
+  }
+
+  .apf-img-placeholder {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5e5e5;
+    border: 2px dashed #d4d4d4;
+  }
+
+  .apf-img-preview {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .apf-spinner {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .s1 {
+    animation: slideUp 0.32s ease both 0.04s;
+  }
+  .s2 {
+    animation: slideUp 0.32s ease both 0.09s;
+  }
+  .s3 {
+    animation: slideUp 0.32s ease both 0.14s;
+  }
+  .s4 {
+    animation: slideUp 0.32s ease both 0.19s;
+  }
+  .s5 {
+    animation: slideUp 0.32s ease both 0.24s;
+  }
+
+  .apf-divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(212, 168, 67, 0.25),
+      transparent
+    );
+  }
+
+  .apf-section-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #b0b0b0;
+  }
+
+  .apf-total-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+  }
+</style>
+
+<div class="apf-root bg-white dark:bg-[#0a0a0a]">
+  <section class="s1 px-6 pt-6 pb-5">
+    <div class="flex items-center gap-2.5 mb-4">
+      <span class="apf-section-label">Información básica</span>
+      <div class="flex-1 h-px bg-black/[0.05] dark:bg-white/[0.05]"></div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="marca"
+          class="text-[0.72rem] font-medium text-black/40 dark:text-white/30 ml-1"
+        >
+          Marca
+        </label>
+        <input
+          id="marca"
+          type="text"
+          [(ngModel)]="producto.marca"
+          placeholder="Ej. Nike, Adidas…"
+          class="apf-input bg-neutral-200 text-black dark:bg-[#161616] dark:text-white dark:placeholder:text-[#444] border border-black/30 dark:border-black"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          for="referencia"
+          class="text-[0.72rem] font-medium text-black/40 dark:text-white/30 ml-1"
+        >
+          Referencia
+        </label>
+        <input
+          id="referencia"
+          type="text"
+          [(ngModel)]="producto.referencia"
+          placeholder="Código de referencia"
+          class="apf-input bg-neutral-200 text-black dark:bg-[#161616] dark:text-white dark:placeholder:text-[#444] border border-gray-300 dark:border-gray-700"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5 sm:col-span-2">
+        <label
+          for="fila"
+          class="text-[0.72rem] font-medium text-black/40 dark:text-white/30 ml-1"
+        >
+          Fila / Ubicación
+        </label>
+        <input
+          id="fila"
+          type="text"
+          [(ngModel)]="producto.fila"
+          placeholder="Ubicación en bodega"
+          class="apf-input bg-neutral-200 text-black dark:bg-[#161616] dark:text-white dark:placeholder:text-[#444] border border-gray-300 dark:border-gray-700"
+        />
+      </div>
+    </div>
+  </section>
+
+  <div class="apf-divider mx-6"></div>
+
+  <section class="s2 px-6 py-5">
+    <div class="flex items-center gap-2.5 mb-4">
+      <span class="apf-section-label">Imagen del producto</span>
+      <div class="flex-1 h-px bg-black/[0.05] dark:bg-white/[0.05]"></div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="apf-img-preview" *ngIf="producto.imagen">
+        <img
+          [src]="producto.imagen"
+          alt="Vista previa del producto"
+          class="w-full h-full object-cover"
+        />
+      </div>
+      <div class="apf-img-placeholder" *ngIf="!producto.imagen">
+        <i
+          class="pi pi-image text-black/20 dark:text-white/15"
+          style="font-size: 1.1rem"
+        ></i>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="apf-upload-btn">
+          <i class="pi pi-arrow-up-right" style="font-size: 0.72rem"></i>
+          <span>{{
+            producto.imagen ? "Cambiar imagen" : "Seleccionar imagen"
+          }}</span>
+          <input
+            type="file"
+            accept="image/*"
+            (change)="handleNativeImageUpload($event)"
+            hidden
+          />
+        </label>
+        <p class="text-[0.68rem] text-black/25 dark:text-white/20 ml-1">
+          JPG, PNG, WEBP — máx. 5 MB
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="apf-divider mx-6"></div>
+  <section class="s3 px-6 py-5">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center gap-2.5">
+        <span class="apf-section-label">Tallas disponibles</span>
+        <div class="w-12 h-px bg-black/[0.05] dark:bg-white/[0.05]"></div>
+      </div>
+      <div class="apf-total-badge bg-neutral-200 dark:bg-[#161616]">
+        <span
+          class="text-[0.6rem] font-semibold uppercase tracking-wider text-black dark:text-white"
+        >
+          Total
+        </span>
+        <span
+          class="text-sm font-semibold tabular-nums text-[#c9961a] dark:text-[#d4a843]"
+        >
+          {{ totalTallasIngresadas }}
+        </span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-9 gap-2">
+      <ng-container
+        *ngFor="
+          let talla of [
+            28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
+            45, 46, 47, 48, 49, 50,
+          ]
+        "
+      >
+        <div
+          class="apf-talla-card text-red-500 bg-neutral-200 dark:bg-[#161616] focus-within:bg-neutral-300 dark:focus-within:bg-[#212121]"
+        >
+          <span
+            class="text-[0.58rem] font-bold tracking-wide text-black/35 dark:text-white"
+          >
+            {{ talla }}
+          </span>
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="producto.tallasDisponibles[talla]"
+            class="apf-talla-input text-black dark:text-white"
+            placeholder="—"
+          />
+        </div>
+      </ng-container>
+    </div>
+
+    <div
+      class="mt-3 flex items-center justify-between px-4 py-3 rounded-xl bg-black/[0.025] dark:bg-white/[0.03] border border-black/[0.04] dark:border-white/[0.04]"
+    >
+      <span class="text-[0.7rem] font-medium text-black/40 dark:text-white/30">
+        Pares en inventario
+      </span>
+      <span
+        class="text-sm font-semibold tabular-nums text-black/70 dark:text-white/60"
+      >
+        {{ totalTallasIngresadas }}
+      </span>
+    </div>
+  </section>
+
+  <ng-container *ngIf="admin">
+    <div class="apf-divider mx-6"></div>
+
+    <section class="s4 px-6 py-5">
+      <div class="flex items-center gap-2.5 mb-4">
+        <span class="apf-section-label">Precios</span>
+        <div class="flex-1 h-px bg-black/[0.05] dark:bg-white/[0.05]"></div>
+        <span
+          class="text-[0.58rem] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-[#d4a843]/10 text-[#b8891a] dark:bg-[#c9a84c]/10 dark:text-[#c9a84c]"
+        >
+          Admin
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="flex flex-col gap-1.5">
+          <label
+            class="text-[0.72rem] font-medium text-black/40 dark:text-white/30 ml-1"
+          >
+            Adquisición
+          </label>
+          <div class="relative">
+            <span
+              class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-black/30 dark:text-white/20 pointer-events-none"
+            ></span>
+            <input
+              type="number"
+              [(ngModel)]="producto.precioAdquisicion"
+              placeholder="0"
+              min="0"
+              class="apf-input bg-neutral-200 text-black dark:bg-[#161616] dark:text-white dark:placeholder:text-[#444] border border-gray-300 dark:border-gray-700"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label
+            class="text-[0.72rem] font-medium text-black/40 dark:text-white/30 ml-1"
+          >
+            Precio local
+          </label>
+          <div class="relative">
+            <span
+              class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-black/30 dark:text-white/20 pointer-events-none"
+            ></span>
+            <input
+              type="number"
+              [(ngModel)]="producto.pl"
+              placeholder="0"
+              min="0"
+              class="apf-input bg-neutral-200 text-black dark:bg-[#161616] dark:text-white dark:placeholder:text-[#444] border border-gray-300 dark:border-gray-700"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label
+            class="text-[0.72rem] font-medium text-black/40 dark:text-white/30 ml-1"
+          >
+            Precio mínimo
+          </label>
+          <div class="relative">
+            <span
+              class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-black/30 dark:text-white/20 pointer-events-none"
+            ></span>
+            <input
+              type="number"
+              [(ngModel)]="producto.precioMin"
+              placeholder="0"
+              min="0"
+              class="apf-input bg-neutral-200 text-black dark:bg-[#161616] dark:text-white dark:placeholder:text-[#444] border border-gray-300 dark:border-gray-700"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  </ng-container>
+
+  <div class="apf-divider mx-6"></div>
+
+  <div class="s5 flex items-center justify-between gap-3 px-6 py-5">
+    <button
+      type="button"
+      class="apf-btn apf-btn-cancel flex-1 sm:flex-none"
+      (click)="cerrarModal()"
+      [disabled]="loading"
+    >
+      Cancelar
+    </button>
+
+    <button
+      type="button"
+      class="apf-btn apf-btn-primary flex-1 sm:flex-none sm:min-w-[140px]"
+      (click)="guardarProducto()"
+      [disabled]="loading"
+    >
+      <span *ngIf="loading" class="apf-spinner"></span>
+      <svg
+        *ngIf="!loading"
+        width="12"
+        height="12"
+        viewBox="0 0 12 12"
+        fill="none"
+      >
+        <path
+          d="M1 6.5L4.5 10L11 2"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      {{ loading ? "Guardando…" : "Guardar" }}
+    </button>
+  </div>
+</div>
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+></p-toast>

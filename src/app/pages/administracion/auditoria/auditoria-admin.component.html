@@ -1,0 +1,1421 @@
+<div *ngIf="cargandoLocales || buscandoSesion" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-md px-4 text-neutral-900 dark:text-white">
+  <app-ia-loader detalle="ShoeShop" [mensajes]="['Conectando con tus datos…', 'Cargando locales…', 'Buscando sesión activa…']"></app-ia-loader>
+</div>
+
+<div
+  class="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 antialiased"
+>
+  <header
+    id="top"
+    class="sticky top-0 z-40 bg-zinc-50/80 dark:bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-200/60 dark:border-zinc-800/40"
+  >
+    <div
+      class="max-w-6xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between"
+    >
+      <div class="flex items-center gap-3.5">
+        <div
+          class="relative w-9 h-9 rounded-xl bg-gradient-to-br from-zinc-900 via-zinc-800 to-black dark:from-zinc-100 dark:via-white dark:to-zinc-300 flex items-center justify-center shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10"
+        >
+          <svg
+            class="w-4 h-4 text-white dark:text-zinc-900"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path d="M9 11l3 3L22 4" />
+            <path
+              d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+            />
+          </svg>
+          <span
+            class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-zinc-50 dark:ring-zinc-950"
+          ></span>
+        </div>
+        <div class="hidden sm:flex flex-col gap-1">
+          <span class="text-[13px] font-semibold tracking-tight leading-none"
+            >Auditoría de Exhibición</span
+          >
+          <span
+            class="text-[9px] font-medium tracking-[0.22em] uppercase text-zinc-400 dark:text-zinc-500 leading-none"
+            >ShoeShop · Admin</span
+          >
+        </div>
+      </div>
+      <div
+        *ngIf="sesion?.estado === 'en_progreso'"
+        class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-800/40 shadow-sm shadow-emerald-500/10"
+      >
+        <span class="relative flex h-1.5 w-1.5">
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+          ></span>
+          <span
+            class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"
+          ></span>
+        </span>
+        <span
+          class="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 tracking-wide"
+        >
+          En vivo · Local {{ localNumero }}
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 lg:px-10">
+    <section class="pt-10 pb-14">
+      <div
+        class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 dark:from-black dark:via-zinc-950 dark:to-black border border-zinc-800/60 dark:border-zinc-800/80 shadow-2xl shadow-black/20"
+      >
+        <div
+          class="absolute inset-0 opacity-[0.18]"
+          style="
+            background-image: radial-gradient(
+              circle at 1px 1px,
+              rgb(148 163 184) 1px,
+              transparent 0
+            );
+            background-size: 28px 28px;
+          "
+        ></div>
+        <div
+          class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"
+        ></div>
+        <div
+          class="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-blue-500/5 blur-3xl pointer-events-none"
+        ></div>
+
+        <div class="relative z-10 p-8 sm:p-12 lg:p-14">
+          <div
+            class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-400/20 backdrop-blur-sm"
+          >
+            <span class="relative flex h-1.5 w-1.5">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+              ></span>
+              <span
+                class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"
+              ></span>
+            </span>
+            <span
+              class="text-[10px] font-bold tracking-[0.22em] uppercase text-emerald-300"
+            >
+              ShoeShop AI
+            </span>
+          </div>
+
+          <h1
+            class="mt-7 text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter text-white leading-[1.05]"
+          >
+            Auditoría<br />
+            <span
+              class="bg-gradient-to-r from-emerald-200 via-emerald-400 to-emerald-200 bg-clip-text text-transparent"
+            >
+              Inteligente.
+            </span>
+          </h1>
+
+          <p class="mt-5 text-[15px] text-zinc-400 max-w-xl leading-relaxed">
+            Sistema impulsado por IA que compara escaneos en tiempo real contra
+            el inventario esperado. Detecta faltantes, sobrantes y discrepancias
+            en segundos.
+          </p>
+
+          <div class="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div
+              class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 backdrop-blur-sm"
+            >
+              <p class="text-2xl font-black text-emerald-400 tabular-nums">
+                99.9%
+              </p>
+              <p
+                class="text-[10px] text-zinc-500 mt-1.5 tracking-widest uppercase"
+              >
+                Precisión
+              </p>
+            </div>
+            <div
+              class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 backdrop-blur-sm"
+            >
+              <p class="text-2xl font-black text-blue-400 tracking-tight">
+                Real-time
+              </p>
+              <p
+                class="text-[10px] text-zinc-500 mt-1.5 tracking-widest uppercase"
+              >
+                Sin latencia
+              </p>
+            </div>
+            <div
+              class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 backdrop-blur-sm"
+            >
+              <p class="text-2xl font-black text-violet-400 tracking-tight">
+                AI
+              </p>
+              <p
+                class="text-[10px] text-zinc-500 mt-1.5 tracking-widest uppercase"
+              >
+                Automática
+              </p>
+            </div>
+            <div
+              class="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 backdrop-blur-sm"
+            >
+              <p class="text-2xl font-black text-amber-400">∞</p>
+              <p
+                class="text-[10px] text-zinc-500 mt-1.5 tracking-widest uppercase"
+              >
+                Escalable
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section *ngIf="!sesionId && !resultado" class="pb-28">
+      <div class="mb-12">
+        <p
+          class="text-[10px] font-bold tracking-[0.3em] uppercase text-zinc-400 dark:text-zinc-500 mb-3"
+        >
+          Comenzar auditoría
+        </p>
+        <h2
+          class="text-3xl sm:text-4xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 leading-tight"
+        >
+          Selecciona tu local.
+        </h2>
+        <p
+          class="mt-3 text-sm text-zinc-500 dark:text-zinc-500 max-w-md leading-relaxed"
+        >
+          El sistema activará el escaneo automático desde el dispositivo del
+          vendedor en segundos.
+        </p>
+      </div>
+
+      <div
+        class="max-w-md rounded-2xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/60 p-7 mb-12 shadow-sm shadow-zinc-900/[0.02] dark:shadow-black/20 backdrop-blur-sm"
+      >
+        <label
+          class="block text-[10px] font-bold tracking-[0.22em] uppercase text-zinc-400 dark:text-zinc-500 mb-3"
+        >
+          Local a auditar
+        </label>
+        <p-select
+          [options]="localesActivos"
+          [(ngModel)]="localSeleccionado"
+          placeholder="Seleccionar local…"
+          class="w-full mb-6"
+          appendTo="body"
+        ></p-select>
+
+        <button
+          (click)="iniciarAuditoria()"
+          [disabled]="!localSeleccionado || iniciandoSesion"
+          class="group relative w-full py-3.5 rounded-xl text-sm font-bold bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 disabled:opacity-25 disabled:cursor-not-allowed active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2.5 shadow-lg shadow-zinc-900/20 dark:shadow-zinc-100/10 overflow-hidden"
+        >
+          <span
+            class="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"
+          ></span>
+          <app-ia-spinner *ngIf="iniciandoSesion" class="w-4 h-4 relative z-10 text-zinc-50 dark:text-zinc-900"></app-ia-spinner>
+          <svg
+            *ngIf="!iniciandoSesion"
+            class="w-4 h-4 relative z-10"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          <span class="relative z-10">{{
+            iniciandoSesion ? "Iniciando…" : "Iniciar Auditoría"
+          }}</span>
+        </button>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div
+          *ngFor="let f of featureCards"
+          class="group rounded-2xl p-5 bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 backdrop-blur-sm"
+        >
+          <div
+            class="w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
+            [ngClass]="f.bg"
+          >
+            <svg
+              class="w-5 h-5"
+              [ngClass]="f.color"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              [innerHTML]="f.icon"
+            ></svg>
+          </div>
+          <p
+            class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-1.5 tracking-tight"
+          >
+            {{ f.title }}
+          </p>
+          <p class="text-xs text-zinc-500 dark:text-zinc-500 leading-relaxed">
+            {{ f.desc }}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section
+      *ngIf="sesionId && sesion?.estado === 'en_progreso'"
+      class="pt-2 pb-28"
+    >
+      <div class="flex items-start justify-between gap-4 mb-10">
+        <div>
+          <p
+            class="text-[10px] font-bold tracking-[0.3em] uppercase text-zinc-400 dark:text-zinc-500 mb-2"
+          >
+            Sesión activa
+          </p>
+          <h2
+            class="text-4xl sm:text-5xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 leading-none"
+          >
+            Local {{ localNumero }}
+          </h2>
+          <p class="text-sm text-zinc-500 mt-2.5 flex items-center gap-2">
+            <ng-container *ngIf="sesion?.vendedorNombre; else esperando">
+              <span class="relative flex h-1.5 w-1.5">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                ></span>
+                <span
+                  class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"
+                ></span>
+              </span>
+              <span class="font-medium text-zinc-700 dark:text-zinc-300">{{
+                sesion?.vendedorNombre
+              }}</span>
+              <span class="text-zinc-400">escaneando…</span>
+            </ng-container>
+            <ng-template #esperando>
+              <span class="text-zinc-400">Esperando al vendedor…</span>
+            </ng-template>
+          </p>
+        </div>
+        <button
+          (click)="cancelarAuditoria()"
+          class="px-4 py-2.5 rounded-xl text-[11px] font-bold tracking-[0.15em] uppercase text-red-500 border border-red-200/60 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all duration-200 flex-shrink-0 active:scale-[0.97]"
+        >
+          Cancelar
+        </button>
+      </div>
+
+      <div
+        class="mb-8 rounded-2xl bg-gradient-to-br from-amber-50 to-amber-50/50 dark:from-amber-950/30 dark:to-amber-950/10 border border-amber-200/60 dark:border-amber-800/40 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-sm"
+      >
+        <div>
+          <p
+            class="text-[9px] font-black tracking-[0.3em] uppercase text-amber-700 dark:text-amber-400 mb-1.5"
+          >
+            Código de sesión
+          </p>
+          <p
+            class="text-xs text-amber-700/80 dark:text-amber-500/80 leading-relaxed"
+          >
+            Comparte este código con el vendedor para que inicie el escaneo
+          </p>
+        </div>
+        <div class="flex items-center gap-2.5 flex-shrink-0">
+          <code
+            class="text-sm font-black font-mono tracking-[0.2em] px-4 py-2.5 rounded-xl select-all bg-white dark:bg-zinc-900 border border-amber-200/60 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 shadow-sm"
+          >
+            {{ sesionId }}
+          </code>
+          <button
+            (click)="copiarCodigo()"
+            class="w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-200 active:scale-90"
+            [ngClass]="
+              copiado
+                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-600 dark:text-emerald-400 shadow-sm shadow-emerald-500/20'
+                : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+            "
+          >
+            <svg
+              *ngIf="copiado"
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            <svg
+              *ngIf="!copiado"
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+        <div
+          class="col-span-2 sm:col-span-1 rounded-2xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/60 p-6 flex flex-col items-center justify-center backdrop-blur-sm"
+        >
+          <div class="relative w-24 h-24">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+              <circle
+                cx="50"
+                cy="50"
+                r="42"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="6"
+                class="text-zinc-100 dark:text-zinc-800/60"
+              />
+              <circle
+                cx="50"
+                cy="50"
+                r="42"
+                fill="none"
+                stroke="url(#progressGrad)"
+                stroke-width="6"
+                stroke-linecap="round"
+                [style.stroke-dasharray]="'263.9'"
+                [style.stroke-dashoffset]="263.9 - (progreso / 100) * 263.9"
+                class="transition-all duration-700"
+              />
+              <defs>
+                <linearGradient
+                  id="progressGrad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop offset="0%" stop-color="#10b981" />
+                  <stop offset="100%" stop-color="#34d399" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-xl font-black tabular-nums"
+                >{{ progreso }}%</span
+              >
+            </div>
+          </div>
+          <p
+            class="text-[10px] font-semibold text-zinc-400 dark:text-zinc-500 mt-3 tracking-[0.2em] uppercase"
+          >
+            Progreso
+          </p>
+        </div>
+
+        <div
+          class="rounded-2xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/60 p-6 backdrop-blur-sm"
+        >
+          <p class="text-3xl font-black text-emerald-500 tabular-nums">
+            {{ sesion?.totalEscaneos ?? 0 }}
+          </p>
+          <p
+            class="text-[10px] font-semibold text-zinc-400 mt-2.5 uppercase tracking-[0.2em]"
+          >
+            Escaneos
+          </p>
+        </div>
+        <div
+          class="rounded-2xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/60 p-6 backdrop-blur-sm"
+        >
+          <p
+            class="text-3xl font-black text-zinc-900 dark:text-zinc-100 tabular-nums"
+          >
+            {{ escaneadosUnicos }}
+          </p>
+          <p
+            class="text-[10px] font-semibold text-zinc-400 mt-2.5 uppercase tracking-[0.2em]"
+          >
+            Únicos
+          </p>
+        </div>
+        <div
+          class="rounded-2xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/60 p-6 backdrop-blur-sm"
+        >
+          <p class="text-3xl font-black text-blue-500 tabular-nums">
+            {{ resultado?.totalEsperados ?? sesion?.totalEsperados ?? 0 }}
+          </p>
+          <p
+            class="text-[10px] font-semibold text-zinc-400 mt-2.5 uppercase tracking-[0.2em]"
+          >
+            Esperados
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="rounded-2xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/60 p-6 backdrop-blur-sm"
+      >
+        <div class="flex items-center gap-2.5 mb-5">
+          <span class="relative flex h-1.5 w-1.5">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+            ></span>
+            <span
+              class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"
+            ></span>
+          </span>
+          <h3
+            class="text-[10px] font-bold tracking-[0.25em] uppercase text-zinc-500"
+          >
+            Códigos en vivo
+          </h3>
+          <div
+            class="flex-1 h-px bg-gradient-to-r from-zinc-200 dark:from-zinc-800 to-transparent ml-2"
+          ></div>
+        </div>
+        <div
+          *ngIf="(sesion?.totalEscaneos ?? 0) === 0"
+          class="text-sm text-zinc-400 text-center py-12 flex flex-col items-center gap-2"
+        >
+          <app-ia-loader mensaje="Esperando al vendedor…"></app-ia-loader>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <span
+            *ngFor="let item of sesion?.recientes"
+            class="text-[11px] font-mono font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/40 px-2.5 py-1 rounded-lg fade-chip tabular-nums"
+          >
+            {{ item.id }}
+          </span>
+        </div>
+      </div>
+
+      <p
+        class="text-[11px] text-center text-zinc-400 dark:text-zinc-600 mt-6 tracking-wide"
+      >
+        El vendedor debe finalizar desde su pantalla para ver el reporte
+        completo.
+      </p>
+    </section>
+
+    <section
+      *ngIf="sesionId && !sesion"
+      class="pt-32 flex flex-col items-center justify-center gap-4"
+    >
+      <div class="relative w-10 h-10">
+        <div
+          class="absolute inset-0 rounded-full border-2 border-zinc-200 dark:border-zinc-800"
+        ></div>
+        <div
+          class="absolute inset-0 rounded-full border-2 border-transparent border-t-zinc-900 dark:border-t-zinc-100 animate-spin"
+        ></div>
+      </div>
+      <p class="text-sm text-zinc-400 tracking-wide">
+        Reconectando a la sesión…
+      </p>
+    </section>
+
+    <section
+      *ngIf="sesion?.estado === 'finalizado' && resultado"
+      class="pt-2 pb-32"
+    >
+      <div
+        class="flex flex-col sm:flex-row sm:items-start justify-between gap-5 mb-10"
+      >
+        <div>
+          <p
+            class="text-[10px] font-bold tracking-[0.3em] uppercase text-zinc-400 dark:text-zinc-500 mb-2"
+          >
+            Resultado final
+          </p>
+          <h2
+            class="text-4xl sm:text-5xl font-black tracking-tighter leading-none"
+          >
+            Local {{ localNumero }}
+          </h2>
+          <p class="text-sm text-zinc-500 mt-2.5">
+            Auditoría completada
+            <span
+              *ngIf="sesion?.vendedorNombre"
+              class="text-zinc-700 dark:text-zinc-300 font-medium"
+            >
+              · {{ sesion?.vendedorNombre }}
+            </span>
+            · {{ resultado.totalEsperados }} exhibiciones esperadas
+          </p>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap flex-shrink-0">
+          <button
+            (click)="descargarExcel()"
+            [disabled]="descargandoExcel"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg shadow-emerald-500/25 border border-emerald-600/20 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97] transition-all duration-150"
+          >
+            <svg
+              class="w-3.5 h-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+              />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="12" y1="18" x2="12" y2="12" />
+              <polyline points="9 15 12 18 15 15" />
+            </svg>
+            {{ descargandoExcel ? "Generando…" : "Excel" }}
+          </button>
+          <button
+            (click)="descargarPDF()"
+            [disabled]="descargandoPDF"
+            class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg shadow-red-500/25 border border-red-600/20 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97] transition-all duration-150"
+          >
+            <svg
+              class="w-3.5 h-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+              />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            {{ descargandoPDF ? "Generando…" : "PDF" }}
+          </button>
+          <button
+            (click)="nuevaAuditoria()"
+            class="px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:opacity-90 active:scale-[0.97] transition-all duration-150"
+          >
+            Nueva auditoría
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 mb-10">
+        <div
+          class="relative rounded-2xl text-center p-6 sm:p-7 bg-gradient-to-br from-emerald-50 to-emerald-50/40 dark:from-emerald-950/40 dark:to-emerald-950/10 border border-emerald-200/60 dark:border-emerald-800/40 overflow-hidden"
+        >
+          <div
+            class="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-emerald-500/10 blur-2xl"
+          ></div>
+          <p
+            class="relative text-4xl sm:text-5xl font-black text-emerald-600 dark:text-emerald-400 leading-none tabular-nums"
+          >
+            {{ unidadesCorrectas }}
+          </p>
+          <p
+            class="relative text-[10px] font-bold tracking-[0.25em] uppercase text-emerald-600/80 dark:text-emerald-500/80 mt-3"
+          >
+            Correctos
+          </p>
+        </div>
+        <div
+          class="relative rounded-2xl text-center p-6 sm:p-7 bg-gradient-to-br from-red-50 to-red-50/40 dark:from-red-950/40 dark:to-red-950/10 border border-red-200/60 dark:border-red-800/40 overflow-hidden"
+        >
+          <div
+            class="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-red-500/10 blur-2xl"
+          ></div>
+          <p
+            class="relative text-4xl sm:text-5xl font-black text-red-600 dark:text-red-400 leading-none tabular-nums"
+          >
+            {{ unidadesFaltantes }}
+          </p>
+          <p
+            class="relative text-[10px] font-bold tracking-[0.25em] uppercase text-red-600/80 dark:text-red-500/80 mt-3"
+          >
+            Faltantes
+          </p>
+        </div>
+        <div
+          class="relative rounded-2xl text-center p-6 sm:p-7 bg-gradient-to-br from-blue-50 to-blue-50/40 dark:from-blue-950/40 dark:to-blue-950/10 border border-blue-200/60 dark:border-blue-800/40 overflow-hidden"
+        >
+          <div
+            class="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-blue-500/10 blur-2xl"
+          ></div>
+          <p
+            class="relative text-4xl sm:text-5xl font-black text-blue-600 dark:text-blue-400 leading-none tabular-nums"
+          >
+            {{ unidadesSobrantes() }}
+          </p>
+          <p
+            class="relative text-[10px] font-bold tracking-[0.25em] uppercase text-blue-600/80 dark:text-blue-500/80 mt-3"
+          >
+            Sobrantes
+          </p>
+        </div>
+
+        <div
+          class="relative rounded-2xl text-center p-5 bg-gradient-to-br from-zinc-50 to-zinc-50/40 dark:from-zinc-900/40 dark:to-zinc-900/10 border border-zinc-200/60 dark:border-zinc-800/40 col-span-3 mt-1"
+        >
+          <p class="text-xs text-zinc-400 tracking-wide">
+            <span class="text-emerald-600 dark:text-emerald-400 font-bold">{{
+              unidadesCorrectas
+            }}</span>
+            unidades correctas +
+            <span class="text-red-600 dark:text-red-400 font-bold">{{
+              unidadesFaltantes
+            }}</span>
+            unidades faltantes =
+            <span class="text-zinc-700 dark:text-zinc-200 font-bold">{{
+              resultado.totalEsperados
+            }}</span>
+            esperadas en total
+          </p>
+        </div>
+      </div>
+
+      <div
+        *ngIf="resultado.faltantes.length > 0"
+        class="mb-3 rounded-2xl overflow-hidden border border-red-200/60 dark:border-red-800/40"
+      >
+        <button
+          (click)="toggleAcordeon('faltantes')"
+          class="w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-red-50 to-transparent dark:from-red-950/30 dark:to-transparent hover:from-red-100/60 dark:hover:from-red-950/50 transition-colors duration-200"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-8 h-8 rounded-lg bg-red-100/80 dark:bg-red-900/40 flex items-center justify-center flex-shrink-0"
+            >
+              <svg
+                class="w-4 h-4 text-red-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+            </div>
+            <div class="text-left">
+              <p
+                class="text-sm font-bold text-red-700 dark:text-red-400 tracking-tight"
+              >
+                Faltantes en exhibición
+              </p>
+              <p class="text-xs text-red-500/80 dark:text-red-500/80 mt-0.5">
+                {{ unidadesFaltantes }} unidades no escaneadas
+              </p>
+            </div>
+          </div>
+          <svg
+            class="w-4 h-4 text-red-400 transition-transform duration-300 flex-shrink-0"
+            [class.rotate-180]="acordeones.faltantes"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div
+          *ngIf="acordeones.faltantes"
+          class="bg-white dark:bg-zinc-900/40 divide-y divide-zinc-100/60 dark:divide-zinc-800/40"
+        >
+          <div
+            *ngFor="let item of resultado.faltantes"
+            class="flex items-center justify-between px-5 py-3.5 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/60 transition-colors"
+          >
+            <div class="min-w-0">
+              <p
+                class="text-sm font-semibold text-zinc-900 dark:text-zinc-100 truncate"
+              >
+                {{ item.marca }} · {{ item.referencia }}
+              </p>
+              <p class="text-xs text-zinc-400 mt-0.5 font-mono">
+                {{ item.zapatoId }}
+              </p>
+            </div>
+            <span
+              class="flex-shrink-0 text-[11px] font-black text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200/60 dark:border-red-800/40 px-2.5 py-1 rounded-lg ml-4 tabular-nums"
+            >
+              Faltan {{ item.count }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="resultado.sobrantes.length > 0"
+        class="mb-3 rounded-2xl overflow-hidden border border-blue-200/60 dark:border-blue-800/40"
+      >
+        <button
+          (click)="toggleAcordeon('sobrantes')"
+          class="w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-950/30 dark:to-transparent hover:from-blue-100/60 dark:hover:from-blue-950/50 transition-colors duration-200"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-8 h-8 rounded-lg bg-blue-100/80 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0"
+            >
+              <svg
+                class="w-4 h-4 text-blue-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="16" />
+                <line x1="8" y1="12" x2="16" y2="12" />
+              </svg>
+            </div>
+            <div class="text-left">
+              <p
+                class="text-sm font-bold text-blue-700 dark:text-blue-400 tracking-tight"
+              >
+                Sobrantes no esperados
+              </p>
+              <p class="text-xs text-blue-500/80 dark:text-blue-500/80 mt-0.5">
+                {{ unidadesSobrantes() }} unidades extra
+              </p>
+            </div>
+          </div>
+          <svg
+            class="w-4 h-4 text-blue-400 transition-transform duration-300 flex-shrink-0"
+            [class.rotate-180]="acordeones.sobrantes"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div
+          *ngIf="acordeones.sobrantes"
+          class="bg-white dark:bg-zinc-900/40 divide-y divide-zinc-100/60 dark:divide-zinc-800/40"
+        >
+          <div
+            *ngFor="let item of resultado.sobrantes"
+            class="flex items-center justify-between px-5 py-3.5 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/60 transition-colors"
+          >
+            <p
+              class="text-sm font-semibold font-mono text-zinc-900 dark:text-zinc-100 tabular-nums"
+            >
+              {{ item.zapatoId }}
+            </p>
+            <span
+              class="flex-shrink-0 text-[11px] font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 px-2.5 py-1 rounded-lg ml-4 tabular-nums"
+            >
+              × {{ item.count }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="resultado.ok.length > 0"
+        class="mb-3 rounded-2xl overflow-hidden border border-emerald-200/60 dark:border-emerald-800/40"
+      >
+        <button
+          (click)="toggleAcordeon('correctos')"
+          class="w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-emerald-50 to-transparent dark:from-emerald-950/30 dark:to-transparent hover:from-emerald-100/60 dark:hover:from-emerald-950/50 transition-colors duration-200"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-8 h-8 rounded-lg bg-emerald-100/80 dark:bg-emerald-900/40 flex items-center justify-center flex-shrink-0"
+            >
+              <svg
+                class="w-4 h-4 text-emerald-500"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="9 12 11 14 15 10" />
+              </svg>
+            </div>
+            <div class="text-left">
+              <p
+                class="text-sm font-bold text-emerald-700 dark:text-emerald-400 tracking-tight"
+              >
+                En orden
+              </p>
+              <p
+                class="text-xs text-emerald-600/80 dark:text-emerald-500/80 mt-0.5"
+              >
+                {{ unidadesCorrectas }} unidades correctas
+              </p>
+            </div>
+          </div>
+          <svg
+            class="w-4 h-4 text-emerald-400 transition-transform duration-300 flex-shrink-0"
+            [class.rotate-180]="acordeones.correctos"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div *ngIf="acordeones.correctos" class="bg-white dark:bg-zinc-900/40">
+          <div
+            class="grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:gap-px divide-zinc-100/60 dark:divide-zinc-800/40 bg-zinc-100/60 dark:bg-zinc-800/40"
+          >
+            <div
+              *ngFor="let item of resultado.ok"
+              class="flex items-center gap-3 px-5 py-3.5 bg-white dark:bg-zinc-900/60 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/80 transition-colors"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-emerald-500 flex-shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              <div class="min-w-0">
+                <p
+                  class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate"
+                >
+                  {{ item.marca }}
+                </p>
+                <p class="text-xs text-zinc-400 truncate">
+                  {{ item.referencia }} · {{ item.zapatoId }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-10">
+      <button
+        (click)="toggleHistorial()"
+        class="group w-full flex items-center justify-between px-5 py-4 rounded-2xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 shadow-sm hover:shadow-md backdrop-blur-sm"
+      >
+        <div class="flex items-center gap-3.5">
+          <div
+            class="w-9 h-9 rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-center"
+          >
+            <svg
+              class="w-4 h-4 text-zinc-500"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <div class="text-left">
+            <p
+              class="text-sm font-bold text-zinc-900 dark:text-zinc-100 tracking-tight"
+            >
+              Historial de auditorías
+            </p>
+            <p class="text-xs text-zinc-400 mt-0.5">
+              Ver sesiones finalizadas anteriores
+            </p>
+          </div>
+        </div>
+        <svg
+          class="w-4 h-4 text-zinc-400 transition-transform duration-300 flex-shrink-0 group-hover:text-zinc-600 dark:group-hover:text-zinc-300"
+          [class.rotate-180]="historialAbierto"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      <div *ngIf="historialAbierto" class="mt-4 space-y-4">
+        <div
+          class="rounded-2xl bg-white dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800/60 p-5 backdrop-blur-sm"
+        >
+          <p
+            class="text-[10px] font-bold tracking-[0.25em] uppercase text-zinc-400 mb-5"
+          >
+            Filtros
+          </p>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+            <div>
+              <label
+                class="block text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-400 mb-2"
+                >Local</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="filtros.localNombre"
+                placeholder="Ej: 180"
+                class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10 focus:border-zinc-400 dark:focus:border-zinc-500 transition-all"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-400 mb-2"
+                >Vendedor</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="filtros.vendedorNombre"
+                placeholder="Nombre del vendedor"
+                class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10 focus:border-zinc-400 dark:focus:border-zinc-500 transition-all"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-400 mb-2"
+                >Desde</label
+              >
+              <input
+                type="date"
+                [(ngModel)]="filtros.fechaDesdeStr"
+                class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10 transition-all"
+              />
+            </div>
+            <div>
+              <label
+                class="block text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-400 mb-2"
+                >Hasta</label
+              >
+              <input
+                type="date"
+                [(ngModel)]="filtros.fechaHastaStr"
+                class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 dark:focus:ring-zinc-100/10 transition-all"
+              />
+            </div>
+          </div>
+          <div class="flex items-center gap-2 justify-end">
+            <button
+              (click)="limpiarFiltros()"
+              class="px-4 py-2 rounded-xl text-xs font-bold tracking-wide text-zinc-500 dark:text-zinc-400 border border-zinc-200/60 dark:border-zinc-700/60 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-colors duration-150 active:scale-[0.97]"
+            >
+              Limpiar
+            </button>
+            <button
+              (click)="buscarHistorial()"
+              [disabled]="cargandoHistorial"
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold tracking-wide bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97] transition-all duration-150"
+            >
+              <app-ia-spinner *ngIf="cargandoHistorial" class="w-3 h-3 text-zinc-50 dark:text-zinc-900"></app-ia-spinner>
+              <svg
+                *ngIf="!cargandoHistorial"
+                class="w-3 h-3"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              {{ cargandoHistorial ? "Buscando…" : "Buscar" }}
+            </button>
+          </div>
+        </div>
+
+        <div
+          *ngIf="cargandoHistorial"
+          class="flex items-center justify-center py-12 gap-3"
+        >
+          <app-ia-spinner class="w-5 h-5 text-zinc-900 dark:text-zinc-100"></app-ia-spinner>
+          <p class="text-sm text-zinc-400">Buscando auditorías…</p>
+        </div>
+
+        <div
+          *ngIf="historialError && !cargandoHistorial"
+          class="rounded-2xl bg-red-50 dark:bg-red-950/30 border border-red-200/60 dark:border-red-800/40 p-5 flex items-start gap-3"
+        >
+          <svg
+            class="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <p class="text-sm text-red-600 dark:text-red-400">
+            {{ historialError }}
+          </p>
+        </div>
+
+        <div
+          *ngIf="
+            historialBuscado &&
+            !cargandoHistorial &&
+            !historialError &&
+            historial.length === 0
+          "
+          class="rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/60 dark:border-zinc-800/40 p-12 text-center"
+        >
+          <svg
+            class="w-10 h-10 text-zinc-300 dark:text-zinc-700 mx-auto mb-3"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <p class="text-sm font-semibold text-zinc-500">Sin resultados</p>
+          <p class="text-xs text-zinc-400 mt-1.5">Intenta con otros filtros</p>
+        </div>
+
+        <div
+          *ngIf="!cargandoHistorial && historial.length > 0"
+          class="space-y-3"
+        >
+          <p
+            class="text-[10px] font-bold tracking-[0.25em] uppercase text-zinc-400 px-1"
+          >
+            {{ historial.length }} resultado{{
+              historial.length !== 1 ? "s" : ""
+            }}
+          </p>
+          <div
+            *ngFor="let sesion of historial"
+            class="rounded-2xl overflow-hidden border border-zinc-200/80 dark:border-zinc-800/60 bg-white dark:bg-zinc-900/60 backdrop-blur-sm"
+          >
+            <button
+              (click)="toggleSesionHistorial(sesion)"
+              class="group w-full flex items-center justify-between px-5 py-4 hover:bg-zinc-50/60 dark:hover:bg-zinc-800/40 transition-colors duration-200 text-left"
+            >
+              <div class="flex items-center gap-4 min-w-0">
+                <div
+                  class="w-10 h-10 rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform"
+                >
+                  <svg
+                    class="w-4 h-4 text-zinc-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <p
+                    class="text-sm font-bold text-zinc-900 dark:text-zinc-100 truncate tracking-tight"
+                  >
+                    {{ sesion.localNombre }}
+                  </p>
+                  <div class="flex items-center gap-2 mt-1 flex-wrap">
+                    <span
+                      *ngIf="sesion.vendedorNombre"
+                      class="text-xs text-zinc-500 truncate"
+                      >{{ sesion.vendedorNombre }}</span
+                    >
+                    <span
+                      *ngIf="sesion.vendedorNombre"
+                      class="text-zinc-300 dark:text-zinc-700 text-xs"
+                      >·</span
+                    >
+                    <span class="text-xs text-zinc-400">{{
+                      formatFecha(sesion.fechaFin)
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 flex-shrink-0 ml-3">
+                <span
+                  class="hidden sm:inline-flex text-[10px] font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-700/60 px-2.5 py-1 rounded-lg tabular-nums"
+                >
+                  {{ unicosHistorial(sesion) }} /
+                  {{
+                    sesion.resultado?.totalEsperados ?? sesion.totalEsperados
+                  }}
+                  uds.
+                </span>
+                <app-ia-spinner *ngIf="!sesion.resultado" class="w-4 h-4 text-zinc-700 dark:text-zinc-300"></app-ia-spinner>
+                <svg
+                  *ngIf="sesion.resultado"
+                  class="w-4 h-4 text-zinc-400 transition-transform duration-300"
+                  [class.rotate-180]="sesion.expandida"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+            </button>
+            <div
+              *ngIf="sesion.expandida && sesion.resultado as resultado"
+              class="border-t border-zinc-100/60 dark:border-zinc-800/40 p-5 space-y-3"
+            >
+              <div class="flex items-center justify-end gap-2 mb-1">
+                <button
+                  (click)="descargarExcelHistorial(sesion)"
+                  [disabled]="descargandoExcel"
+                  class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[11px] font-bold tracking-wide bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-sm shadow-emerald-500/25 border border-emerald-600/20 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97] transition-all duration-150"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                    />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <polyline points="9 15 12 18 15 15" />
+                  </svg>
+                  {{ descargandoExcel ? "Generando…" : "Excel" }}
+                </button>
+                <button
+                  (click)="descargarPDFHistorial(sesion)"
+                  [disabled]="descargandoPDF"
+                  class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-[11px] font-bold tracking-wide bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-sm shadow-red-500/25 border border-red-600/20 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.97] transition-all duration-150"
+                >
+                  <svg
+                    class="w-3 h-3"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                    />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
+                  {{ descargandoPDF ? "Generando…" : "PDF" }}
+                </button>
+              </div>
+
+              <div
+                *ngIf="resultado.faltantes.length > 0"
+                class="rounded-xl overflow-hidden border border-red-200/60 dark:border-red-800/40"
+              >
+                <button
+                  (click)="toggleAcordeonHistorial(sesion, 'acordeonFaltantes')"
+                  class="w-full flex items-center justify-between px-4 py-3 bg-red-50/60 dark:bg-red-950/20 hover:bg-red-100/60 dark:hover:bg-red-950/40 transition-colors"
+                >
+                  <span
+                    class="text-xs font-bold text-red-700 dark:text-red-400"
+                  >
+                    Faltantes · {{ unidadesFaltantesHistorial(resultado) }} uds.
+                  </span>
+                  <svg
+                    class="w-3.5 h-3.5 text-red-400 transition-transform duration-300"
+                    [class.rotate-180]="sesion.acordeonFaltantes"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                <div
+                  *ngIf="sesion.acordeonFaltantes"
+                  class="bg-white dark:bg-zinc-900/40 divide-y divide-zinc-100/60 dark:divide-zinc-800/40"
+                >
+                  <div
+                    *ngFor="let item of resultado.faltantes"
+                    class="flex items-center justify-between px-4 py-2.5"
+                  >
+                    <div class="min-w-0">
+                      <p
+                        class="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate"
+                      >
+                        {{ item.marca }} · {{ item.referencia }}
+                      </p>
+                      <p class="text-[11px] text-zinc-400 font-mono">
+                        {{ item.zapatoId }}
+                      </p>
+                    </div>
+                    <span
+                      class="text-[10px] font-black text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200/60 dark:border-red-800/40 px-2 py-0.5 rounded-lg ml-3 tabular-nums"
+                    >
+                      Faltan {{ item.count }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                *ngIf="resultado.sobrantes.length > 0"
+                class="rounded-xl overflow-hidden border border-blue-200/60 dark:border-blue-800/40"
+              >
+                <button
+                  (click)="toggleAcordeonHistorial(sesion, 'acordeonSobrantes')"
+                  class="w-full flex items-center justify-between px-4 py-3 bg-blue-50/60 dark:bg-blue-950/20 hover:bg-blue-100/60 dark:hover:bg-blue-950/40 transition-colors"
+                >
+                  <span
+                    class="text-xs font-bold text-blue-700 dark:text-blue-400"
+                  >
+                    Sobrantes · {{ unidadesSobrantesHistorial(resultado) }} uds.
+                  </span>
+                  <svg
+                    class="w-3.5 h-3.5 text-blue-400 transition-transform duration-300"
+                    [class.rotate-180]="sesion.acordeonSobrantes"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                <div
+                  *ngIf="sesion.acordeonSobrantes"
+                  class="bg-white dark:bg-zinc-900/40 divide-y divide-zinc-100/60 dark:divide-zinc-800/40"
+                >
+                  <div
+                    *ngFor="let item of resultado.sobrantes"
+                    class="flex items-center justify-between px-4 py-2.5"
+                  >
+                    <p
+                      class="text-xs font-semibold font-mono text-zinc-900 dark:text-zinc-100 tabular-nums"
+                    >
+                      {{ item.zapatoId }}
+                    </p>
+                    <span
+                      class="text-[10px] font-black text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 px-2 py-0.5 rounded-lg ml-3 tabular-nums"
+                    >
+                      × {{ item.count }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                *ngIf="resultado.ok.length > 0"
+                class="rounded-xl overflow-hidden border border-emerald-200/60 dark:border-emerald-800/40"
+              >
+                <button
+                  (click)="toggleAcordeonHistorial(sesion, 'acordeonCorrectos')"
+                  class="w-full flex items-center justify-between px-4 py-3 bg-emerald-50/60 dark:bg-emerald-950/20 hover:bg-emerald-100/60 dark:hover:bg-emerald-950/40 transition-colors"
+                >
+                  <span
+                    class="text-xs font-bold text-emerald-700 dark:text-emerald-400"
+                  >
+                    Correctos · {{ unidadesCorrectasHistorial(resultado) }} uds.
+                  </span>
+                  <svg
+                    class="w-3.5 h-3.5 text-emerald-400 transition-transform duration-300"
+                    [class.rotate-180]="sesion.acordeonCorrectos"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                <div
+                  *ngIf="sesion.acordeonCorrectos"
+                  class="bg-white dark:bg-zinc-900/40 grid sm:grid-cols-2 divide-y sm:divide-y-0 sm:gap-px divide-zinc-100/60 dark:divide-zinc-800/40 bg-zinc-100/60 dark:bg-zinc-800/40"
+                >
+                  <div
+                    *ngFor="let item of resultado.ok"
+                    class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-zinc-900/60"
+                  >
+                    <svg
+                      class="w-3 h-3 text-emerald-500 flex-shrink-0"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.5"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <div class="min-w-0">
+                      <p
+                        class="text-xs font-medium text-zinc-900 dark:text-zinc-100 truncate"
+                      >
+                        {{ item.marca }}
+                      </p>
+                      <p class="text-[11px] text-zinc-400 truncate">
+                        {{ item.referencia }} · {{ item.zapatoId }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<p-toast position="top-right"></p-toast>
+
+<button
+  (click)="scrollTop()"
+  aria-label="Volver al inicio"
+  class="fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full bg-zinc-900/90 dark:bg-zinc-100/90 text-zinc-50 dark:text-zinc-900 shadow-xl shadow-black/30 dark:shadow-black/50 flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200 backdrop-blur-sm"
+>
+  <svg
+    class="w-4 h-4"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+  >
+    <polyline points="18 15 12 9 6 15" />
+  </svg>
+</button>
+
+<style>
+  .fade-chip {
+    animation: chipIn 250ms ease-out forwards;
+  }
+  @keyframes chipIn {
+    from {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(228 228 231 / 0.5);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(228 228 231 / 0.8);
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgb(39 39 42 / 0.5);
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgb(39 39 42 / 0.8);
+  }
+</style>

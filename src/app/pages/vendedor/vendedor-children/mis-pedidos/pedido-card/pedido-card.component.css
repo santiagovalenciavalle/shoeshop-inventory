@@ -1,0 +1,75 @@
+.pcard {
+    will-change: transform;
+}
+
+.pcard-btn {
+    will-change: transform;
+}
+
+.pcard-btn:focus-visible {
+    outline: 2px solid #EAB308;
+    outline-offset: 2px;
+}
+
+@keyframes ai-scan {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(280%);
+    }
+}
+
+@keyframes ai-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.15;
+    }
+}
+
+@keyframes ai-pulse-ring {
+    0% {
+        box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 7px rgba(234, 179, 8, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(234, 179, 8, 0);
+    }
+}
+
+@keyframes ai-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ai-scan-line {
+    background: linear-gradient(90deg, transparent, rgba(234, 179, 8, 0.85), transparent);
+    animation: ai-scan 1.6s linear infinite;
+}
+
+.ai-blink {
+    animation: ai-blink 1.2s ease-in-out infinite;
+}
+
+.ai-pulse-ring {
+    animation: ai-pulse-ring 2s ease-out infinite;
+}
+
+.ai-spin {
+    animation: ai-spin 2.4s linear infinite;
+}

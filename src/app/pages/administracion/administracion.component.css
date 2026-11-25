@@ -1,0 +1,122 @@
+:host {
+  display: block;
+}
+
+svg text {
+  font-family: inherit;
+}
+
+.bar-fill {
+  transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[class*="pointer-events-none"] {
+  animation: tooltipFade 120ms ease-out;
+}
+
+@keyframes tooltipFade {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+section {
+  animation: sectionIn 0.4s ease-out both;
+}
+
+section:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+section:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+section:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+section:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+section:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+@keyframes sectionIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+
+.dark .overflow-y-auto {
+  scrollbar-color: #3f3f46 transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+}
+
+.hover\:shadow-md {
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+.hover\:shadow-md:hover {
+  transform: translateY(-1px);
+}
+
+svg circle {
+  transition: r 150ms ease;
+}
+
+svg circle:hover {
+  r: 6;
+}
+
+@media (max-width: 640px) {
+  .ap-drawer {
+    max-height: 90dvh !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  section,
+  .bar-fill,
+  [class*="pointer-events-none"],
+  svg circle {
+    animation: none !important;
+    transition: none !important;
+  }
+}

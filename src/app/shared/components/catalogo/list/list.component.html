@@ -1,0 +1,54 @@
+<div
+  *ngFor="let producto of productosFiltrados; trackBy: trackById"
+  data-aos-duration="1000"
+  data-aos="zoom-in"
+  [ngClass]="{
+    'bg-red-100 border-red-300 dark:bg-red-900 dark:border-red-600':
+      producto.stock === 0,
+    'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700':
+      producto.stock > 0
+  }"
+  class="p-4 my-3 rounded-lg border flex items-center transition-colors duration-300"
+>
+  <div class="relative">
+    <img
+      [src]="producto.imagen"
+      alt="{{ producto.nombre }}"
+      class="w-25 h-25 object-fill rounded-md"
+    />
+
+    <p-badge
+      *ngIf="producto.stock === 0"
+      value="Agotado"
+      severity="danger"
+      class="absolute top-2 right-2"
+    ></p-badge>
+  </div>
+
+  <div class="ml-4 flex-1">
+    <h3 class="font-bold text-gray-900 dark:text-white">
+      {{ producto.nombre }}
+    </h3>
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      Marca: {{ producto.marca }}
+    </p>
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      Ref: {{ producto.referencia }}
+    </p>
+    <p class="text-sm text-gray-600 dark:text-gray-400" *ngIf="user">
+      Precio Sugerido:
+      {{ producto.precioMin | currency : "COP " : "symbol" : "1.0-0" }}
+    </p>
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      id: {{ producto.id }}
+    </p>
+  </div>
+
+  <button
+    pButton
+    label="Detalles"
+    (click)="verDetalles(producto)"
+    [disabled]="producto.stock === 0"
+    class="mt-2 w-20 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-black dark:text-white px-1 py-2 rounded"
+  ></button>
+</div>

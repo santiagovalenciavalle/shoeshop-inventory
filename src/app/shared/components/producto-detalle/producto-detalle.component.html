@@ -1,0 +1,248 @@
+<p-toast
+  [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"
+></p-toast>
+
+<div
+  *ngIf="visible"
+  class="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-0 sm:px-5 bg-black/60 dark:bg-black/75 backdrop-blur-md modal-overlay-in"
+  (click)="cerrarDialogo()"
+>
+  <div
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'Detalle de ' + producto?.marca + ' ' + producto?.referencia"
+    class="det-panel relative w-full sm:max-w-5xl bg-white dark:bg-neutral-950 sm:rounded-3xl rounded-t-3xl overflow-hidden shadow-2xl max-h-[95dvh] overflow-y-auto modal-sheet-in border border-transparent dark:border-neutral-800"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div class="w-10 h-1 rounded-full bg-black/15 dark:bg-white/15"></div>
+    </div>
+
+    <button
+      type="button"
+      (click)="cerrarDialogo()"
+      class="absolute top-3.5 right-3.5 z-20 w-9 h-9 flex items-center justify-center rounded-full bg-white/90 dark:bg-neutral-900/90 border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-black dark:hover:text-white active:scale-95 transition-all backdrop-blur"
+      aria-label="Cerrar"
+    >
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+
+    <div class="grid md:grid-cols-[1fr_1.05fr] md:min-h-[560px]">
+      <!-- Imagen -->
+      <div
+        class="relative flex items-center justify-center bg-gradient-to-b from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-950 p-8 sm:p-12 min-h-[260px] sm:min-h-[420px]"
+      >
+        <div class="absolute top-4 left-4 z-10 flex gap-1.5">
+          <span
+            *ngIf="producto?.stock === 0 && !producto?.soloExhibicion"
+            class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-black dark:bg-white text-white dark:text-black leading-none"
+            >Agotado</span
+          >
+          <span
+            *ngIf="producto?.soloExhibicion"
+            class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-amber-400 text-amber-950 leading-none"
+            >Solo exhibición</span
+          >
+        </div>
+
+        <img
+          [src]="producto?.imagen || '/logo.svg'"
+          [alt]="producto?.marca + ' ' + producto?.referencia"
+          class="relative z-10 max-h-[280px] sm:max-h-[420px] max-w-full object-contain transition-transform duration-500 hover:scale-[1.05]"
+          style="filter: drop-shadow(0 24px 36px rgba(0, 0, 0, 0.14))"
+        />
+      </div>
+
+      <!-- Información -->
+      <div
+        class="flex flex-col px-6 sm:px-9 py-7 sm:py-10 border-t md:border-t-0 md:border-l border-neutral-200 dark:border-neutral-800"
+      >
+        <div class="pr-10">
+          <p class="text-xs font-semibold text-yellow-600 dark:text-yellow-500">
+            {{ producto?.marca }}
+          </p>
+          <h2
+            class="font-black text-black dark:text-white leading-[1.02] tracking-tight mt-1"
+            style="font-size: clamp(26px, 4.5vw, 38px)"
+          >
+            {{ producto?.marca }} {{ producto?.referencia }}
+          </h2>
+          <div class="flex flex-wrap items-center gap-2 mt-3">
+            <span class="text-[11px] font-medium px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400">
+              Ref. {{ producto?.referencia }}
+            </span>
+            <span class="text-[11px] font-medium px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400">
+              Código {{ producto?.id }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Precio -->
+        <div
+          *ngIf="esVendedor"
+          class="mt-6 flex items-end justify-between gap-4 p-4 rounded-2xl border border-yellow-500/30 bg-yellow-500/[0.06]"
+        >
+          <div>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400">Precio público</p>
+            <p class="font-black text-black dark:text-white leading-none tracking-tight mt-1.5" style="font-size: clamp(26px, 5vw, 34px)">
+              {{ producto?.precioMin | currency: "COP" : "symbol" : "1.0-0" }}
+            </p>
+          </div>
+          <p *ngIf="producto?.pl" class="text-xs text-neutral-500 dark:text-neutral-400 text-right">
+            PL
+            <strong class="block text-sm text-black dark:text-white font-bold">{{ producto?.pl }}</strong>
+          </p>
+        </div>
+
+        <!-- Tallas -->
+        <section class="mt-6">
+          <div class="flex items-baseline justify-between mb-3">
+            <h3 class="text-sm font-bold text-black dark:text-white">
+              {{ esVendedor ? "Elige una talla" : "Tallas disponibles" }}
+            </h3>
+          </div>
+
+          <div
+            *ngIf="tallasOrdenadas.length"
+            class="grid grid-cols-4 sm:grid-cols-5 gap-2"
+            role="group"
+            aria-label="Tallas"
+          >
+            <ng-container *ngFor="let talla of tallasOrdenadas">
+              <button
+                *ngIf="esVendedor"
+                type="button"
+                (click)="seleccionarTalla(talla.value)"
+                [disabled]="tallaReservada(talla)"
+                [attr.aria-pressed]="tallaSeleccionada === talla.value"
+                [attr.title]="tallaReservada(talla) ? textoReservada : null"
+                class="relative flex flex-col items-center justify-center py-2.5 rounded-xl border text-sm font-bold transition-all active:scale-95 disabled:cursor-not-allowed disabled:active:scale-100"
+                [ngClass]="
+                  tallaReservada(talla)
+                    ? 'bg-neutral-100 dark:bg-neutral-900 text-neutral-400 dark:text-neutral-600 border-dashed border-neutral-300 dark:border-neutral-700'
+                    : tallaSeleccionada === talla.value
+                      ? 'bg-black text-white border-black dark:bg-yellow-500 dark:text-black dark:border-yellow-500 shadow-md'
+                      : 'bg-white dark:bg-neutral-900 text-black dark:text-white border-neutral-200 dark:border-neutral-800 hover:border-yellow-500'
+                "
+              >
+                {{ talla.label }}
+                <span
+                  *ngIf="tallaReservada(talla)"
+                  class="text-[9px] font-bold uppercase tracking-wide mt-0.5 text-amber-600 dark:text-amber-500"
+                >
+                  Reservado
+                </span>
+              </button>
+              <span
+                *ngIf="!esVendedor"
+                class="flex items-center justify-center py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-sm font-bold text-black dark:text-white"
+              >
+                {{ talla.label }}
+              </span>
+            </ng-container>
+          </div>
+
+          <p
+            *ngIf="!tallasOrdenadas.length"
+            class="text-sm text-neutral-500 dark:text-neutral-400 px-4 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-900"
+          >
+            No hay tallas disponibles por ahora.
+          </p>
+        </section>
+
+        <!-- Exhibiciones -->
+        <section *ngIf="esVendedor" class="mt-6">
+          <h3 class="text-sm font-bold text-black dark:text-white mb-3">
+            Exhibiciones en locales
+          </h3>
+
+          <p
+            *ngIf="cargandoExhibiciones"
+            class="flex items-center gap-2 text-xs text-neutral-400"
+          >
+            <span class="inline-flex gap-1">
+              <span class="det-dot" style="--dp: 0s"></span>
+              <span class="det-dot" style="--dp: 0.15s"></span>
+              <span class="det-dot" style="--dp: 0.3s"></span>
+            </span>
+            Cargando…
+          </p>
+
+          <div
+            *ngIf="!cargandoExhibiciones && exhibiciones.length > 0"
+            class="flex flex-col gap-1.5"
+          >
+            <div
+              *ngFor="let ex of exhibiciones"
+              class="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+            >
+              <span class="text-xs font-bold text-black dark:text-white shrink-0">Talla {{ ex.talla }}</span>
+              <span class="text-xs text-neutral-500 dark:text-neutral-400 text-right">{{ ex.locales.join(", ") }}</span>
+            </div>
+          </div>
+
+          <p
+            *ngIf="!cargandoExhibiciones && exhibiciones.length === 0"
+            class="text-xs text-neutral-500 dark:text-neutral-400"
+          >
+            Esta referencia no está en exhibición.
+          </p>
+        </section>
+
+        <!-- Acción -->
+        <div class="mt-auto pt-6">
+          <div class="pt-5 border-t border-neutral-200 dark:border-neutral-800 flex flex-col gap-3">
+            <ng-container *ngIf="esVendedor">
+              <p
+                class="text-xs text-center min-h-[16px]"
+                [ngClass]="tallaSeleccionada ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-400'"
+              >
+                <ng-container *ngIf="tallaSeleccionada; else sinTalla">
+                  Talla <strong>{{ tallaSeleccionada }}</strong><ng-container *ngIf="localSeleccionado"> · Local {{ localSeleccionado }}</ng-container>
+                </ng-container>
+                <ng-template #sinTalla>Selecciona una talla para solicitarla.</ng-template>
+              </p>
+              <button
+                type="button"
+                (click)="solicitarProducto()"
+                [disabled]="cargando || !tallaSeleccionada"
+                class="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-yellow-500 text-black text-sm font-bold hover:bg-yellow-400 active:scale-[0.98] disabled:bg-neutral-200 disabled:text-neutral-400 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-600 disabled:cursor-not-allowed transition-all shadow-md shadow-yellow-500/20 disabled:shadow-none"
+              >
+                <ng-container *ngIf="!cargando">Solicitar a bodega</ng-container>
+                <ng-container *ngIf="cargando">
+                  <span class="det-spinner"></span>
+                  Enviando solicitud…
+                </ng-container>
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="!esVendedor">
+              <p class="text-xs text-center text-neutral-500 dark:text-neutral-400">
+                Pregunta por precio y disponibilidad por WhatsApp.
+              </p>
+              <a
+                [href]="generarLinkWhatsApp()"
+                target="_blank"
+                rel="noopener"
+                class="w-full inline-flex items-center justify-center gap-2.5 py-3.5 rounded-xl bg-black dark:bg-white text-white dark:text-black text-sm font-bold hover:bg-yellow-500 hover:text-black dark:hover:bg-yellow-500 active:scale-[0.98] transition-all"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"
+                  />
+                  <path
+                    d="M12 0C5.373 0 0 5.373 0 12c0 2.107.547 4.086 1.505 5.808L.057 23.286a.5.5 0 0 0 .61.61l5.478-1.448A11.934 11.934 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.797 9.797 0 0 1-5.003-1.376l-.359-.213-3.714.981.996-3.616-.233-.371A9.818 9.818 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182c5.43 0 9.818 4.388 9.818 9.818 0 5.43-4.388 9.818-9.818 9.818z"
+                  />
+                </svg>
+                Escribir por WhatsApp
+              </a>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,399 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '64px' },
+  }"
+></p-toast>
+
+<div class="min-h-screen bg-neutral-50 dark:bg-black">
+  <div
+    class="sticky top-0 z-30 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-neutral-100 dark:border-neutral-900"
+  >
+    <div
+      class="max-w-4xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-center"
+    >
+      <span
+        class="text-sm font-semibold text-black dark:text-white tracking-tight"
+      >
+        Gestión de Bonos
+      </span>
+      <div class="w-14"></div>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto px-5 sm:px-8 py-10 flex flex-col gap-10">
+    <div class="flex flex-col gap-2 bon-fade" style="--d: 0s">
+      <div class="flex items-center gap-3">
+        <span class="w-5 h-px bg-yellow-500"></span>
+        <span
+          class="text-[10px] uppercase tracking-[0.3em] font-semibold text-neutral-400 dark:text-neutral-500"
+        >
+          Devoluciones
+        </span>
+      </div>
+      <h1
+        class="text-3xl sm:text-4xl font-bold text-black dark:text-white leading-tight tracking-tight"
+      >
+        Bonos
+      </h1>
+      <p class="text-sm text-neutral-400 dark:text-neutral-500">
+        Administra los bonos generados por cambios de productos
+      </p>
+    </div>
+
+    <div class="bon-fade" style="--d: 0.07s">
+      <div class="bon-segment" id="bonSegment">
+        <button
+          type="button"
+          class="bon-seg-btn bon-seg-active"
+          id="tabBtnCrear"
+          (click)="switchTab('crear')"
+        >
+          Crear bono
+        </button>
+        <button
+          type="button"
+          class="bon-seg-btn"
+          id="tabBtnVer"
+          (click)="switchTab('ver')"
+        >
+          Historial
+        </button>
+      </div>
+
+      <div id="panelCrear" class="bon-panel flex flex-col gap-8 mt-8">
+        <div class="flex flex-col gap-1.5">
+          <p
+            class="text-[10px] uppercase tracking-[0.25em] font-semibold text-neutral-400 dark:text-neutral-500"
+          >
+            Producto a devolver
+          </p>
+
+          <div
+            *ngIf="!producto"
+            class="bg-white dark:bg-neutral-900 rounded-[20px] border border-neutral-200/60 dark:border-neutral-800/60 p-5 flex flex-col items-center gap-4 text-center"
+          >
+            <div
+              class="w-12 h-12 rounded-[14px] bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center"
+            >
+              <i
+                class="pi pi-search text-xl text-neutral-400 dark:text-neutral-500"
+              ></i>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-black dark:text-white">
+                Ningún producto seleccionado
+              </p>
+              <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
+                Busca la venta asociada a este bono
+              </p>
+            </div>
+            <button
+              type="button"
+              (click)="buscarProducto()"
+              class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-semibold hover:opacity-80 active:scale-[0.97] transition-all duration-150 cursor-pointer"
+            >
+              <i class="pi pi-search text-xs"></i>
+              Buscar producto
+            </button>
+          </div>
+
+          <div
+            *ngIf="producto"
+            class="bg-white dark:bg-neutral-900 rounded-[20px] border border-neutral-200/60 dark:border-neutral-800/60 p-4"
+          >
+            <div class="flex items-start gap-4">
+              <div
+                class="shrink-0 w-16 h-16 rounded-[12px] overflow-hidden bg-neutral-100 dark:bg-neutral-800 border border-neutral-200/60 dark:border-neutral-700/40"
+              >
+                <img
+                  [src]="producto.imagen || '/logo.svg'"
+                  alt="producto"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-semibold text-black dark:text-white leading-tight"
+                >
+                  {{ producto.marca }}
+                  <span class="font-normal text-neutral-400">·</span>
+                  {{ producto.referencia }}
+                </p>
+                <div class="flex flex-wrap items-center gap-2 mt-1.5">
+                  <span
+                    class="text-[11px] font-medium text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-full"
+                  >
+                    Talla {{ producto.talla }}
+                  </span>
+                  <span
+                    class="text-[11px] text-neutral-400 dark:text-neutral-500"
+                  >
+                    {{ producto.vendedor }}
+                  </span>
+                </div>
+                <p
+                  class="text-base font-bold text-yellow-600 dark:text-yellow-500 mt-2"
+                >
+                  {{ producto.precio | currency: "COP" : "symbol" : "1.0-0" }}
+                </p>
+              </div>
+              <button
+                type="button"
+                (click)="buscarProducto()"
+                class="shrink-0 text-xs font-medium text-neutral-400 dark:text-neutral-500 hover:text-black dark:hover:text-white transition-colors duration-150 cursor-pointer"
+              >
+                Cambiar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <p
+            class="text-[10px] uppercase tracking-[0.25em] font-semibold text-neutral-400 dark:text-neutral-500"
+          >
+            Detalles del bono
+          </p>
+
+          <div
+            class="bg-white dark:bg-neutral-900 rounded-[20px] border border-neutral-200/60 dark:border-neutral-800/60 overflow-hidden divide-y divide-neutral-100 dark:divide-neutral-800/60"
+          >
+            <div class="bon-row flex items-center gap-4 px-5 py-4">
+              <label
+                class="w-32 shrink-0 text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+              >
+                Destino
+              </label>
+              <p-select
+                [options]="destinosDevolucion"
+                [(ngModel)]="destinoDevolucion"
+                placeholder="Seleccionar…"
+                styleClass="bon-select"
+              ></p-select>
+            </div>
+            <div class="bon-row flex items-center gap-4 px-5 py-4">
+              <label
+                class="w-32 shrink-0 text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+              >
+                Motivo
+              </label>
+              <p-select
+                [options]="motivos"
+                [(ngModel)]="motivo"
+                placeholder="Seleccionar…"
+                styleClass="bon-select"
+              ></p-select>
+            </div>
+
+            <div class="bon-row flex items-center gap-4 px-5 py-4">
+              <label
+                class="w-32 shrink-0 text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+              >
+                Nº cliente
+              </label>
+              <input
+                type="text"
+                [(ngModel)]="numeroCliente"
+                placeholder="Número del cliente"
+                class="bon-input flex-1"
+              />
+            </div>
+
+            <div class="bon-row flex items-start gap-4 px-5 py-4">
+              <label
+                class="w-32 shrink-0 text-xs font-semibold text-neutral-500 dark:text-neutral-400 pt-0.5"
+              >
+                Comentario
+              </label>
+              <textarea
+                [(ngModel)]="comentario"
+                rows="3"
+                placeholder="Notas adicionales…"
+                class="bon-input flex-1 resize-none"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="crearBono()"
+          class="w-full py-3.5 rounded-full text-sm font-semibold bg-black dark:bg-white text-white dark:text-black hover:opacity-80 active:scale-[0.98] transition-all duration-150 cursor-pointer inline-flex items-center justify-center gap-2"
+        >
+          <i class="pi pi-plus text-xs"></i>
+          Crear bono
+        </button>
+      </div>
+
+      <div id="panelVer" class="bon-panel hidden flex flex-col gap-4 mt-8">
+        <div class="flex flex-col gap-2">
+          <p
+            class="text-[10px] uppercase tracking-[0.25em] font-semibold text-neutral-400 dark:text-neutral-500"
+          >
+            Historial
+          </p>
+
+          <div class="flex flex-col gap-3">
+            <div
+              *ngFor="let bono of bonos; let i = index"
+              class="bon-fade bg-white dark:bg-neutral-900 rounded-[20px] border border-neutral-200/60 dark:border-neutral-800/60 p-4 flex items-start gap-4"
+              [style]="'--d:' + i * 0.05 + 's'"
+            >
+              <div
+                class="shrink-0 w-14 h-14 rounded-[12px] overflow-hidden bg-neutral-100 dark:bg-neutral-800 border border-neutral-200/60 dark:border-neutral-700/40"
+              >
+                <img
+                  [src]="bono.producto.imagen || '/logo.svg'"
+                  alt="producto"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+
+              <div class="flex-1 min-w-0 flex flex-col gap-1">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <p
+                      class="text-sm font-semibold text-black dark:text-white leading-tight"
+                    >
+                      {{ bono.producto.marca }}
+                      <span class="font-normal text-neutral-400">·</span>
+                      {{ bono.producto.referencia }}
+                    </p>
+                    <p
+                      class="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5"
+                    >
+                      {{ bono.vendedor }}
+                    </p>
+                  </div>
+                  <p
+                    class="text-sm font-bold text-yellow-600 dark:text-yellow-500 shrink-0"
+                  >
+                    {{ bono.precioBono | currency: "COP" : "symbol" : "1.0-0" }}
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 mt-1">
+                  <span
+                    class="text-[11px] font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 px-2 py-0.5 rounded-full"
+                  >
+                    Talla {{ bono.tallaADevolver }}
+                  </span>
+                  <span
+                    class="text-[11px] font-medium bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-500 px-2 py-0.5 rounded-full"
+                  >
+                    {{ bono.motivo }}
+                  </span>
+                </div>
+
+                <p
+                  *ngIf="bono.comentario"
+                  class="text-[11px] text-neutral-400 dark:text-neutral-500 mt-1 leading-relaxed"
+                >
+                  {{ bono.comentario }}
+                </p>
+
+                <p
+                  class="text-[10px] font-mono text-neutral-300 dark:text-neutral-600 mt-1 truncate"
+                >
+                  {{ bono.id }}
+                </p>
+              </div>
+            </div>
+
+            <div
+              *ngIf="bonos?.length === 0"
+              class="flex flex-col items-center justify-center py-20 gap-4 text-center"
+            >
+              <div
+                class="w-14 h-14 rounded-[18px] bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center"
+              >
+                <i
+                  class="pi pi-ticket text-2xl text-neutral-400 dark:text-neutral-600"
+                ></i>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-black dark:text-white">
+                  Sin bonos
+                </p>
+                <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+                  Los bonos creados aparecerán aquí
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalBuscarProducto"
+  class="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0 bon-overlay"
+  (click)="mostrarModalBuscarProducto = false"
+>
+  <div class="absolute inset-0 bg-black/40 dark:bg-black/60"></div>
+  <div
+    class="relative z-10 w-full sm:max-w-2xl bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] h-[90vh] max-h-[90vh] flex flex-col overflow-hidden shadow-2xl bon-sheet"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-modal-buscar-producto
+      class="flex-1 min-h-0 flex flex-col"
+      (productoSeleccionado)="productoSeleccionado($event)"
+    ></app-modal-buscar-producto>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalConfirmacion"
+  class="fixed inset-0 z-[9999] flex items-center justify-center px-6 bon-overlay"
+>
+  <div class="absolute inset-0 bg-black/40 dark:bg-black/60"></div>
+  <div
+    class="relative z-10 w-full max-w-sm bg-white dark:bg-neutral-900 rounded-[28px] p-8 shadow-2xl bon-sheet flex flex-col items-center gap-5 text-center"
+  >
+    <div
+      class="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center"
+    >
+      <i class="pi pi-check text-2xl text-emerald-500"></i>
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <h3 class="text-lg font-bold text-black dark:text-white">
+        Bono generado
+      </h3>
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">
+        Anota este código para que el cliente pueda usarlo
+      </p>
+    </div>
+
+    <div
+      class="w-full bg-neutral-50 dark:bg-neutral-800 rounded-[16px] px-6 py-4"
+    >
+      <p
+        class="text-[10px] uppercase tracking-[0.25em] font-semibold text-neutral-400 dark:text-neutral-500 mb-2"
+      >
+        Código del bono
+      </p>
+      <p
+        class="text-xl font-mono font-bold text-black dark:text-white tracking-wider break-all"
+      >
+        {{ codigoBonoGenerado }}
+      </p>
+    </div>
+
+    <button
+      type="button"
+      (click)="mostrarModalConfirmacion = false"
+      class="w-full py-3.5 rounded-full text-sm font-semibold bg-black dark:bg-white text-white dark:text-black hover:opacity-80 active:scale-[0.98] transition-all duration-150 cursor-pointer"
+    >
+      Entendido
+    </button>
+  </div>
+</div>

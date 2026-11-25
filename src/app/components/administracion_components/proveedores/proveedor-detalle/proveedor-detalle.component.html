@@ -1,0 +1,698 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+></p-toast>
+<div
+  class="min-h-screen bg-[#f5f5f7] dark:bg-black transition-colors duration-500"
+>
+  <div *ngIf="cargandoProveedor" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-md px-4 text-neutral-900 dark:text-white">
+  <app-ia-loader detalle="ShoeShop" [mensajes]="['Conectando con tus datos…', 'Cargando proveedor…', 'Casi listo…']"></app-ia-loader>
+</div>
+
+  <div
+    *ngIf="!cargandoProveedor"
+    class="max-w-6xl mx-auto px-4 sm:px-8 py-10 space-y-12"
+  >
+    <header class="flex items-center justify-between">
+      <div class="flex items-center gap-5">
+        <button
+          routerLink="/admin/proveedores"
+          class="w-10 h-10 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/40 dark:border-white/10 flex items-center justify-center hover:scale-105 transition"
+        >
+          <i class="pi pi-arrow-left text-gray-700 dark:text-gray-300"></i>
+        </button>
+
+        <div>
+          <h1
+            class="text-2xl font-semibold tracking-tight text-black dark:text-white"
+          >
+            Cuentas del Proveedor
+          </h1>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Detalle de Facturación
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <div
+      class="rounded-[40px] bg-white/70 dark:bg-white/5 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.08)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-500"
+    >
+      <div
+        class="px-6 sm:px-12 py-12 flex flex-col lg:flex-row gap-10 lg:items-center"
+      >
+        <div class="flex items-center gap-6 flex-1">
+          <div
+            class="w-20 h-20 rounded-[28px] bg-white/60 dark:bg-white/10 backdrop-blur-xl flex items-center justify-center"
+          >
+            <i
+              class="pi pi-building text-3xl text-gray-700 dark:text-gray-300"
+            ></i>
+          </div>
+
+          <div>
+            <p class="text-xs tracking-[0.35em] uppercase text-gray-400 mb-3">
+              Proveedor
+            </p>
+
+            <h2
+              class="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-black dark:text-white break-words"
+            >
+              {{ proveedor.nombre }}
+            </h2>
+
+            <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+              ID {{ proveedor.id }}
+            </p>
+          </div>
+        </div>
+
+        <button
+          (click)="mostrarModalEstadoCuenta = true"
+          class="px-8 py-4 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-medium hover:opacity-80 transition"
+        >
+          Descargar Estado
+        </button>
+      </div>
+
+      <div class="px-6 sm:px-12 pb-14 space-y-14">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-400 mb-4">
+              Deuda Inicial
+            </p>
+            <p
+              class="text-3xl sm:text-4xl font-semibold text-black dark:text-white"
+            >
+              {{ deudaTotal | currency: "COP" : "symbol" : "1.0-0" }}
+            </p>
+          </div>
+
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-400 mb-4">
+              Deuda Pendiente
+            </p>
+            <p
+              class="text-3xl sm:text-4xl font-semibold text-black dark:text-white"
+            >
+              {{ deudaPendiente | currency: "COP" : "symbol" : "1.0-0" }}
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <div class="flex justify-between items-center">
+            <p class="text-xs uppercase tracking-[0.35em] text-gray-400">
+              Progreso de Pago
+            </p>
+
+            <span
+              class="text-sm font-semibold text-gray-700 dark:text-gray-200"
+            >
+              {{
+                ((deudaTotal - deudaPendiente) / deudaTotal) * 100
+                  | number: "1.0-0"
+              }}%
+            </span>
+          </div>
+
+          <div
+            class="relative h-6 w-full rounded-full bg-white/40 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 shadow-[inset_0_1px_2px_rgba(255,255,255,0.6),inset_0_-2px_6px_rgba(0,0,0,0.15)] overflow-hidden"
+          >
+            <div
+              class="relative h-full rounded-full bg-gradient-to-r from-black via-gray-800 to-black dark:from-white dark:via-gray-300 dark:to-white transition-all duration-700 ease-out"
+              [style.width.%]="
+                ((deudaTotal - deudaPendiente) / deudaTotal) * 100
+              "
+            >
+              <div
+                class="absolute inset-0 rounded-full bg-gradient-to-t from-white/0 via-white/40 to-white/70 opacity-40 blur-[2px]"
+              ></div>
+            </div>
+          </div>
+
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{
+              deudaTotal - deudaPendiente | currency: "COP" : "symbol" : "1.0-0"
+            }}
+            pagados
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-8">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        <h3
+          class="text-xl font-semibold tracking-tight text-black dark:text-white"
+        >
+          Facturas
+        </h3>
+
+        <button
+          (click)="abrirModalFactura()"
+          class="px-6 py-3 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-medium hover:opacity-80 transition"
+        >
+          Agregar Factura
+        </button>
+      </div>
+
+      <div class="flex flex-col md:flex-row gap-4">
+        <input
+          type="text"
+          [(ngModel)]="terminoBusqueda"
+          placeholder="Buscar factura..."
+          class="flex-1 px-5 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/40 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20"
+        />
+
+        <select
+          [(ngModel)]="filtroEstado"
+          class="px-5 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/40 dark:border-white/10"
+        >
+          <option value="todas">Todas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="cancelada">Canceladas</option>
+        </select>
+      </div>
+
+      <div
+        class="rounded-[32px] bg-white/70 dark:bg-white/5 backdrop-blur-2xl border border-white/40 dark:border-white/10 overflow-x-auto"
+      >
+        <table class="min-w-full text-sm">
+          <thead
+            class="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400"
+          >
+            <tr>
+              <th class="px-6 py-4 text-left">Factura</th>
+              <th class="px-6 py-4 text-left">Producto</th>
+              <th class="px-6 py-4 text-left">Fecha</th>
+              <th class="px-6 py-4 text-right">Valor Inicial</th>
+              <th class="px-6 py-4 text-right">Saldo</th>
+              <th class="px-6 py-4 text-left">Estado</th>
+              <th class="px-6 py-4 text-right">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              *ngFor="let factura of facturasPaginadas"
+              class="border-t border-white/20 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5 transition"
+            >
+              <td class="px-6 py-4 font-medium">
+                #{{ factura.numeroFactura }}
+              </td>
+
+              <td class="px-6 py-4">
+                {{ factura.producto }}
+              </td>
+
+              <td class="px-6 py-4">
+                {{ factura.fecha | date: "dd MMM yyyy" }}
+              </td>
+
+              <td class="px-6 py-4 text-right">
+                {{
+                  factura.valorInicial | currency: "COP" : "symbol" : "1.0-0"
+                }}
+              </td>
+
+              <td class="px-6 py-4 text-right font-medium">
+                {{
+                  factura.deudaPendiente | currency: "COP" : "symbol" : "1.0-0"
+                }}
+              </td>
+
+              <td class="px-6 py-4">
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-medium bg-black/10 dark:bg-white/10"
+                >
+                  {{ factura.estado | titlecase }}
+                </span>
+              </td>
+
+              <td class="px-6 py-4 text-right space-x-2">
+                <button
+                  (click)="abrirModalVerAbonos(factura)"
+                  class="px-4 py-2 rounded-full bg-black/5 dark:bg-white/10 text-xs font-medium hover:bg-black/10 dark:hover:bg-white/20 transition"
+                >
+                  Ver
+                </button>
+
+                <button
+                  (click)="abrirModalAbono(factura)"
+                  [disabled]="factura.estado === 'cancelada'"
+                  class="px-4 py-2 rounded-full bg-black dark:bg-white text-white dark:text-black text-xs font-medium hover:opacity-80 transition disabled:opacity-40"
+                >
+                  Abono
+                </button>
+
+                <button
+                  (click)="exportarFacturaPDF(factura)"
+                  class="px-4 py-2 rounded-full bg-black/80 text-white text-xs font-medium hover:opacity-80 transition"
+                >
+                  PDF
+                </button>
+
+                <button
+                  (click)="abrirConfirmacionEliminar(factura)"
+                  class="px-4 py-2 rounded-full bg-red-500 text-white text-xs font-medium hover:opacity-80 transition"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div
+          *ngIf="totalPaginas > 1"
+          class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 px-6 py-6 border-t border-white/20 dark:border-white/5"
+        >
+          <div
+            class="text-sm text-gray-500 dark:text-gray-400 text-center sm:text-left"
+          >
+            Página
+            <span class="font-semibold text-black dark:text-white">{{
+              paginaActual
+            }}</span>
+            de
+            <span class="font-semibold text-black dark:text-white">{{
+              totalPaginas
+            }}</span>
+          </div>
+
+          <div class="flex items-center justify-center gap-2">
+            <button
+              (click)="cambiarPagina(paginaActual - 1)"
+              [disabled]="paginaActual === 1"
+              class="px-4 py-2 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/40 dark:border-white/10 text-sm font-medium hover:scale-105 transition disabled:opacity-40 disabled:hover:scale-100"
+            >
+              Anterior
+            </button>
+
+            <ng-container *ngFor="let pagina of paginas">
+              <button
+                (click)="cambiarPagina(pagina)"
+                [ngClass]="{
+                  'bg-black text-white dark:bg-white dark:text-black shadow-md scale-105':
+                    pagina === paginaActual,
+                  'bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/40 dark:border-white/10 hover:scale-105':
+                    pagina !== paginaActual,
+                }"
+                class="px-4 py-2 rounded-full text-sm font-medium transition"
+              >
+                {{ pagina }}
+              </button>
+            </ng-container>
+
+            <button
+              (click)="cambiarPagina(paginaActual + 1)"
+              [disabled]="paginaActual === totalPaginas"
+              class="px-4 py-2 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/40 dark:border-white/10 text-sm font-medium hover:scale-105 transition disabled:opacity-40 disabled:hover:scale-100"
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalFactura"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+>
+  <div
+    class="w-full max-w-lg bg-white/70 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-3xl shadow-2xl p-6 transition-transform transform scale-100 animate-fadeIn"
+  >
+    <h3 class="text-xl font-semibold text-black dark:text-white mb-6">
+      Nueva Factura
+    </h3>
+
+    <form [formGroup]="facturaForm" class="space-y-4">
+      <div>
+        <label class="block text-sm mb-2 text-gray-700 dark:text-gray-300"
+          >Número de Factura</label
+        >
+        <input
+          type="text"
+          formControlName="numeroFactura"
+          class="w-full px-4 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm mb-2 text-gray-700 dark:text-gray-300"
+          >Producto</label
+        >
+        <input
+          type="text"
+          formControlName="producto"
+          class="w-full px-4 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm mb-2 text-gray-700 dark:text-gray-300"
+          >Fecha</label
+        >
+        <input
+          type="date"
+          formControlName="fecha"
+          class="w-full px-4 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm mb-2 text-gray-700 dark:text-gray-300"
+          >Valor Inicial (COP)</label
+        >
+        <div class="relative">
+          <span
+            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"
+            >$</span
+          >
+          <input
+            type="text"
+            formControlName="valorInicial"
+            (input)="formatearMoneda($event)"
+            class="w-full pl-8 pr-4 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+            placeholder="0"
+          />
+        </div>
+      </div>
+    </form>
+
+    <div class="flex flex-col sm:flex-row gap-3 mt-6">
+      <button
+        (click)="agregarFactura()"
+        [disabled]="cargandoFactura"
+        class="flex-1 h-12 rounded-2xl bg-yellow-500 hover:bg-yellow-600 text-black font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.98]"
+      >
+        <ng-container *ngIf="!cargandoFactura">Guardar</ng-container>
+        <ng-template #loadingGuardar>
+          <span class="flex items-center gap-2"
+            ><app-ia-spinner></app-ia-spinner>Guardando...</span
+          >
+        </ng-template>
+      </button>
+
+      <button
+        (click)="cerrarModalFactura()"
+        [disabled]="cargandoFactura"
+        class="flex-1 h-12 rounded-2xl border border-white/30 dark:border-white/10 bg-white/60 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-white/10 text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalAbono"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
+>
+  <div
+    class="w-full max-w-lg bg-white/70 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-3xl shadow-2xl p-6 transition-transform transform scale-100 animate-fadeIn"
+  >
+    <h3 class="text-xl font-semibold text-black dark:text-white mb-6">
+      Nuevo Abono
+    </h3>
+
+    <form [formGroup]="abonoForm" class="space-y-4">
+      <div>
+        <label class="block text-sm mb-2 text-gray-700 dark:text-gray-300"
+          >Fecha</label
+        >
+        <input
+          type="date"
+          formControlName="fecha"
+          class="w-full px-4 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm mb-2 text-gray-700 dark:text-gray-300"
+          >Cantidad (COP)</label
+        >
+        <input
+          type="text"
+          formControlName="cantidad"
+          (input)="formatearCantidadAbono($event)"
+          class="w-full px-4 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+          placeholder="0"
+        />
+        <p
+          class="text-xs text-red-500 mt-1"
+          *ngIf="cantidadAbonoNumerica > facturaSeleccionada?.deudaPendiente"
+        >
+          El abono no puede ser mayor a la deuda pendiente
+        </p>
+      </div>
+
+      <div>
+        <label class="block text-sm mb-2 text-gray-700 dark:text-gray-300"
+          >Nota</label
+        >
+        <textarea
+          formControlName="descripcion"
+          rows="3"
+          class="w-full px-4 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+        ></textarea>
+      </div>
+    </form>
+
+    <div class="flex flex-col sm:flex-row gap-3 mt-6">
+      <button
+        (click)="abrirConfirmacionAbono()"
+        [disabled]="cargandoAbono"
+        class="flex-1 py-3 rounded-2xl bg-yellow-500 hover:bg-yellow-600 text-black font-semibold text-sm flex items-center justify-center gap-2"
+      >
+        <span *ngIf="!cargandoAbono">Guardar Abono</span>
+        <span *ngIf="cargandoAbono" class="flex items-center gap-2"
+          ><app-ia-spinner></app-ia-spinner>Guardando...</span
+        >
+      </button>
+      <button
+        (click)="cerrarModalAbono()"
+        class="flex-1 py-3 rounded-2xl border border-white/30 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-white/10 text-sm font-medium transition"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarConfirmacionAbono"
+  class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+>
+  <div
+    class="w-full max-w-md bg-white/70 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-3xl shadow-2xl p-6 animate-fadeIn"
+  >
+    <div class="flex items-center gap-3 mb-4">
+      <div
+        class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900"
+      >
+        <i class="pi pi-exclamation-triangle text-yellow-600"></i>
+      </div>
+      <h3 class="text-lg font-semibold text-black dark:text-white">
+        Confirmar Abono
+      </h3>
+    </div>
+
+    <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
+      ¿Seguro que quieres agregar un abono de
+      <span class="font-bold text-yellow-600">{{
+        cantidadAbonoNumerica | currency: "COP" : "symbol" : "1.0-0"
+      }}</span>
+      a esta factura?
+    </p>
+
+    <div class="flex gap-3">
+      <button
+        (click)="confirmarAbono()"
+        class="flex-1 py-2 rounded-2xl bg-yellow-500 hover:bg-yellow-600 text-black font-semibold text-sm transition"
+      >
+        Sí, confirmar
+      </button>
+      <button
+        (click)="cancelarConfirmacionAbono()"
+        class="flex-1 py-2 rounded-2xl border border-white/30 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-white/10 text-sm font-medium transition"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalVerAbonos"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4 animate-fadeIn"
+>
+  <div
+    class="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white/70 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-3xl shadow-2xl p-6 relative"
+  >
+    <div
+      class="flex items-center justify-between mb-6 sticky top-0 z-10 bg-white/70 dark:bg-white/5 backdrop-blur-2xl p-4 border-b border-white/30 dark:border-white/10"
+    >
+      <div>
+        <h2 class="text-xl font-bold text-black dark:text-white">
+          Historial de Abonos
+        </h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Factura #{{ facturaAbonosSeleccionada?.numeroFactura }}
+        </p>
+      </div>
+      <button
+        (click)="cerrarModalVerAbonos()"
+        class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/30 dark:hover:bg-white/10 transition"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+
+    <div *ngIf="cargandoAbonos" class="space-y-3">
+      <div
+        *ngFor="let i of [1, 2, 3, 4]"
+        class="h-16 bg-white/60 dark:bg-white/5 rounded-2xl animate-pulse"
+      ></div>
+    </div>
+
+    <div *ngIf="!cargandoAbonos && abonosAgrupados.length" class="space-y-8">
+      <div *ngFor="let grupo of abonosAgrupados">
+        <h3 class="text-gray-500 dark:text-gray-400 font-semibold mb-3">
+          {{ grupo.mes | titlecase }}
+        </h3>
+        <div class="relative border-l-2 border-yellow-500 pl-6 space-y-5">
+          <div
+            *ngFor="let abono of grupo.abonos"
+            class="relative flex justify-between items-start gap-4"
+          >
+            <div
+              class="absolute -left-3 top-1 w-6 h-6 rounded-full bg-yellow-500 border-2 border-white dark:border-gray-900"
+            ></div>
+            <div
+              class="flex-1 bg-white/60 dark:bg-white/5 p-4 rounded-2xl shadow-sm"
+            >
+              <div class="flex justify-between items-center">
+                <p class="text-lg font-semibold text-black dark:text-white">
+                  {{ abono.cantidad | currency: "COP" : "symbol" : "1.0-0" }}
+                </p>
+                <span
+                  class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400"
+                  >COMPLETADO</span
+                >
+              </div>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {{ abono.fecha | date: "dd MMM yyyy" }}
+              </p>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {{ abono.descripcion }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="border-t border-white/30 dark:border-white/10 mt-8 pt-4 flex justify-between text-sm"
+      *ngIf="!cargandoAbonos && abonosAgrupados.length"
+    >
+      <span class="text-gray-500 dark:text-gray-400">Total Abonado</span>
+      <span class="font-semibold text-black dark:text-white">{{
+        totalAbonado | currency: "COP" : "symbol" : "1.0-0"
+      }}</span>
+    </div>
+  </div>
+</div>
+<div
+  *ngIf="mostrarConfirmacionEliminar"
+  class="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+>
+  <div
+    class="w-full max-w-md bg-white/70 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-3xl shadow-2xl p-6 animate-fadeIn"
+  >
+    <div class="flex items-center gap-3 mb-4">
+      <div
+        class="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900"
+      >
+        <i class="pi pi-trash text-red-600"></i>
+      </div>
+      <h3 class="text-lg font-semibold text-black dark:text-white">
+        Confirmar Eliminación
+      </h3>
+    </div>
+
+    <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
+      ¿Seguro que deseas eliminar la factura
+      <span class="font-bold text-red-600"
+        >#{{ facturaAEliminar?.numeroFactura }}</span
+      >? Esta acción no se puede deshacer.
+    </p>
+
+    <div class="flex gap-3">
+      <button
+        (click)="confirmarEliminarFactura()"
+        [disabled]="cargandoEliminar"
+        class="flex-1 py-2 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm flex items-center justify-center gap-2 transition disabled:opacity-70 disabled:cursor-not-allowed"
+      >
+        <span *ngIf="!cargandoEliminar">Sí, eliminar</span>
+        <span *ngIf="cargandoEliminar" class="flex items-center gap-2"
+          ><app-ia-spinner></app-ia-spinner>Eliminando...</span
+        >
+      </button>
+
+      <button
+        (click)="cancelarEliminar()"
+        [disabled]="cargandoEliminar"
+        class="flex-1 py-2 rounded-2xl border border-white/30 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-white/10 text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalEstadoCuenta"
+  class="fixed inset-0 z-[80] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+>
+  <div
+    class="w-full max-w-md bg-white/70 dark:bg-white/5 backdrop-blur-2xl border border-white/30 dark:border-white/10 rounded-3xl shadow-2xl p-6 animate-fadeIn"
+  >
+    <h3 class="text-lg font-semibold text-black dark:text-white mb-4">
+      ¿Qué tipo de facturas deseas generar?
+    </h3>
+
+    <select
+      [(ngModel)]="tipoEstadoCuenta"
+      class="w-full mb-6 px-4 py-3 rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition"
+    >
+      <option value="todas">Todas</option>
+      <option value="pendiente">Solo Pendientes</option>
+      <option value="cancelada">Solo Canceladas</option>
+    </select>
+
+    <div class="flex gap-3">
+      <button
+        (click)="generarEstadoCuentaFiltrado()"
+        class="flex-1 py-3 rounded-2xl bg-yellow-500 hover:bg-yellow-600 text-black font-semibold text-sm transition"
+      >
+        Generar
+      </button>
+      <button
+        (click)="mostrarModalEstadoCuenta = false"
+        class="flex-1 py-3 rounded-2xl border border-white/30 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-white/10 text-sm font-medium transition"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>

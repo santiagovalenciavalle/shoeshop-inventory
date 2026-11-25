@@ -1,0 +1,165 @@
+<div
+  class="flex flex-col min-h-0 overflow-hidden h-full bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px]"
+>
+  <div
+    class="px-6 pt-6 pb-4 border-b border-neutral-100 dark:border-neutral-800/60"
+  >
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <p
+          class="text-[10px] uppercase tracking-[0.25em] font-semibold text-neutral-400 dark:text-neutral-500 mb-1"
+        >
+          Cambio
+        </p>
+        <h2
+          class="text-xl font-semibold text-black dark:text-white leading-tight tracking-tight"
+        >
+          Buscar venta
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        (click)="cancelar()"
+        class="bmp-btn-ghost text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white transition-colors duration-200"
+      >
+        Cancelar
+      </button>
+    </div>
+
+    <div class="relative">
+      <div
+        class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none"
+      >
+        <i
+          class="pi pi-search text-xs text-neutral-400 dark:text-neutral-500"
+        ></i>
+      </div>
+      <input
+        id="buscar"
+        type="text"
+        [(ngModel)]="search"
+        placeholder="Marca, referencia o ID…"
+        class="bmp-input w-full pl-9 pr-4 py-2.5 text-sm bg-neutral-100 dark:bg-neutral-800/60 text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500/40 transition-all duration-200"
+      />
+    </div>
+  </div>
+
+  <div
+    class="px-6 py-3 flex items-center gap-3 border-b border-neutral-100 dark:border-neutral-800/60"
+  >
+    <div class="flex-1">
+      <p-datepicker
+        [(ngModel)]="fechaSeleccionada"
+        (ngModelChange)="onFechaChange($event)"
+        placeholder="Filtrar por fecha"
+        [readonlyInput]="true"
+        [showIcon]="true"
+        styleClass="bmp-datepicker w-full"
+      ></p-datepicker>
+    </div>
+
+    <button
+      type="button"
+      (click)="limpiarFiltros()"
+      class="shrink-0 text-xs font-medium text-yellow-600 dark:text-yellow-500 hover:text-yellow-700 dark:hover:text-yellow-400 transition-colors duration-200 py-1 px-1"
+    >
+      Limpiar
+    </button>
+  </div>
+
+  <div
+    class="flex-1 overflow-y-auto px-4 py-2 divide-y divide-neutral-100 dark:divide-neutral-800/60"
+  >
+    <div *ngIf="cargando" class="flex justify-center py-10">
+      <app-ia-spinner class="text-2xl text-neutral-400"></app-ia-spinner>
+    </div>
+    <div *ngIf="!cargando">
+      <div
+        *ngFor="let venta of ventasFiltradas; let i = index"
+        class="bmp-item group flex items-center gap-4 py-3.5 px-2 rounded-2xl hover:bg-neutral-50 dark:hover:bg-neutral-900/60 transition-all duration-200 cursor-default"
+        [style.animation-delay]="i * 40 + 'ms'"
+      >
+        <div
+          class="shrink-0 w-14 h-14 rounded-[14px] bg-neutral-100 dark:bg-neutral-800 border border-neutral-200/60 dark:border-neutral-700/40"
+        >
+          <img
+            [src]="venta.imagen || '/logo.svg'"
+            alt="Producto"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <p
+            class="text-sm font-semibold text-black dark:text-white truncate leading-tight"
+          >
+            {{ venta.marca }}
+            <span class="font-normal text-neutral-500 dark:text-neutral-400"
+              >·</span
+            >
+            {{ venta.referencia }}
+          </p>
+          <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+            <span class="text-xs text-neutral-500 dark:text-neutral-400">
+              Talla {{ venta.talla }}
+            </span>
+            <span
+              class="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-600 shrink-0"
+            ></span>
+            <span
+              class="text-xs text-neutral-500 dark:text-neutral-400 truncate"
+            >
+              {{ venta.vendedor }}
+            </span>
+          </div>
+          <div class="flex items-center gap-3 mt-1.5">
+            <span
+              class="text-sm font-semibold text-yellow-600 dark:text-yellow-500"
+            >
+              {{ venta.precio | currency: "COP" : "symbol" : "1.0-0" }}
+            </span>
+            <span class="text-[11px] text-neutral-400 dark:text-neutral-500">
+              {{ getFecha(venta) | date: "shortDate" }}
+            </span>
+            <span class="text-sm font-semibold"
+              >Cod:
+              <span class="text-yellow-600 dark:text-yellow-500">
+                {{ venta.zapatoId }}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="seleccionar(venta)"
+          class="bmp-btn-select shrink-0 text-xs font-semibold text-white bg-black dark:bg-white dark:text-black px-3.5 py-1.5 rounded-full hover:opacity-80 active:scale-[0.97] transition-all duration-150 sm:opacity-0 sm:group-hover:opacity-100"
+        >
+          Elegir
+        </button>
+      </div>
+    </div>
+
+    <div
+      *ngIf="ventasFiltradas?.length === 0"
+      class="flex flex-col items-center justify-center py-16 gap-3 text-center"
+    >
+      <div
+        class="w-12 h-12 rounded-[14px] bg-neutral-100 dark:bg-neutral-800/60 flex items-center justify-center"
+      >
+        <i
+          class="pi pi-search text-xl text-neutral-400 dark:text-neutral-500"
+        ></i>
+      </div>
+      <div>
+        <p class="text-sm font-semibold text-black dark:text-white">
+          Sin resultados
+        </p>
+        <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
+          Intenta con otra búsqueda o fecha
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

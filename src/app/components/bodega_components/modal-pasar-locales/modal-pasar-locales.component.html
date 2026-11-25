@@ -1,0 +1,194 @@
+<div
+  *ngIf="visible"
+  class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
+  (click)="onBackdropClick()"
+>
+  <div
+    *ngIf="producto"
+    (click)="$event.stopPropagation()"
+    class="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-black dark:text-white shadow-xl animate-fade-slide-up"
+  >
+    <div
+      class="flex items-center justify-between gap-3 px-5 py-4 border-b border-neutral-100 dark:border-neutral-900"
+    >
+      <div class="flex items-center gap-3 min-w-0">
+        <img
+          [src]="producto.imagen || '/logo.svg'"
+          [alt]="producto.marca"
+          class="w-12 h-12 object-contain rounded-lg bg-neutral-100 dark:bg-neutral-900 flex-shrink-0"
+        />
+        <div class="min-w-0">
+          <p class="font-semibold text-sm truncate">{{ producto.marca }}</p>
+          <p class="text-xs text-neutral-500 truncate">
+            {{ producto.referencia }}
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        (click)="cerrarModal()"
+        [disabled]="enviando"
+        aria-label="Cerrar"
+        class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition disabled:opacity-30 disabled:cursor-not-allowed"
+      >
+        <svg
+          class="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div
+      *ngIf="mensaje"
+      class="mx-5 mt-4 px-4 py-2.5 rounded-xl text-xs font-medium animate-fade-slide-up"
+      [class.bg-red-50]="mensaje.tipo === 'error'"
+      [class.text-red-700]="mensaje.tipo === 'error'"
+      [class.dark:bg-red-950]="mensaje.tipo === 'error'"
+      [class.dark:text-red-400]="mensaje.tipo === 'error'"
+      [class.bg-emerald-50]="mensaje.tipo === 'success'"
+      [class.text-emerald-700]="mensaje.tipo === 'success'"
+      [class.dark:bg-emerald-950]="mensaje.tipo === 'success'"
+      [class.dark:text-emerald-400]="mensaje.tipo === 'success'"
+    >
+      {{ mensaje.texto }}
+    </div>
+
+    <div class="flex flex-col gap-4 px-5 py-4">
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[0.72rem] font-medium tracking-wide text-neutral-500 dark:text-neutral-500"
+        >
+          Local destino
+        </label>
+        <select
+          [(ngModel)]="localSeleccionado"
+          [disabled]="enviando"
+          class="local-select w-full px-3.5 py-2.5 text-sm font-normal bg-neutral-100 dark:bg-neutral-900 text-black dark:text-white border border-transparent rounded-xl outline-none transition-all duration-200 focus:border-neutral-300 dark:focus:border-neutral-700 focus:bg-white dark:focus:bg-neutral-950 disabled:opacity-50"
+        >
+          <option [ngValue]="null" disabled>Selecciona un local</option>
+          <option *ngFor="let l of locales" [ngValue]="l.id">
+            {{ l.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          class="text-[0.72rem] font-medium tracking-wide text-neutral-500 dark:text-neutral-500"
+        >
+          Tallas a enviar
+        </label>
+
+        <div class="flex flex-col gap-2">
+          <div
+            *ngFor="let t of tallas"
+            class="flex items-center justify-between border border-neutral-200 dark:border-neutral-800 rounded-xl px-3.5 py-2.5"
+          >
+            <div>
+              <p class="text-sm font-medium">Talla {{ t.talla }}</p>
+              <p class="text-[0.7rem] text-neutral-400 dark:text-neutral-600">
+                Disponible: {{ t.disponible }}
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2.5">
+              <button
+                type="button"
+                (click)="decrementar(t)"
+                [disabled]="t.cantidad === 0 || enviando"
+                class="w-7 h-7 flex items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                −
+              </button>
+
+              <input
+                type="number"
+                inputmode="numeric"
+                [ngModel]="t.cantidad"
+                (ngModelChange)="onCantidadManual(t, $event)"
+                [disabled]="enviando"
+                min="0"
+                [max]="t.disponible"
+                class="w-12 text-center text-sm tabular-nums bg-transparent border border-neutral-200 dark:border-neutral-800 rounded-lg py-1 outline-none focus:border-neutral-400 dark:focus:border-neutral-600 disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+
+              <button
+                type="button"
+                (click)="incrementar(t)"
+                [disabled]="t.cantidad >= t.disponible || enviando"
+                class="w-7 h-7 flex items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700 text-sm font-medium hover:bg-neutral-100 dark:hover:bg-neutral-900 transition disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <p
+            *ngIf="tallas.length === 0"
+            class="text-xs text-neutral-400 dark:text-neutral-600 py-2"
+          >
+            Este producto no tiene stock disponible en bodega.
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="flex items-center justify-between pt-3 border-t border-neutral-100 dark:border-neutral-900"
+      >
+        <span class="text-xs text-neutral-500 dark:text-neutral-500"
+          >Total a enviar</span
+        >
+        <span class="text-sm font-semibold tabular-nums">{{
+          totalAEnviar
+        }}</span>
+      </div>
+    </div>
+
+    <div
+      class="flex items-center justify-end gap-3 px-5 py-4 border-t border-neutral-100 dark:border-neutral-900"
+    >
+      <button
+        type="button"
+        (click)="cerrarModal()"
+        [disabled]="enviando"
+        class="px-4 py-2.5 rounded-xl text-[0.82rem] font-semibold tracking-tight text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition disabled:opacity-30 disabled:cursor-not-allowed"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        (click)="confirmarEnvio()"
+        [disabled]="!puedeEnviar"
+        class="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-[0.82rem] font-semibold tracking-tight bg-black dark:bg-white text-white dark:text-black border-none cursor-pointer select-none transition-all duration-200 ease-out hover:-translate-y-px hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.97] disabled:opacity-30 disabled:cursor-not-allowed disabled:translate-y-0 disabled:scale-100"
+      >
+        <ng-container *ngIf="!enviando; else cargando">
+          <span>Enviar</span>
+          <svg
+            class="w-3.5 h-3.5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+        </ng-container>
+        <ng-template #cargando>
+          <app-ia-spinner class="w-4 h-4"></app-ia-spinner>
+        </ng-template>
+      </button>
+    </div>
+  </div>
+</div>

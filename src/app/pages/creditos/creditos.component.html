@@ -1,0 +1,210 @@
+<style>
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .anim-fade-up {
+    animation: fadeUp 0.5s cubic-bezier(0.22, 0.68, 0, 1.2) both;
+  }
+  .anim-scale-in {
+    animation: scaleIn 0.42s cubic-bezier(0.22, 0.68, 0, 1.2) both;
+  }
+
+  .delay-1 {
+    animation-delay: 0.05s;
+  }
+  .delay-2 {
+    animation-delay: 0.12s;
+  }
+  .delay-3 {
+    animation-delay: 0.19s;
+  }
+
+  .provider-card {
+    cursor: pointer;
+    transition:
+      box-shadow 0.25s ease,
+      transform 0.25s ease,
+      border-color 0.2s ease;
+  }
+  .provider-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.09);
+    transform: translateY(-2px);
+  }
+  .dark .provider-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+  .provider-card:active {
+    transform: scale(0.98);
+  }
+
+  .check-ring {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .gold-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #b8962e;
+    flex-shrink: 0;
+  }
+</style>
+
+<div
+  class="min-h-screen bg-[#f5f5f7] dark:bg-[#000000] text-[#1d1d1f] dark:text-[#f5f5f7] transition-colors duration-300 px-4 sm:px-8 lg:px-16 py-10"
+>
+  <header class="anim-fade-up mb-10">
+    <div class="mt-8">
+      <h1
+        class="text-3xl sm:text-4xl font-semibold tracking-tight leading-tight"
+      >
+        Ventas a Crédito
+      </h1>
+      <p class="text-sm text-[#6e6e73] dark:text-[#86868b] mt-2 max-w-md">
+        Selecciona un proveedor de crédito para consultar las ventas realizadas
+      </p>
+    </div>
+  </header>
+
+  <section class="anim-fade-up delay-1 mb-12">
+    <div class="flex items-center gap-2 mb-6">
+      <span class="gold-dot"></span>
+      <p
+        class="text-xs font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+      >
+        Proveedor
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
+      <div
+        (click)="select('3m')"
+        class="provider-card anim-scale-in delay-2 bg-white dark:bg-[#1c1c1e] border rounded-2xl p-6 flex flex-col gap-4"
+        [ngClass]="
+          selected === '3m'
+            ? 'border-[#b8962e] shadow-[0_4px_24px_rgba(184,150,46,0.15)]'
+            : 'border-[#d2d2d7] dark:border-[#3a3a3c]'
+        "
+      >
+        <div
+          class="w-full flex items-center justify-center py-4 px-6 rounded-xl bg-emerald-500"
+        >
+          <span class="text-white text-xl font-semibold tracking-tight"
+            >Sistecrédito</span
+          >
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-semibold text-sm leading-tight">Sistecrédito</p>
+            <p class="text-xs text-[#6e6e73] dark:text-[#86868b] mt-0.5">
+              Pago a 3 meses
+            </p>
+          </div>
+
+          <div
+            class="check-ring"
+            [ngClass]="
+              selected === '3m'
+                ? 'bg-[#b8962e]'
+                : 'bg-[#e5e5ea] dark:bg-[#3a3a3c]'
+            "
+          >
+            <i
+              *ngIf="selected === '3m'"
+              class="pi pi-check text-[10px] text-white font-bold"
+            ></i>
+          </div>
+        </div>
+
+        <div *ngIf="selected === '3m'" class="flex justify-start">
+          <span
+            class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#b8962e]"
+          >
+            <i class="pi pi-check-circle text-[11px]"></i>
+            Seleccionado
+          </span>
+        </div>
+      </div>
+
+      <div
+        (click)="select('1m')"
+        class="provider-card anim-scale-in delay-3 bg-white dark:bg-[#1c1c1e] border rounded-2xl p-6 flex flex-col gap-4"
+        [ngClass]="
+          selected === '1m'
+            ? 'border-[#b8962e] shadow-[0_4px_24px_rgba(184,150,46,0.15)]'
+            : 'border-[#d2d2d7] dark:border-[#3a3a3c]'
+        "
+      >
+        <div
+          class="w-full flex items-center justify-center py-4 px-6 rounded-xl bg-blue-500"
+        >
+          <span class="text-white text-xl font-semibold tracking-tight"
+            >Addi</span
+          >
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-semibold text-sm leading-tight">Addi</p>
+            <p class="text-xs text-[#6e6e73] dark:text-[#86868b] mt-0.5">
+              Pago a 1 mes
+            </p>
+          </div>
+
+          <div
+            class="check-ring"
+            [ngClass]="
+              selected === '1m'
+                ? 'bg-[#b8962e]'
+                : 'bg-[#e5e5ea] dark:bg-[#3a3a3c]'
+            "
+          >
+            <i
+              *ngIf="selected === '1m'"
+              class="pi pi-check text-[10px] text-white font-bold"
+            ></i>
+          </div>
+        </div>
+
+        <div *ngIf="selected === '1m'" class="flex justify-start">
+          <span
+            class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#b8962e]"
+          >
+            <i class="pi pi-check-circle text-[11px]"></i>
+            Seleccionado
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="border-t border-[#d2d2d7] dark:border-[#2c2c2e] mb-10"></div>
+
+  <section class="anim-fade-up delay-3">
+    <app-ventas-credito [credito]="credito"></app-ventas-credito>
+  </section>
+</div>

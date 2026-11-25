@@ -1,0 +1,47 @@
+@keyframes navFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-fade {
+  opacity: 0;
+  animation: navFadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s) forwards;
+}
+
+.nav-card .nav-icon {
+
+  transform-origin: center;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.2s ease;
+}
+
+.nav-card:hover .nav-icon {
+  transform: scale(1.08);
+}
+
+.nav-card .pi-arrow-right {
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-card:focus-visible {
+  outline: 2px solid #EAB308;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .nav-root {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .nav-card {
+    min-height: 140px;
+  }
+}

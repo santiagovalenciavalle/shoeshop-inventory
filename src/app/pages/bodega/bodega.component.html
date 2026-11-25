@@ -1,0 +1,691 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '64px' },
+  }"
+></p-toast>
+
+<div class="min-h-screen bg-neutral-50 dark:bg-black">
+  <div
+    class="sticky top-0 z-30 bg-white/90 dark:bg-black/90 backdrop-blur-2xl border-b border-neutral-100 dark:border-neutral-900"
+  >
+    <div
+      class="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between"
+    >
+      <div class="flex flex-col gap-0.5">
+        <span
+          class="text-[10px] uppercase tracking-[0.28em] font-bold text-neutral-400 dark:text-neutral-500"
+        >
+          Bodega
+        </span>
+        <h1
+          class="text-base font-semibold text-black dark:text-white leading-tight"
+        >
+          Hola,
+          <span class="text-yellow-500 dark:text-yellow-400">{{
+            nombreUsuario
+          }}</span>
+        </h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <a
+          routerLink="/bodega/inventario"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold bg-yellow-500 text-black hover:bg-yellow-400 active:scale-[0.97] transition-all duration-150 shadow-sm shadow-yellow-500/20"
+        >
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+            />
+            <path d="m3.3 7 8.7 5 8.7-5" />
+            <path d="M12 22V12" />
+          </svg>
+          Inventario
+        </a>
+        <a
+          routerLink="/home"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 active:scale-[0.97] transition-all duration-150 border border-neutral-200 dark:border-neutral-800"
+        >
+          Cerrar sesión
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-10 flex flex-col gap-14"
+  >
+    <div class="mu-banner bod-fade" style="--d: 0s">
+      <div class="mu-banner-noise"></div>
+      <div class="mu-banner-glow"></div>
+
+      <div class="mu-banner-body">
+        <div class="mu-icon-col">
+          <div class="mu-orb">
+            <div class="mu-orb-ring mu-orb-ring-1"></div>
+            <div class="mu-orb-ring mu-orb-ring-2"></div>
+            <div class="mu-orb-face">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#eab308"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h2a7 7 0 0 1 7 7H2a7 7 0 0 1 7-7h2V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z"
+                />
+                <path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5" />
+                <circle cx="9" cy="17" r="1" fill="#eab308" stroke="none" />
+                <circle cx="15" cy="17" r="1" fill="#eab308" stroke="none" />
+                <path d="M2 14h1M21 14h1" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="mu-content-col">
+          <div class="mu-eyebrow">
+            <span class="mu-eyebrow-line"></span>
+            <span class="mu-eyebrow-text"
+              >ShoeShop · Intelligence System</span
+            >
+            <span class="mu-eyebrow-line"></span>
+          </div>
+          <h2 class="mu-headline">Operación bajo vigilancia de IA</h2>
+          <p class="mu-sub">
+            Cada movimiento de bodega es registrado y auditado en tiempo real
+            por el sistema autónomo de ShoeShop.
+          </p>
+          <div class="mu-pills">
+            <span class="mu-pill mu-pill-green">
+              <span class="mu-pill-dot"></span>Monitoreado
+            </span>
+            <span class="mu-pill mu-pill-blue">
+              <span class="mu-pill-dot mu-pill-dot-blue"></span>Vigilado
+            </span>
+            <span class="mu-pill mu-pill-gold">
+              <span class="mu-pill-dot mu-pill-dot-gold"></span>Auditado
+            </span>
+          </div>
+        </div>
+
+        <div class="mu-status-col">
+          <div class="mu-status-card">
+            <div class="mu-status-indicator"></div>
+            <span class="mu-status-label">Sistema</span>
+            <span class="mu-status-value">Activo</span>
+            <div class="mu-scan-track">
+              <div class="mu-scan-beam"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-notifications [esBodega]="esBodega"></app-notifications>
+
+    <section
+      *ngFor="let estado of estadosFiltrados; let si = index"
+      class="flex flex-col gap-6 bod-fade"
+      [style]="'--d:' + si * 0.06 + 's'"
+    >
+      <ng-container
+        *ngIf="['Pendiente', 'Recibido', 'Devuelto'].includes(estado)"
+      >
+        <ng-container *ngIf="pedidos$ | async as pedidos">
+          <ng-container *ngIf="filtrarPedidos(pedidos, estado).length > 0">
+            <div class="flex items-center gap-3">
+              <span
+                class="w-2 h-2 rounded-full shrink-0"
+                [ngClass]="{
+                  'bg-yellow-500 animate-pulse': estado === 'Pendiente',
+                  'bg-emerald-500': estado === 'Recibido',
+                  'bg-red-500': estado === 'Devuelto',
+                }"
+              ></span>
+              <span
+                class="text-[10px] uppercase tracking-[0.3em] font-bold text-neutral-400 dark:text-neutral-500"
+              >
+                {{ getTabLabel(estado) }}
+              </span>
+              <span
+                class="text-[10px] font-bold px-2.5 py-0.5 rounded-full"
+                [ngClass]="{
+                  'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-400':
+                    estado === 'Pendiente',
+                  'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400':
+                    estado === 'Recibido',
+                  'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400':
+                    estado === 'Devuelto',
+                }"
+              >
+                {{ filtrarPedidos(pedidos, estado).length }}
+              </span>
+            </div>
+
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+            >
+              <div
+                *ngFor="
+                  let pedido of filtrarPedidos(pedidos, estado);
+                  let i = index
+                "
+                class="bod-card bod-fade group flex flex-col bg-white dark:bg-neutral-950 rounded-3xl overflow-hidden border border-neutral-200/70 dark:border-neutral-800/70 hover:border-neutral-300 dark:hover:border-neutral-700 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/40 transition-all duration-300"
+                [style]="'--d:' + (i * 0.04 + si * 0.06 + 0.05) + 's'"
+              >
+                <div
+                  class="relative h-48 overflow-hidden bg-neutral-100 dark:bg-neutral-900 shrink-0"
+                >
+                  <img
+                    [src]="pedido.imagen || '/logo.svg'"
+                    alt="{{ pedido.marca }}"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
+                  ></div>
+
+                  <span
+                    class="absolute top-3 left-3 text-[10px] uppercase tracking-[0.14em] font-bold px-2.5 py-1 rounded-full backdrop-blur-sm"
+                    [ngClass]="{
+                      'bg-yellow-400/20 text-yellow-900 dark:bg-yellow-400/20 dark:text-yellow-300 border border-yellow-400/30':
+                        pedido.estado === 'Pendiente',
+                      'bg-emerald-400/20 text-emerald-900 dark:bg-emerald-400/20 dark:text-emerald-300 border border-emerald-400/30':
+                        pedido.estado === 'Recibido',
+                      'bg-red-400/20 text-red-900 dark:bg-red-400/20 dark:text-red-300 border border-red-400/30':
+                        pedido.estado === 'Devuelto',
+                    }"
+                    >{{ pedido.estado }}</span
+                  >
+
+                  <div
+                    class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-white dark:bg-black shadow-md flex items-center justify-center text-sm font-black text-yellow-500 border border-white/20 dark:border-white/10"
+                  >
+                    {{ pedido.talla }}
+                  </div>
+                </div>
+
+                <div
+                  class="flex items-center justify-between px-4 py-2 bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-100 dark:border-neutral-800/50"
+                >
+                  <span
+                    class="text-[11px] font-mono text-neutral-400 dark:text-neutral-600"
+                  >
+                    Cód. {{ pedido.zapatoId }}
+                  </span>
+                  <span
+                    class="text-[11px] font-mono text-neutral-400 dark:text-neutral-600"
+                  >
+                    Fila {{ pedido.fila || "—" }}
+                  </span>
+                </div>
+
+                <div class="p-4 flex flex-col gap-2 flex-1">
+                  <p
+                    class="text-sm font-bold text-black dark:text-white leading-tight truncate"
+                  >
+                    {{ pedido.marca }}
+                    <span
+                      class="font-normal text-neutral-300 dark:text-neutral-600"
+                      >·</span
+                    >
+                    <span
+                      class="font-normal text-neutral-500 dark:text-neutral-400"
+                      >{{ pedido.referencia }}</span
+                    >
+                  </p>
+
+                  <div class="flex flex-col gap-0.5">
+                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                      {{ pedido.vendedor }}
+                    </p>
+                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                      {{ pedido.local || "Sin local" }}
+                    </p>
+                    <p
+                      class="text-[11px] font-mono text-neutral-400 dark:text-neutral-600 mt-0.5"
+                    >
+                      {{ formatDate(pedido.hora) }}
+                    </p>
+                  </div>
+
+                  <span
+                    *ngIf="pedido.estado === 'Devuelto'"
+                    class="self-start text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-500/20"
+                  >
+                    {{ pedido.tipoDevolucion || "Sin especificar" }}
+                  </span>
+
+                  <div class="mt-auto pt-3">
+                    <button
+                      *ngIf="pedido.estado === 'Pendiente'"
+                      (click)="aceptarPedido(pedido)"
+                      [disabled]="loadingPedidos[pedido.id]"
+                      class="w-full py-2.5 rounded-full text-xs font-bold bg-yellow-500 text-black hover:bg-yellow-400 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 cursor-pointer inline-flex items-center justify-center gap-1.5 shadow-sm shadow-yellow-500/30"
+                    >
+                      <i
+                        class="pi text-[10px]"
+                        [ngClass]="
+                          loadingPedidos[pedido.id]
+                            ? 'pi-spin pi-spinner'
+                            : 'pi-check'
+                        "
+                      ></i>
+                      {{
+                        loadingPedidos[pedido.id] ? "Procesando…" : "Aceptar"
+                      }}
+                    </button>
+
+                    <button
+                      *ngIf="pedido.estado === 'Devuelto'"
+                      (click)="realizarDevolucion(pedido)"
+                      [disabled]="loadingPedidos[pedido.id]"
+                      class="w-full py-2.5 rounded-full text-xs font-bold bg-black dark:bg-white text-white dark:text-black hover:opacity-80 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 cursor-pointer inline-flex items-center justify-center gap-1.5"
+                    >
+                      <i
+                        class="pi text-[10px]"
+                        [ngClass]="
+                          loadingPedidos[pedido.id]
+                            ? 'pi-spin pi-spinner'
+                            : 'pi-replay'
+                        "
+                      ></i>
+                      {{
+                        loadingPedidos[pedido.id] ? "Procesando…" : "Devolver"
+                      }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </section>
+  </div>
+</div>
+
+<div
+  *ngIf="showPendientesModal"
+  class="fixed inset-0 z-[9999] flex flex-col bod-modal-overlay"
+>
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
+
+  <div class="relative z-10 flex flex-col h-full max-h-screen">
+    <div
+      class="shrink-0 bg-white dark:bg-neutral-950 border-b border-neutral-100 dark:border-neutral-900 px-5 sm:px-8 py-4 flex items-center justify-between bod-modal-header"
+    >
+      <div class="flex items-center gap-3">
+        <div class="relative flex items-center justify-center">
+          <span
+            class="w-3 h-3 rounded-full bg-yellow-500 animate-ping absolute opacity-50"
+          ></span>
+          <span class="w-3 h-3 rounded-full bg-yellow-500 relative"></span>
+        </div>
+        <div>
+          <p
+            class="text-[10px] uppercase tracking-[0.28em] font-bold text-neutral-400 dark:text-neutral-500"
+          >
+            Alerta
+          </p>
+          <h2
+            class="text-base font-black text-black dark:text-white leading-tight"
+          >
+            Pedidos pendientes
+          </h2>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <span
+          class="text-xs font-bold text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-500/10 px-3 py-1 rounded-full border border-yellow-100 dark:border-yellow-500/20"
+        >
+          {{ pedidosPendientes.length }} pendiente{{
+            pedidosPendientes.length !== 1 ? "s" : ""
+          }}
+        </span>
+        <button
+          *ngIf="pedidosPendientes.length === 0"
+          (click)="showPendientesModal = false"
+          class="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors duration-150 cursor-pointer border border-neutral-200 dark:border-neutral-800"
+        >
+          <i
+            class="pi pi-times text-xs text-neutral-600 dark:text-neutral-300"
+          ></i>
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="shrink-0 bg-white dark:bg-neutral-950 px-5 sm:px-8 py-3 border-b border-neutral-100 dark:border-neutral-900"
+    >
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">
+        Acepta cada pedido para continuar. El modal se cerrará automáticamente.
+      </p>
+    </div>
+
+    <div
+      class="flex-1 overflow-y-auto bg-neutral-50 dark:bg-black px-5 sm:px-8 lg:px-12 py-8 bod-modal-scroll"
+    >
+      <div
+        class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+      >
+        <div
+          *ngFor="let pedido of pedidosPendientes; let i = index"
+          class="bod-card bod-modal-card flex flex-col bg-white dark:bg-neutral-950 rounded-3xl overflow-hidden border-2 border-yellow-300/60 dark:border-yellow-500/30 shadow-md shadow-yellow-500/5 transition-all duration-300"
+          [style]="'--d:' + i * 0.05 + 's'"
+        >
+          <div
+            class="relative h-48 overflow-hidden bg-neutral-100 dark:bg-neutral-900 shrink-0"
+          >
+            <img
+              [src]="pedido.imagen || '/logo.svg'"
+              alt="{{ pedido.marca }}"
+              class="w-full h-full object-cover"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"
+            ></div>
+            <span
+              class="absolute top-3 left-3 text-[10px] uppercase tracking-[0.14em] font-bold px-2.5 py-1 rounded-full bg-yellow-400/20 text-yellow-900 dark:text-yellow-300 border border-yellow-400/30 backdrop-blur-sm"
+            >
+              Pendiente
+            </span>
+            <div
+              class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-white dark:bg-black shadow-md flex items-center justify-center text-sm font-black text-yellow-500 border border-white/20 dark:border-white/10"
+            >
+              {{ pedido.talla }}
+            </div>
+          </div>
+
+          <div
+            class="flex items-center justify-between px-4 py-2 bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-100 dark:border-neutral-800/50"
+          >
+            <span
+              class="text-[11px] font-mono text-neutral-400 dark:text-neutral-600"
+              >Cód. {{ pedido.zapatoId }}</span
+            >
+            <span
+              class="text-[11px] font-mono text-neutral-400 dark:text-neutral-600"
+              >Fila {{ pedido.fila || "—" }}</span
+            >
+          </div>
+
+          <div class="p-4 flex flex-col gap-2 flex-1">
+            <p
+              class="text-sm font-bold text-black dark:text-white leading-tight truncate"
+            >
+              {{ pedido.marca }}
+              <span class="font-normal text-neutral-300 dark:text-neutral-600"
+                >·</span
+              >
+              <span
+                class="font-normal text-neutral-500 dark:text-neutral-400"
+                >{{ pedido.referencia }}</span
+              >
+            </p>
+            <div class="flex flex-col gap-0.5">
+              <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                {{ pedido.vendedor }}
+              </p>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                {{ pedido.local || "Sin local" }}
+              </p>
+              <p
+                class="text-[11px] font-mono text-neutral-400 dark:text-neutral-600 mt-0.5"
+              >
+                {{ formatDate(pedido.hora) }}
+              </p>
+            </div>
+            <div class="mt-auto pt-3">
+              <button
+                (click)="aceptarPedido(pedido)"
+                [disabled]="loadingPedidos[pedido.id]"
+                class="w-full py-3 rounded-full text-sm font-black bg-yellow-500 text-black hover:bg-yellow-400 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-150 cursor-pointer inline-flex items-center justify-center gap-2 shadow-md shadow-yellow-500/25"
+              >
+                <i
+                  class="pi text-xs"
+                  [ngClass]="
+                    loadingPedidos[pedido.id]
+                      ? 'pi-spin pi-spinner'
+                      : 'pi-check'
+                  "
+                ></i>
+                {{
+                  loadingPedidos[pedido.id] ? "Procesando…" : "Aceptar pedido"
+                }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="pedidosPendientes.length === 0"
+          class="col-span-full flex flex-col items-center justify-center py-24 gap-5 text-center"
+        >
+          <div
+            class="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20"
+          >
+            <i class="pi pi-check text-3xl text-emerald-500"></i>
+          </div>
+          <div>
+            <p class="text-lg font-black text-black dark:text-white">
+              Todos los pedidos aceptados
+            </p>
+            <p class="text-sm text-neutral-400 dark:text-neutral-600 mt-1">
+              El modal se cerrará en un momento…
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showPrintModal" class="bm-overlay" (click)="cerrarPrintModal()">
+  <div class="bm-sheet" (click)="$event.stopPropagation()">
+    <div class="bm-handle"></div>
+
+    <div class="bm-header">
+      <div class="bm-header-icon">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path
+            d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+          ></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+      </div>
+      <div>
+        <p class="bm-label">Antes de devolver</p>
+        <h3 class="bm-title">¿Imprimir sticker?</h3>
+      </div>
+      <button class="bm-close" (click)="cerrarPrintModal()">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="bm-product-card" *ngIf="pedidoParaImprimir">
+      <div class="bm-product-img">
+        <img
+          [src]="pedidoParaImprimir.imagen || '/logo.svg'"
+          [alt]="pedidoParaImprimir.marca"
+        />
+      </div>
+      <div class="bm-product-info">
+        <div class="bm-product-brand">{{ pedidoParaImprimir.marca }}</div>
+        <div class="bm-product-ref">{{ pedidoParaImprimir.referencia }}</div>
+      </div>
+      <div class="bm-data-grid">
+        <div class="bm-data-cell bm-data-talla">
+          <span class="bm-data-label">Talla</span>
+          <span class="bm-data-value">{{ pedidoParaImprimir.talla }}</span>
+        </div>
+        <div class="bm-data-cell bm-data-cod">
+          <span class="bm-data-label">Código</span>
+          <span class="bm-data-value">{{ pedidoParaImprimir.zapatoId }}</span>
+        </div>
+        <div
+          class="bm-data-cell bm-data-local"
+          *ngIf="pedidoParaImprimir.local"
+        >
+          <span class="bm-data-label">Local</span>
+          <span class="bm-data-value">{{ pedidoParaImprimir.local }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="bm-printer-status"
+      [class.bm-printer-ok]="printer.isConnected()"
+      [class.bm-printer-off]="!printer.isConnected()"
+    >
+      <div class="bm-printer-dot"></div>
+      <span>{{
+        printer.isConnected()
+          ? printer.deviceName() || "Impresora conectada"
+          : "Sin impresora conectada"
+      }}</span>
+      <button
+        *ngIf="!printer.isConnected()"
+        class="bm-connect-btn"
+        (click)="connectPrinter()"
+        [disabled]="printer.isConnecting()"
+      >
+        <span *ngIf="!printer.isConnecting()">Conectar</span>
+        <span *ngIf="printer.isConnecting()" class="bm-spin-inline"></span>
+      </button>
+    </div>
+
+    <div class="bm-done" *ngIf="printSuccess">
+      <div class="bm-done-icon">
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <p class="bm-done-title">Sticker enviado</p>
+      <p class="bm-done-sub">Cerrando en un momento…</p>
+      <div class="bm-done-progress">
+        <div class="bm-done-bar"></div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!printSuccess">
+      <div class="bm-error-banner" *ngIf="printError">
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        {{ printError }}
+      </div>
+
+      <div class="bm-actions" *ngIf="!confirmando">
+        <button
+          class="bm-btn bm-btn-print"
+          (click)="pedirConfirmacion('print')"
+          [disabled]="!printer.isConnected() || printLoading"
+        >
+          <span class="bm-btn-inner">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path
+                d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+              ></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Imprimir sticker
+          </span>
+        </button>
+      </div>
+
+      <div class="bm-confirm-box" *ngIf="confirmando">
+        <p class="bm-confirm-text">
+          Se enviará el sticker a la impresora. ¿Confirmar?
+        </p>
+        <div class="bm-confirm-actions">
+          <button
+            class="bm-btn bm-btn-skip bm-btn-half"
+            (click)="cancelarConfirmacion()"
+            [disabled]="printLoading"
+          >
+            Cancelar
+          </button>
+          <button
+            class="bm-btn bm-btn-confirm bm-btn-half"
+            (click)="confirmar()"
+            [disabled]="printLoading"
+          >
+            <span *ngIf="!printLoading" class="bm-btn-inner">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Confirmar
+            </span>
+            <span *ngIf="printLoading" class="bm-btn-inner">
+              <span class="bm-spinner"></span>
+              Imprimiendo…
+            </span>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<app-other-sites *ngIf="esAdmin"></app-other-sites>

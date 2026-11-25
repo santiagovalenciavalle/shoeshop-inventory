@@ -1,0 +1,428 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+></p-toast>
+
+<div
+  class="min-h-screen bg-white text-neutral-900 dark:bg-black dark:text-white transition-colors duration-500"
+>
+  <div class="max-w-5xl mx-auto px-6 sm:px-10 py-16">
+    <header
+      class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-16 gap-4 sm:gap-0"
+    >
+      <div class="flex items-center gap-4 sm:gap-6 w-full sm:w-auto">
+        <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">
+          Gestión de Proveedores
+        </h1>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+        <button
+          (click)="abrirModalCuentas()"
+          class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-2xl bg-amber-400 text-black hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-sm sm:text-sm font-medium"
+          [disabled]="cargando"
+        >
+          Ver Cuentas
+        </button>
+
+        <button
+          (click)="abrirModal()"
+          class="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 rounded-2xl bg-neutral-900 text-white dark:bg-white dark:text-black hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-sm sm:text-sm font-medium"
+          [disabled]="cargando"
+        >
+          Nuevo Proveedor
+        </button>
+      </div>
+    </header>
+
+    <div class="mb-16 relative max-w-md flex items-center gap-2">
+      <i
+        class="pi pi-search absolute left-5 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-white/40"
+      ></i>
+
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        (input)="filtrarProveedores()"
+        placeholder="Buscar proveedor..."
+        class="w-full pl-12 pr-5 py-4 rounded-2xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 backdrop-blur-xl text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition-all duration-300"
+      />
+
+      <button
+        *ngIf="busqueda"
+        (click)="limpiarFiltro()"
+        type="button"
+        class="flex items-center justify-center px-4 py-2 rounded-2xl bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 text-sm"
+      >
+        Limpiar
+      </button>
+    </div>
+
+    <div
+      class="rounded-3xl bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 backdrop-blur-2xl overflow-hidden transition-all duration-500"
+    >
+      <div
+        class="px-8 py-6 border-b border-neutral-200 dark:border-white/10 flex justify-between items-center"
+      >
+        <h2 class="text-lg font-semibold tracking-tight">Proveedores</h2>
+
+        <span class="text-sm text-neutral-400 dark:text-white/40">
+          {{ proveedoresFiltrados.length }} registrados
+        </span>
+      </div>
+
+      <div
+        *ngIf="cargando"
+        class="divide-y divide-neutral-200 dark:divide-white/10"
+      >
+        <div
+          *ngFor="let item of [1, 2, 3, 4, 5, 6]"
+          class="px-8 py-6 animate-pulse flex justify-between items-center"
+        >
+          <div class="space-y-3">
+            <div
+              class="h-3 w-48 rounded-full bg-neutral-200 dark:bg-white/10"
+            ></div>
+            <div
+              class="h-2 w-32 rounded-full bg-neutral-200 dark:bg-white/10"
+            ></div>
+          </div>
+
+          <div
+            class="h-8 w-24 rounded-xl bg-neutral-200 dark:bg-white/10"
+          ></div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="!cargando && proveedoresFiltrados.length === 0"
+        class="py-20 text-center text-neutral-400 dark:text-white/40"
+      >
+        No se encontraron resultados
+      </div>
+
+      <div
+        *ngIf="!cargando"
+        class="divide-y divide-neutral-200 dark:divide-white/10"
+      >
+        <div
+          *ngFor="let proveedor of proveedoresFiltrados"
+          class="group px-8 py-6 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-white/5 transition-all duration-300"
+        >
+          <div class="flex items-center gap-6">
+            <div
+              class="w-12 h-12 rounded-2xl bg-neutral-100 dark:bg-white/10 flex items-center justify-center"
+            >
+              <i class="pi pi-briefcase text-amber-400"></i>
+            </div>
+
+            <div>
+              <p class="font-medium tracking-tight">
+                {{ proveedor.nombre | titlecase }}
+              </p>
+
+              <p class="text-sm text-neutral-500 dark:text-white/40">
+                {{ proveedor.descripcion | titlecase }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <span
+              class="hidden sm:inline-block text-xs px-3 py-1 rounded-xl bg-amber-400/10 text-amber-500 border border-amber-400/20"
+            >
+              ID {{ proveedor.id }}
+            </span>
+
+            <button
+              [routerLink]="['/admin/proveedores', proveedor.id]"
+              class="px-4 py-2 rounded-xl text-sm font-medium bg-neutral-900 text-white dark:bg-white dark:text-black hover:scale-[1.05] transition-all duration-200"
+            >
+              Ver
+            </button>
+
+            <button
+              (click)="abrirModalEliminar(proveedor)"
+              class="px-4 py-2 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 transition-all duration-200"
+              [disabled]="eliminando"
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModal"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md px-6 transition-all duration-300"
+>
+  <div
+    class="w-full max-w-lg rounded-3xl bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 backdrop-blur-2xl shadow-2xl p-10"
+  >
+    <div class="mb-10">
+      <h3 class="text-xl font-semibold tracking-tight">Nuevo Proveedor</h3>
+      <p class="text-sm mt-2 text-neutral-500 dark:text-white/40">
+        Completa la información para registrar un nuevo proveedor.
+      </p>
+    </div>
+
+    <form [formGroup]="proveedorForm" class="space-y-8">
+      <div class="space-y-3">
+        <label class="text-sm font-medium text-neutral-600 dark:text-white/60">
+          Nombre
+        </label>
+
+        <input
+          type="text"
+          formControlName="nombre"
+          class="w-full px-4 py-4 rounded-2xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition-all duration-300"
+          [ngClass]="{
+            'border-red-500 focus:ring-red-500/40':
+              proveedorForm.get('nombre')?.invalid &&
+              proveedorForm.get('nombre')?.touched,
+          }"
+        />
+
+        <p
+          *ngIf="
+            proveedorForm.get('nombre')?.invalid &&
+            proveedorForm.get('nombre')?.touched
+          "
+          class="text-xs text-red-500"
+        >
+          Mínimo 3 caracteres.
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <label class="text-sm font-medium text-neutral-600 dark:text-white/60">
+          Descripción
+        </label>
+
+        <textarea
+          rows="3"
+          formControlName="descripcion"
+          class="w-full px-4 py-4 rounded-2xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition-all duration-300"
+          [ngClass]="{
+            'border-red-500 focus:ring-red-500/40':
+              proveedorForm.get('descripcion')?.invalid &&
+              proveedorForm.get('descripcion')?.touched,
+          }"
+        ></textarea>
+
+        <p
+          *ngIf="
+            proveedorForm.get('descripcion')?.invalid &&
+            proveedorForm.get('descripcion')?.touched
+          "
+          class="text-xs text-red-500"
+        >
+          Mínimo 5 caracteres.
+        </p>
+      </div>
+    </form>
+
+    <div class="flex gap-4 mt-12">
+      <button
+        (click)="guardarProveedor()"
+        [disabled]="guardando"
+        class="flex-1 py-4 rounded-2xl bg-neutral-900 text-white dark:bg-white dark:text-black hover:scale-[1.02] active:scale-[0.97] disabled:opacity-60 transition-all duration-300 text-sm font-medium flex justify-center items-center gap-2"
+      >
+        <app-ia-spinner *ngIf="guardando"></app-ia-spinner>
+        <span>{{ guardando ? "Guardando..." : "Guardar" }}</span>
+      </button>
+
+      <button
+        (click)="cerrarModal()"
+        class="flex-1 py-4 rounded-2xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 hover:bg-neutral-200 dark:hover:bg-white/10 transition-all duration-300 text-sm font-medium"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+<div
+  *ngIf="mostrarModalEliminar"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md px-6 transition-all duration-300"
+>
+  <div
+    class="w-full max-w-md rounded-3xl bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 backdrop-blur-2xl shadow-2xl p-10"
+  >
+    <div class="flex items-center gap-4 mb-8">
+      <div
+        class="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center"
+      >
+        <i class="pi pi-exclamation-triangle text-red-500"></i>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-semibold tracking-tight">
+          Confirmar eliminación
+        </h3>
+        <p class="text-sm text-neutral-500 dark:text-white/40">
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+    </div>
+
+    <p class="text-sm text-neutral-600 dark:text-white/60 mb-10">
+      ¿Deseas eliminar a
+      <span class="font-semibold">
+        {{ proveedorAEliminar?.nombre }}
+      </span>
+      como proveedor?
+    </p>
+
+    <div class="flex gap-4">
+      <button
+        (click)="confirmarEliminacion()"
+        [disabled]="eliminando"
+        class="flex-1 py-4 rounded-2xl bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 transition-all duration-300 text-sm font-medium flex justify-center items-center gap-2"
+      >
+        <app-ia-spinner *ngIf="eliminando"></app-ia-spinner>
+        <span>{{ eliminando ? "Eliminando..." : "Eliminar" }}</span>
+      </button>
+
+      <button
+        (click)="cancelarEliminacion()"
+        class="flex-1 py-4 rounded-2xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 hover:bg-neutral-200 dark:hover:bg-white/10 transition-all duration-300 text-sm font-medium"
+      >
+        Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+<div
+  *ngIf="mostrarModalCuentas"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md px-4 sm:px-8 transition-opacity duration-300 opacity-0 animate-fade-in"
+>
+  <div
+    class="relative w-full max-w-4xl h-[92vh] sm:h-[85vh] rounded-[32px] bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-white/10 shadow-2xl overflow-y-auto transform scale-95 opacity-0 animate-scale-fade"
+  >
+    <button
+      (click)="cerrarModalCuentas()"
+      class="fixed sm:absolute top-6 right-6 z-50 w-11 h-11 rounded-full bg-neutral-100 dark:bg-white/10 border border-neutral-200 dark:border-white/10 hover:bg-neutral-200 dark:hover:bg-white/20 transition-all duration-300 flex items-center justify-center"
+    >
+      <i class="pi pi-times text-sm"></i>
+    </button>
+
+    <div class="px-8 sm:px-14 py-16 space-y-16">
+      <div class="animate-slide-up">
+        <h3 class="text-2xl sm:text-3xl font-semibold tracking-tight">
+          Cuentas por Pagar
+        </h3>
+        <p class="text-sm mt-4 text-neutral-500 dark:text-white/40">
+          Estado financiero actual con proveedores registrados.
+        </p>
+      </div>
+
+      <div class="animate-slide-up delay-75">
+        <p class="text-sm text-neutral-400 dark:text-white/30 mb-6">
+          Deuda Total General
+        </p>
+        <p
+          class="text-4xl sm:text-5xl font-semibold tracking-tight text-amber-500"
+        >
+          {{ totalDeudaGeneral | currency: "USD" }}
+        </p>
+      </div>
+      <button
+        (click)="exportarCuentasPDF()"
+        class="px-6 py-3 rounded-2xl bg-black text-white text-sm font-medium hover:scale-[1.02] transition-all duration-300"
+      >
+        Exportar PDF
+      </button>
+
+      <div class="space-y-12 animate-slide-up delay-150">
+        <div
+          *ngFor="let cuenta of resumenCuentas"
+          class="pb-10 border-b border-neutral-200 dark:border-white/10"
+        >
+          <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+          >
+            <div>
+              <p class="text-base font-medium tracking-tight">
+                {{ cuenta.nombre | titlecase }}
+              </p>
+              <p class="text-sm text-neutral-500 dark:text-white/40 mt-3">
+                {{ cuenta.facturasPendientes }} facturas pendientes
+              </p>
+            </div>
+
+            <div class="sm:text-right">
+              <p
+                class="text-xl sm:text-2xl font-semibold tracking-tight"
+                [ngClass]="{
+                  'text-red-500': cuenta.totalDeuda > 0,
+                  'text-emerald-500': cuenta.totalDeuda === 0,
+                }"
+              >
+                {{ cuenta.totalDeuda | currency: "USD" }}
+              </p>
+              <p class="text-xs mt-2 text-neutral-400 dark:text-white/30">
+                {{ cuenta.totalDeuda > 0 ? "Pendiente" : "Sin deuda" }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @layer utilities {
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.25s ease-out forwards;
+    }
+
+    @keyframes scale-fade {
+      0% {
+        transform: scale(0.98);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .animate-scale-fade {
+      animation: scale-fade 0.3s ease-out forwards;
+    }
+
+    @keyframes slide-up {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-slide-up {
+      animation: slide-up 0.3s ease-out forwards;
+    }
+
+    .delay-75 {
+      animation-delay: 0.075s;
+    }
+    .delay-150 {
+      animation-delay: 0.15s;
+    }
+  }
+</style>

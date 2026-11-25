@@ -1,0 +1,80 @@
+@keyframes prestFadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.prest-fade {
+    opacity: 0;
+    animation: prestFadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes overlayIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.modal-overlay-in {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    animation: overlayIn 0.25s ease-out forwards;
+}
+
+@keyframes sheetIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-sheet-in {
+    animation: sheetIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.prest-card {
+    will-change: transform;
+}
+
+.iphone-loader {
+    position: relative;
+    width: 34px;
+    height: 34px;
+}
+
+.iphone-loader span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3px;
+    height: 9px;
+    background: #b8922a;
+    border-radius: 2px;
+    transform-origin: center -12px;
+    animation: iphoneFade 1.2s linear infinite;
+}
+
+@keyframes iphoneFade {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.1;
+    }
+}

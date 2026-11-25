@@ -1,0 +1,89 @@
+@keyframes hvFadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hv-fade {
+    opacity: 0;
+    animation: hvFadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) var(--d, 0s) forwards;
+}
+
+.kpi-mini {
+    will-change: transform;
+}
+
+.venta-row {
+    will-change: transform;
+}
+
+@keyframes overlayIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.modal-overlay-in {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: overlayIn 0.25s ease-out forwards;
+}
+
+@keyframes sheetIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-sheet-in {
+    animation: sheetIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    scrollbar-width: none;
+}
+
+.modal-sheet-in::-webkit-scrollbar {
+    display: none;
+}
+
+.hv-datepicker .p-inputtext {
+    border-radius: 14px !important;
+    border-color: #e5e5e5 !important;
+    background: #fafafa !important;
+    font-size: 0.875rem !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.hv-datepicker .p-inputtext:focus {
+    border-color: #EAB308 !important;
+    box-shadow: 0 0 0 2px rgba(234, 179, 8, 0.2) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    .hv-datepicker .p-inputtext {
+        background: #171717 !important;
+        border-color: #262626 !important;
+        color: #fff !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .kpi-mini {
+        padding: 0.875rem;
+    }
+}

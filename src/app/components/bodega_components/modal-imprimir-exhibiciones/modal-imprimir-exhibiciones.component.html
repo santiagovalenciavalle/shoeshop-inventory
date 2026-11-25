@@ -1,0 +1,798 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+></p-toast>
+
+<div class="min-h-screen bg-neutral-100 dark:bg-neutral-950 flex flex-col">
+  <header
+    class="top-0 z-40 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800"
+  >
+    <div class="flex items-center justify-between px-4 py-4">
+      <a
+        routerLink="/bodega/inventario"
+        class="w-9 h-9 flex items-center justify-center rounded-full text-amber-500 dark:text-amber-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+        title="Volver"
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      </a>
+
+      <h1
+        class="text-lg font-bold text-neutral-900 dark:text-white tracking-tight"
+      >
+        Impresión de Exhibiciones
+      </h1>
+
+      <div class="w-9 h-9"></div>
+    </div>
+
+    <div class="px-4 pb-3 space-y-2">
+      <div class="relative">
+        <svg
+          class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <rect x="3" y="3" width="5" height="5" />
+          <rect x="16" y="3" width="5" height="5" />
+          <rect x="3" y="16" width="5" height="5" />
+          <path d="M21 16h-3v3" />
+          <path d="M21 21v.01" />
+          <path d="M12 7v3" />
+          <path d="M12 3v.01" />
+          <path d="M12 21v-1" />
+          <path d="M3 12h1" />
+          <path d="M21 12v.01" />
+        </svg>
+        <input
+          [(ngModel)]="searchCode"
+          (ngModelChange)="displayCount = 20"
+          placeholder="Buscar por código"
+          autocomplete="off"
+          class="w-full pl-10 pr-10 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm outline-none focus:ring-2 focus:ring-amber-500 transition-all border-0"
+        />
+        <button
+          *ngIf="searchCode"
+          (click)="searchCode = ''"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="relative">
+        <svg
+          class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="displayCount = 20"
+          placeholder="Buscar por marca y referencia"
+          autocomplete="off"
+          class="w-full pl-10 pr-10 py-3 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm outline-none focus:ring-2 focus:ring-amber-500 transition-all border-0"
+        />
+        <button
+          *ngIf="searchTerm"
+          (click)="searchTerm = ''"
+          class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="px-4 pb-4">
+      <p
+        class="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-2.5"
+      >
+        Locales disponibles
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <button
+          class="px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap"
+          [ngClass]="
+            !selectedLocalNum
+              ? 'bg-amber-400 dark:bg-amber-500 text-neutral-900 shadow-md'
+              : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-700'
+          "
+          (click)="seleccionarLocal(null)"
+        >
+          Todos
+        </button>
+        <button
+          *ngFor="let l of localesConExhibiciones; trackBy: trackByLocalId"
+          class="px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap"
+          [ngClass]="
+            selectedLocalNum === extractNum(l.nombre)
+              ? 'bg-amber-400 dark:bg-amber-500 text-neutral-900 shadow-md'
+              : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-700'
+          "
+          (click)="seleccionarLocal(extractNum(l.nombre))"
+        >
+          Local {{ extractNum(l.nombre) }}
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="flex items-center justify-between px-4 py-3 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900"
+    >
+      <p class="text-sm text-neutral-600 dark:text-neutral-400 font-medium">
+        Total exhibiciones
+        <span
+          class="text-amber-500 dark:text-amber-400 font-bold text-xl ml-1.5"
+          >{{ exhibicionesFiltradas.length }}</span
+        >
+      </p>
+      <button
+        *ngIf="!imprimiendo"
+        (click)="abrirImprimirTodas()"
+        class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-900 dark:bg-neutral-800 hover:bg-neutral-700 dark:hover:bg-neutral-700 text-amber-400 font-semibold text-xs transition-all shadow-sm active:scale-95"
+        title="Imprimir todas"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="17" y1="10" x2="3" y2="10" />
+          <line x1="21" y1="6" x2="3" y2="6" />
+          <line x1="21" y1="14" x2="3" y2="14" />
+          <line x1="17" y1="18" x2="3" y2="18" />
+          <polyline points="21 10 17 6 21 6" />
+        </svg>
+        <span>Imprimir todas</span>
+      </button>
+      <ng-container *ngIf="selectedLocalNum && imprimiendo">
+        <span
+          class="text-xs text-amber-600 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-900/30 px-2.5 py-1 rounded-full"
+        >
+          Local {{ selectedLocalNum }}
+        </span>
+      </ng-container>
+    </div>
+  </header>
+
+  <main class="flex-1 px-3 sm:px-4 lg:px-6 py-4 max-w-7xl w-full mx-auto">
+    <div
+      *ngIf="cargando"
+      class="flex flex-col items-center justify-center py-24"
+    >
+      <app-ia-loader mensaje="Cargando exhibiciones…"></app-ia-loader>
+    </div>
+
+    <div
+      *ngIf="!cargando && exhibicionesFiltradas.length === 0"
+      class="flex flex-col items-center justify-center py-24 text-center"
+    >
+      <div
+        class="w-16 h-16 rounded-2xl bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center mb-5"
+      >
+        <svg
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-neutral-400 dark:text-neutral-600"
+        >
+          <rect x="2" y="3" width="20" height="14" rx="2" />
+          <line x1="8" y1="21" x2="16" y2="21" />
+          <line x1="12" y1="17" x2="12" y2="21" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-1">
+        Sin exhibiciones
+      </h3>
+      <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-xs">
+        <ng-container *ngIf="searchTerm || searchCode"
+          >No encontramos resultados para tu búsqueda</ng-container
+        >
+        <ng-container *ngIf="!searchTerm && !searchCode && selectedLocalNum"
+          >No hay exhibiciones para el Local
+          {{ selectedLocalNum }}</ng-container
+        >
+        <ng-container *ngIf="!searchTerm && !searchCode && !selectedLocalNum"
+          >No hay exhibiciones en este momento</ng-container
+        >
+      </p>
+    </div>
+
+    <div
+      *ngIf="!cargando && exhibicionesFiltradas.length > 0"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4"
+    >
+      <button
+        *ngFor="
+          let ex of exhibicionesFiltradas | slice: 0 : displayCount;
+          trackBy: trackById
+        "
+        class="group relative overflow-hidden rounded-2xl aspect-[4/5] w-full text-left focus:outline-none focus:ring-2 focus:ring-amber-500 active:scale-[0.98] transition-transform duration-150"
+        (click)="abrirElegirLocal(ex)"
+        type="button"
+      >
+        <div
+          class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+          [style.background-image]="
+            'url(' + (ex.imagen || '/logo.svg') + ')'
+          "
+        ></div>
+
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"
+        ></div>
+
+        <div
+          class="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100"
+        >
+          <div class="flex flex-col items-center gap-2">
+            <div
+              class="w-14 h-14 rounded-full bg-amber-400 dark:bg-amber-500 flex items-center justify-center shadow-2xl transform scale-75 group-hover:scale-100 transition-transform duration-300"
+            >
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#1a1a1a"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="6 9 6 2 18 2 18 9" />
+                <path
+                  d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+                />
+                <rect x="6" y="14" width="12" height="8" />
+              </svg>
+            </div>
+            <span
+              class="text-white text-xs font-bold tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75"
+              >Imprimir</span
+            >
+          </div>
+        </div>
+
+        <div
+          class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-amber-400 dark:bg-amber-500 text-neutral-900 text-[10px] font-extrabold uppercase tracking-wider shadow-lg"
+        >
+          sticker
+        </div>
+
+        <button
+          class="sm:hidden absolute top-3 left-3 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center shadow-lg active:scale-90 transition-transform z-10"
+          (click)="$event.stopPropagation(); abrirElegirLocal(ex)"
+          type="button"
+          aria-label="Imprimir"
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#f59e0b"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path
+              d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+            />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+        </button>
+
+        <div class="absolute bottom-0 left-0 right-0 px-4 pb-4 pt-8">
+          <p
+            class="text-white font-extrabold text-lg leading-tight truncate drop-shadow"
+          >
+            {{ ex.marca }}
+          </p>
+          <p class="text-amber-400 text-xs font-semibold truncate mt-0.5">
+            {{ ex.referencia }}
+          </p>
+          <div class="flex items-end justify-between mt-2">
+            <span
+              class="inline-flex items-center px-2 py-0.5 rounded-md bg-white/10 text-white text-xs font-semibold backdrop-blur-sm"
+            >
+              Local {{ localesDeExhibicion(ex) }}
+            </span>
+            <div class="text-right">
+              <p class="text-[10px] text-neutral-400 leading-none">Talla</p>
+              <p class="text-amber-400 font-extrabold text-2xl leading-none">
+                {{ ex.talla }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <div
+      *ngIf="!cargando && displayCount < exhibicionesFiltradas.length"
+      class="flex flex-col items-center gap-1.5 mt-8 pb-6"
+    >
+      <button
+        (click)="cargarMas()"
+        class="flex items-center gap-2 px-6 py-3 rounded-full bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:border-amber-500 dark:hover:border-amber-400 text-neutral-700 dark:text-neutral-200 font-semibold text-sm transition-all shadow-sm hover:shadow-md active:scale-95"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+        Ver más
+      </button>
+      <p class="text-xs text-neutral-400 dark:text-neutral-500">
+        {{ displayCount }} de {{ exhibicionesFiltradas.length }}
+      </p>
+    </div>
+  </main>
+</div>
+
+<div
+  *ngIf="exhibicionParaImprimir"
+  class="fixed inset-0 z-50"
+  (click)="cerrarElegirLocal()"
+>
+  <div
+    class="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
+  ></div>
+
+  <div
+    class="absolute inset-y-0 right-0 w-full max-w-md bg-white dark:bg-neutral-900 shadow-2xl overflow-y-auto flex flex-col"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="sticky top-0 z-10 bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 px-5 py-4 flex items-start justify-between"
+    >
+      <div>
+        <p
+          class="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest"
+        >
+          Selecciona destino
+        </p>
+        <h3 class="text-base font-bold text-neutral-900 dark:text-white mt-0.5">
+          ¿A qué local imprimir?
+        </h3>
+      </div>
+      <button
+        (click)="cerrarElegirLocal()"
+        class="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl text-neutral-500 transition-colors"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div
+      class="px-5 py-4 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950"
+    >
+      <div class="flex gap-4">
+        <div
+          class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-neutral-200 dark:bg-neutral-800 shadow"
+        >
+          <div
+            class="w-full h-full bg-cover bg-center"
+            [style.background-image]="
+              'url(' + (exhibicionParaImprimir.imagen || '/logo.svg') + ')'
+            "
+          ></div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="font-bold text-neutral-900 dark:text-white truncate">
+            {{ exhibicionParaImprimir.marca }}
+          </p>
+          <p class="text-sm text-neutral-500 dark:text-neutral-400 truncate">
+            {{ exhibicionParaImprimir.referencia }}
+          </p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <span
+              class="px-2 py-1 rounded-lg text-xs font-semibold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+              >T{{ exhibicionParaImprimir.talla }}</span
+            >
+            <span
+              class="px-2 py-1 rounded-lg text-xs font-semibold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
+              >{{ exhibicionParaImprimir.zapatoId }}</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1 px-5 py-5 overflow-y-auto">
+      <p
+        class="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-3"
+      >
+        Locales disponibles
+      </p>
+      <div class="grid grid-cols-3 gap-2.5">
+        <button
+          *ngFor="let l of locales; trackBy: trackByLocalId"
+          class="relative p-4 rounded-xl border-2 font-bold text-lg transition-all"
+          [ngClass]="{
+            'border-amber-500 bg-amber-50 dark:border-amber-400 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 shadow-lg':
+              localElegido === extractNum(l.nombre),
+            'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 text-neutral-900 dark:text-white hover:border-amber-400':
+              localElegido !== extractNum(l.nombre),
+          }"
+          [disabled]="imprimiendo"
+          (click)="localElegido = extractNum(l.nombre)"
+          type="button"
+        >
+          {{ extractNum(l.nombre) }}
+          <span
+            *ngIf="
+              exhibicionEnLocal(
+                exhibicionParaImprimir.locales ?? [],
+                extractNum(l.nombre)
+              )
+            "
+            class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold shadow"
+            >✓</span
+          >
+        </button>
+      </div>
+    </div>
+
+    <div
+      *ngIf="imprimiendo"
+      class="flex flex-col items-center gap-3 px-5 py-6 border-t border-neutral-200 dark:border-neutral-800"
+    >
+      <app-ia-loader mensaje="Imprimiendo…"></app-ia-loader>
+    </div>
+
+    <div
+      *ngIf="impresionOk && !imprimiendo"
+      class="flex items-center justify-center gap-2.5 px-5 py-5 border-t border-neutral-200 dark:border-neutral-800 bg-green-50 dark:bg-green-900/20"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        class="text-green-600 dark:text-green-400"
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+      <span class="font-semibold text-sm text-green-700 dark:text-green-300"
+        >¡Imprimido correctamente!</span
+      >
+    </div>
+
+    <div
+      class="sticky bottom-0 bg-white dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800 px-5 py-4 flex gap-3"
+    >
+      <button
+        (click)="cerrarElegirLocal()"
+        class="flex-1 px-4 py-3 rounded-xl border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white font-semibold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+        [disabled]="imprimiendo"
+        type="button"
+      >
+        {{ impresionOk ? "Cerrar" : "Cancelar" }}
+      </button>
+      <button
+        *ngIf="!impresionOk"
+        (click)="confirmarImprimirIndividual()"
+        class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-600 text-neutral-900 font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-sm"
+        [disabled]="imprimiendo || !localElegido"
+        type="button"
+      >
+        <ng-container *ngIf="!imprimiendo">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path
+              d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+            />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+          Imprimir
+        </ng-container>
+        <ng-container *ngIf="imprimiendo">
+          <app-ia-spinner class="w-4 h-4 text-neutral-900"></app-ia-spinner>
+          Imprimiendo…
+        </ng-container>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="modalImprimirTodas"
+  class="fixed inset-0 z-50"
+  (click)="cerrarImprimirTodas()"
+>
+  <div
+    class="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
+  ></div>
+
+  <div
+    class="absolute inset-0 flex items-center justify-center p-4"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="w-full max-w-md bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]"
+    >
+      <div
+        class="border-b border-neutral-200 dark:border-neutral-800 px-5 py-4 flex items-start justify-between"
+      >
+        <div>
+          <p
+            class="text-[10px] font-bold text-amber-500 dark:text-amber-400 uppercase tracking-widest"
+          >
+            Impresión masiva
+          </p>
+          <h3
+            class="text-base font-bold text-neutral-900 dark:text-white mt-0.5"
+          >
+            ¿Qué local imprimir?
+          </h3>
+        </div>
+        <button
+          (click)="cerrarImprimirTodas()"
+          class="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl text-neutral-500 transition-colors"
+          [disabled]="imprimiendo"
+          type="button"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto px-5 py-5 space-y-5">
+        <div>
+          <p
+            class="text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-widest mb-3"
+          >
+            Selecciona un local
+          </p>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button
+              *ngFor="let l of localesConExhibiciones; trackBy: trackByLocalId"
+              class="p-3 rounded-xl border-2 font-bold text-base transition-all"
+              [ngClass]="{
+                'border-amber-500 bg-amber-50 dark:border-amber-400 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 shadow-lg':
+                  localTodasElegido === extractNum(l.nombre),
+                'border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800 text-neutral-900 dark:text-white hover:border-amber-400':
+                  localTodasElegido !== extractNum(l.nombre),
+              }"
+              [disabled]="imprimiendo"
+              (click)="localTodasElegido = extractNum(l.nombre)"
+              type="button"
+            >
+              <div>{{ extractNum(l.nombre) }}</div>
+              <div class="text-xs font-normal opacity-60 mt-0.5">
+                {{ todasExhibiciones | mieLocalCount: extractNum(l.nombre) }}
+                sticker{{
+                  (todasExhibiciones | mieLocalCount: extractNum(l.nombre)) !==
+                  1
+                    ? "s"
+                    : ""
+                }}
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div
+          *ngIf="localTodasElegido"
+          class="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 flex items-start gap-3"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            class="text-blue-500 dark:text-blue-400 flex-shrink-0 mt-0.5"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span class="text-sm text-blue-900 dark:text-blue-200">
+            Se imprimirán
+            <strong class="text-blue-700 dark:text-blue-300">{{
+              exhibicionesDelLocalSeleccionado.length
+            }}</strong>
+            sticker{{
+              exhibicionesDelLocalSeleccionado.length !== 1 ? "s" : ""
+            }}
+            para Local
+            <strong class="text-blue-700 dark:text-blue-300">{{
+              localTodasElegido
+            }}</strong>
+          </span>
+        </div>
+      </div>
+
+      <div
+        *ngIf="imprimiendo && progreso"
+        class="px-5 py-4 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950 space-y-2.5"
+      >
+        <div class="flex items-center justify-between text-sm">
+          <span class="font-medium text-neutral-700 dark:text-neutral-300"
+            >Enviando a impresora…</span
+          >
+          <span class="font-bold text-amber-500 dark:text-amber-400"
+            >{{ progreso.actual }}/{{ progreso.total }}</span
+          >
+        </div>
+        <div
+          class="w-full h-2 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden"
+        >
+          <div
+            class="h-full bg-amber-500 dark:bg-amber-400 transition-all duration-300 rounded-full"
+            [style.width.%]="(progreso.actual / progreso.total) * 100"
+          ></div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="impresionOk && !imprimiendo"
+        class="flex items-center justify-center gap-2.5 px-5 py-5 border-t border-neutral-200 dark:border-neutral-800 bg-green-50 dark:bg-green-900/20"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          class="text-green-600 dark:text-green-400"
+        >
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        <span class="font-semibold text-sm text-green-700 dark:text-green-300"
+          >¡Listo! {{ progreso?.total }} stickers enviados.</span
+        >
+      </div>
+
+      <div
+        class="border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-5 py-4 flex gap-3"
+      >
+        <button
+          (click)="cerrarImprimirTodas()"
+          class="flex-1 px-4 py-3 rounded-xl border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white font-semibold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+          [disabled]="imprimiendo"
+          type="button"
+        >
+          {{ impresionOk ? "Cerrar" : "Cancelar" }}
+        </button>
+        <button
+          *ngIf="!impresionOk"
+          (click)="confirmarImprimirTodas()"
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-600 text-neutral-900 font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-sm"
+          [disabled]="
+            imprimiendo ||
+            !localTodasElegido ||
+            exhibicionesDelLocalSeleccionado.length === 0
+          "
+          type="button"
+        >
+          <ng-container *ngIf="!imprimiendo">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path
+                d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+              />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
+            Imprimir {{ exhibicionesDelLocalSeleccionado.length }} sticker{{
+              exhibicionesDelLocalSeleccionado.length !== 1 ? "s" : ""
+            }}
+          </ng-container>
+          <ng-container *ngIf="imprimiendo">
+            <app-ia-spinner class="w-4 h-4 text-neutral-900"></app-ia-spinner>
+            Imprimiendo…
+          </ng-container>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

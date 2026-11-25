@@ -1,0 +1,1575 @@
+<style>
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmerSkel {
+    from {
+      background-position: -200% 0;
+    }
+    to {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmerGold {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+
+  .fade-up {
+    animation: fadeUp 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  .fade-up-1 {
+    animation-delay: 0.06s;
+  }
+  .fade-up-2 {
+    animation-delay: 0.12s;
+  }
+  .fade-up-3 {
+    animation-delay: 0.18s;
+  }
+
+  .card-stagger {
+    animation: fadeUp 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  .card-stagger:nth-child(1) {
+    animation-delay: 0.04s;
+  }
+  .card-stagger:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  .card-stagger:nth-child(3) {
+    animation-delay: 0.16s;
+  }
+  .card-stagger:nth-child(4) {
+    animation-delay: 0.22s;
+  }
+  .card-stagger:nth-child(5) {
+    animation-delay: 0.28s;
+  }
+  .card-stagger:nth-child(6) {
+    animation-delay: 0.34s;
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmerSkel 1.4s ease infinite;
+    border-radius: 12px;
+  }
+  .dark .skeleton {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05) 25%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.05) 75%
+    );
+    background-size: 200% 100%;
+  }
+  .spinner {
+    animation: spin 0.9s linear infinite;
+  }
+  .overlay-in {
+    animation: fadeIn 0.25s ease both;
+  }
+  .modal-in {
+    animation: slideUp 0.32s cubic-bezier(0.34, 1.16, 0.64, 1) both;
+  }
+  .employee-card {
+    transition:
+      transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 0.28s ease;
+  }
+  .employee-card:hover {
+    transform: translateY(-2px);
+  }
+  .gold-shimmer {
+    background: linear-gradient(
+      90deg,
+      #b8973a 0%,
+      #e8c84a 30%,
+      #f5e080 50%,
+      #e8c84a 70%,
+      #b8973a 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmerGold 3s linear infinite;
+  }
+  .historial-row {
+    transition:
+      background 0.15s ease,
+      transform 0.15s ease;
+  }
+  .historial-row:hover {
+    background: rgba(212, 175, 55, 0.05);
+    transform: translateX(2px);
+  }
+  .tab-btn {
+    transition: all 0.2s ease;
+  }
+
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    transition: 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .dark .toggle-slider {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 2px;
+    bottom: 2px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .toggle-switch input:checked + .toggle-slider {
+    background: #22c55e;
+    border-color: #16a34a;
+  }
+  .toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(14px);
+    background: #fff;
+  }
+</style>
+
+<div
+  class="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-white flex flex-col"
+>
+  <header
+    class="sticky top-0 z-40 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-xl border-b border-neutral-100 dark:border-neutral-800"
+  >
+    <div
+      class="max-w-6xl mx-auto px-5 sm:px-8 h-14 flex items-center justify-between gap-4"
+    >
+      <div>
+        <h1
+          class="text-sm font-bold tracking-tight text-neutral-900 dark:text-white"
+        >
+          Nómina Semanal
+        </h1>
+        <span class="text-xs text-neutral-400 dark:text-neutral-500">
+          {{ formatearFecha(fechaInicioSemana) }} –
+          {{ formatearFecha(fechaFinSemana) }}
+        </span>
+      </div>
+      <div
+        class="flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 rounded-xl p-1"
+      >
+        <button
+          (click)="vistaActual = 'formulario'"
+          class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold"
+          [class]="
+            vistaActual === 'formulario'
+              ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm'
+              : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+          "
+        >
+          Esta semana
+        </button>
+        <button
+          (click)="abrirHistorial()"
+          class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5"
+          [class]="
+            vistaActual === 'historial'
+              ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm'
+              : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+          "
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          Historial
+        </button>
+      </div>
+    </div>
+  </header>
+
+  @if (vistaActual === "formulario") {
+    <section class="max-w-6xl mx-auto px-5 sm:px-8 py-6 fade-up fade-up-1">
+      <p
+        class="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-4"
+      >
+        Configuración de pagos
+      </p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div
+          class="bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-4"
+        >
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mb-3">
+            Pago Diario Bodega
+          </p>
+          <div class="flex items-center gap-2">
+            <input
+              type="number"
+              [(ngModel)]="pagoDiarioBodega"
+              [readonly]="!editarBodega"
+              class="flex-1 min-w-0 bg-transparent text-sm font-semibold text-neutral-900 dark:text-white focus:outline-none border-b border-transparent focus:border-yellow-500 transition pb-0.5"
+            />
+            <button
+              *ngIf="!editarBodega"
+              (click)="activarEdicion('bodega')"
+              class="text-xs text-yellow-500 hover:text-yellow-400 font-semibold transition-colors flex-shrink-0"
+            >
+              Editar
+            </button>
+            <button
+              *ngIf="editarBodega"
+              (click)="guardarEdicion()"
+              class="text-xs text-emerald-500 hover:text-emerald-400 font-semibold transition-colors flex-shrink-0"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+        <div
+          class="bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-4"
+        >
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mb-3">
+            Pago Diario Vendedor
+          </p>
+          <div class="flex items-center gap-2">
+            <input
+              type="number"
+              [(ngModel)]="pagoDiarioVendedor"
+              [readonly]="!editarVendedor"
+              class="flex-1 min-w-0 bg-transparent text-sm font-semibold text-neutral-900 dark:text-white focus:outline-none border-b border-transparent focus:border-yellow-500 transition pb-0.5"
+            />
+            <button
+              *ngIf="!editarVendedor"
+              (click)="activarEdicion('vendedor')"
+              class="text-xs text-yellow-500 hover:text-yellow-400 font-semibold transition-colors flex-shrink-0"
+            >
+              Editar
+            </button>
+            <button
+              *ngIf="editarVendedor"
+              (click)="guardarEdicion()"
+              class="text-xs text-emerald-500 hover:text-emerald-400 font-semibold transition-colors flex-shrink-0"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+        <div
+          class="bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-4"
+        >
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mb-3">
+            Pago Diario Patinador
+          </p>
+          <div class="flex items-center gap-2">
+            <input
+              type="number"
+              [(ngModel)]="pagoDiarioPatinador"
+              [readonly]="!editarPatinador"
+              class="flex-1 min-w-0 bg-transparent text-sm font-semibold text-neutral-900 dark:text-white focus:outline-none border-b border-transparent focus:border-yellow-500 transition pb-0.5"
+            />
+            <button
+              *ngIf="!editarPatinador"
+              (click)="activarEdicion('patinador')"
+              class="text-xs text-yellow-500 hover:text-yellow-400 font-semibold transition-colors flex-shrink-0"
+            >
+              Editar
+            </button>
+            <button
+              *ngIf="editarPatinador"
+              (click)="guardarEdicion()"
+              class="text-xs text-emerald-500 hover:text-emerald-400 font-semibold transition-colors flex-shrink-0"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+        <div
+          class="bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-4"
+        >
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mb-3">
+            Comisión por Zapato
+          </p>
+          <div class="flex items-center gap-2">
+            <input
+              type="number"
+              [(ngModel)]="comisionPorZapato"
+              [readonly]="!editarComision"
+              class="flex-1 min-w-0 bg-transparent text-sm font-semibold text-neutral-900 dark:text-white focus:outline-none border-b border-transparent focus:border-yellow-500 transition pb-0.5"
+            />
+            <button
+              *ngIf="!editarComision"
+              (click)="activarEdicion('comision')"
+              class="text-xs text-yellow-500 hover:text-yellow-400 font-semibold transition-colors flex-shrink-0"
+            >
+              Editar
+            </button>
+            <button
+              *ngIf="editarComision"
+              (click)="guardarEdicion()"
+              class="text-xs text-emerald-500 hover:text-emerald-400 font-semibold transition-colors flex-shrink-0"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end">
+        <button
+          (click)="guardarEdicion()"
+          [disabled]="loadingGuardarPagos"
+          class="flex items-center gap-2 bg-yellow-400 dark:bg-yellow-500 hover:bg-yellow-300 dark:hover:bg-yellow-400 active:scale-[.98] disabled:opacity-50 text-neutral-900 text-sm font-bold px-5 py-2.5 rounded-xl transition-all"
+        >
+          @if (loadingGuardarPagos) {
+            <app-ia-spinner class="w-4 h-4"></app-ia-spinner>
+          } @else {
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          }
+          Aceptar cambios
+        </button>
+      </div>
+    </section>
+
+    <main class="flex-1 max-w-6xl mx-auto w-full px-5 sm:px-8 pb-36 space-y-10">
+      <section class="fade-up fade-up-1">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0"></div>
+          <span
+            class="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500"
+            >Bodegueros</span
+          >
+          <div class="flex-1 h-px bg-neutral-100 dark:bg-neutral-800"></div>
+        </div>
+        @if (loadingUsuarios || loadingPagos) {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (i of [1, 2, 3]; track i) {
+              <div class="skeleton h-44"></div>
+            }
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (b of bodegueros$ | async; track b.id) {
+              <div
+                class="card-stagger employee-card bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5 space-y-4 hover:shadow-lg hover:shadow-neutral-900/5 dark:hover:shadow-black/30"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+                  >
+                    {{ b.name.charAt(0) }}
+                  </div>
+                  <div>
+                    <p
+                      class="text-sm font-bold text-neutral-900 dark:text-white"
+                    >
+                      {{ b.name }}
+                    </p>
+                    <p class="text-xs text-indigo-500 font-medium">Bodeguero</p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      Pago/día
+                    </p>
+                    <p
+                      class="text-sm font-semibold text-neutral-900 dark:text-white"
+                    >
+                      ${{ pagoDiarioBodega | number }}
+                    </p>
+                  </div>
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      Días
+                    </p>
+                    <input
+                      type="number"
+                      min="0"
+                      [(ngModel)]="diasPorUsuario[b.id]"
+                      (ngModelChange)="actualizarDias(b.id, $event)"
+                      class="w-full bg-neutral-50 dark:bg-neutral-800 rounded-lg px-2 py-1.5 text-sm text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-yellow-500/30 transition"
+                    />
+                  </div>
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      ½ días
+                    </p>
+                    <input
+                      type="number"
+                      min="0"
+                      [(ngModel)]="mediosDiasPorUsuario[b.id]"
+                      (ngModelChange)="actualizarMediosDias(b.id, $event)"
+                      class="w-full bg-neutral-50 dark:bg-neutral-800 rounded-lg px-2 py-1.5 text-sm text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-yellow-500/30 transition"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="flex justify-between items-center pt-3 border-t border-neutral-50 dark:border-neutral-800"
+                >
+                  <span class="text-xs text-neutral-400 dark:text-neutral-500"
+                    >Total</span
+                  >
+                  <span
+                    class="text-sm font-black text-neutral-900 dark:text-white"
+                  >
+                    ${{ calcularTotalEmpleado(b.id, "bodega") | number }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="fade-up fade-up-2">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-2 h-2 rounded-full bg-yellow-500 flex-shrink-0"></div>
+          <span
+            class="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500"
+            >Vendedores</span
+          >
+          <div class="flex-1 h-px bg-neutral-100 dark:bg-neutral-800"></div>
+        </div>
+        @if (loadingUsuarios || loadingVentas) {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (i of [1, 2, 3]; track i) {
+              <div class="skeleton h-64"></div>
+            }
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (v of vendedores$ | async; track v.id) {
+              <div
+                class="card-stagger employee-card bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5 space-y-4 hover:shadow-lg hover:shadow-neutral-900/5 dark:hover:shadow-black/30"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-yellow-500 flex items-center justify-center text-neutral-900 font-bold text-sm flex-shrink-0"
+                  >
+                    {{ v.name.charAt(0) }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p
+                      class="text-sm font-bold text-neutral-900 dark:text-white truncate"
+                    >
+                      {{ v.name }}
+                    </p>
+                    <p class="text-xs text-yellow-500 font-medium">Vendedor</p>
+                  </div>
+                  <div class="flex items-center gap-2 flex-shrink-0">
+                    <span
+                      class="text-[10px] font-semibold"
+                      [class]="
+                        comisionActivaPorUsuario[v.id]
+                          ? 'text-emerald-500'
+                          : 'text-neutral-400 dark:text-neutral-600'
+                      "
+                    >
+                      {{
+                        comisionActivaPorUsuario[v.id] ? "Comisión" : "Sin com."
+                      }}
+                    </span>
+                    <label class="toggle-switch">
+                      <input
+                        type="checkbox"
+                        [(ngModel)]="comisionActivaPorUsuario[v.id]"
+                        (ngModelChange)="actualizarComision(v.id, $event)"
+                      />
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      Pago/día
+                    </p>
+                    <p
+                      class="text-sm font-semibold text-neutral-900 dark:text-white"
+                    >
+                      ${{ pagoDiarioVendedor | number }}
+                    </p>
+                  </div>
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      Días
+                    </p>
+                    <input
+                      type="number"
+                      min="0"
+                      [(ngModel)]="diasPorUsuario[v.id]"
+                      (ngModelChange)="actualizarDias(v.id, $event)"
+                      class="w-full bg-neutral-50 dark:bg-neutral-800 rounded-lg px-2 py-1.5 text-sm text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-yellow-500/30 transition"
+                    />
+                  </div>
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      ½ días
+                    </p>
+                    <input
+                      type="number"
+                      min="0"
+                      [(ngModel)]="mediosDiasPorUsuario[v.id]"
+                      (ngModelChange)="actualizarMediosDias(v.id, $event)"
+                      class="w-full bg-neutral-50 dark:bg-neutral-800 rounded-lg px-2 py-1.5 text-sm text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-yellow-500/30 transition"
+                    />
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      Zapatos
+                    </p>
+                    <p class="text-sm font-bold text-yellow-500">
+                      {{ (ventasPorVendedor$ | async)?.get(v.id) || 0 }}
+                    </p>
+                  </div>
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      Com./par
+                    </p>
+                    <p
+                      class="text-sm font-semibold"
+                      [class]="
+                        comisionActivaPorUsuario[v.id]
+                          ? 'text-neutral-900 dark:text-white'
+                          : 'text-neutral-300 dark:text-neutral-600 line-through'
+                      "
+                    >
+                      ${{ comisionPorZapato | number }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex justify-between items-center text-sm">
+                  <span
+                    class="text-xs font-medium"
+                    [class]="
+                      comisionActivaPorUsuario[v.id]
+                        ? 'text-emerald-600 dark:text-emerald-400'
+                        : 'text-neutral-300 dark:text-neutral-600'
+                    "
+                  >
+                    Comisión total
+                  </span>
+                  <span
+                    class="font-semibold"
+                    [class]="
+                      comisionActivaPorUsuario[v.id]
+                        ? 'text-neutral-900 dark:text-white'
+                        : 'text-neutral-300 dark:text-neutral-600'
+                    "
+                  >
+                    ${{
+                      comisionActivaPorUsuario[v.id]
+                        ? (((ventasPorVendedor$ | async)?.get(v.id) || 0) *
+                            comisionPorZapato | number)
+                        : (0 | number)
+                    }}
+                  </span>
+                </div>
+                <div
+                  class="flex justify-between items-center pt-3 border-t border-neutral-50 dark:border-neutral-800"
+                >
+                  <span class="text-xs text-neutral-400 dark:text-neutral-500"
+                    >Total</span
+                  >
+                  <span
+                    class="text-sm font-black text-neutral-900 dark:text-white"
+                  >
+                    ${{
+                      calcularTotalVendedor(
+                        v.id,
+                        (ventasPorVendedor$ | async)?.get(v.id) || 0
+                      ) | number
+                    }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="fade-up fade-up-3">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></div>
+          <span
+            class="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500"
+            >Patinadores</span
+          >
+          <div class="flex-1 h-px bg-neutral-100 dark:bg-neutral-800"></div>
+        </div>
+        @if (loadingUsuarios) {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (i of [1, 2, 3]; track i) {
+              <div class="skeleton h-44"></div>
+            }
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (p of patinadores$ | async; track p.id) {
+              <div
+                class="card-stagger employee-card bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-5 space-y-4 hover:shadow-lg hover:shadow-neutral-900/5 dark:hover:shadow-black/30"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+                  >
+                    {{ p.name.charAt(0) }}
+                  </div>
+                  <div>
+                    <p
+                      class="text-sm font-bold text-neutral-900 dark:text-white"
+                    >
+                      {{ p.name }}
+                    </p>
+                    <p class="text-xs text-emerald-500 font-medium">
+                      Patinador
+                    </p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      Pago/día
+                    </p>
+                    <p
+                      class="text-sm font-semibold text-neutral-900 dark:text-white"
+                    >
+                      ${{ pagoDiarioPatinador | number }}
+                    </p>
+                  </div>
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      Días
+                    </p>
+                    <input
+                      type="number"
+                      min="0"
+                      [(ngModel)]="diasPorUsuario[p.id]"
+                      (ngModelChange)="actualizarDias(p.id, $event)"
+                      class="w-full bg-neutral-50 dark:bg-neutral-800 rounded-lg px-2 py-1.5 text-sm text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-yellow-500/30 transition"
+                    />
+                  </div>
+                  <div>
+                    <p
+                      class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-1 uppercase tracking-widest"
+                    >
+                      ½ días
+                    </p>
+                    <input
+                      type="number"
+                      min="0"
+                      [(ngModel)]="mediosDiasPorUsuario[p.id]"
+                      (ngModelChange)="actualizarMediosDias(p.id, $event)"
+                      class="w-full bg-neutral-50 dark:bg-neutral-800 rounded-lg px-2 py-1.5 text-sm text-neutral-900 dark:text-white border border-neutral-200 dark:border-neutral-700 focus:outline-none focus:ring-2 focus:ring-yellow-500/30 transition"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="flex justify-between items-center pt-3 border-t border-neutral-50 dark:border-neutral-800"
+                >
+                  <span class="text-xs text-neutral-400 dark:text-neutral-500"
+                    >Total</span
+                  >
+                  <span
+                    class="text-sm font-black text-neutral-900 dark:text-white"
+                  >
+                    ${{ calcularTotalEmpleado(p.id, "patinador") | number }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </main>
+
+    <button
+      (click)="scrollToTop()"
+      class="fixed bottom-28 sm:bottom-24 right-5 z-50 w-11 h-11 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all"
+    >
+      <svg
+        class="w-4 h-4"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+      >
+        <polyline points="18 15 12 9 6 15" />
+      </svg>
+    </button>
+
+    <footer
+      class="fixed bottom-0 left-0 right-0 z-30 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-xl border-t border-neutral-100 dark:border-neutral-800"
+    >
+      <div
+        class="max-w-6xl mx-auto px-5 sm:px-8 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+      >
+        @if (totalNomina$ | async; as nomina) {
+          <div class="flex items-center gap-5">
+            <div>
+              <p class="text-[10px] text-neutral-400 dark:text-neutral-500">
+                Base
+              </p>
+              <p class="text-sm font-bold text-neutral-900 dark:text-white">
+                ${{ nomina.base | number }}
+              </p>
+            </div>
+            <div class="h-8 w-px bg-neutral-100 dark:bg-neutral-800"></div>
+            <div>
+              <p class="text-[10px] text-neutral-400 dark:text-neutral-500">
+                Comisiones
+              </p>
+              <p
+                class="text-sm font-bold text-emerald-600 dark:text-emerald-400"
+              >
+                ${{ nomina.comision | number }}
+              </p>
+            </div>
+            <div class="h-8 w-px bg-neutral-100 dark:bg-neutral-800"></div>
+            <div>
+              <p
+                class="text-[10px] text-neutral-400 dark:text-neutral-500 mb-0.5"
+              >
+                Total · {{ contarEmpleados() }} empleados
+              </p>
+              <p class="text-lg font-black text-neutral-900 dark:text-white">
+                ${{ nomina.total | number }}
+              </p>
+            </div>
+          </div>
+        }
+        <button
+          (click)="abrirModalExportar()"
+          [disabled]="loadingGuardarNomina"
+          class="flex items-center justify-center gap-2 bg-yellow-400 dark:bg-yellow-500 hover:bg-yellow-300 dark:hover:bg-yellow-400 active:scale-[.98] disabled:opacity-50 disabled:cursor-not-allowed text-neutral-900 font-bold text-sm px-6 py-3 rounded-xl transition-all w-full sm:w-auto"
+        >
+          @if (loadingGuardarNomina) {
+            <app-ia-spinner class="w-4 h-4"></app-ia-spinner>
+            Guardando…
+          } @else {
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+              />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            Guardar Nómina
+          }
+        </button>
+      </div>
+    </footer>
+  }
+
+  @if (vistaActual === "historial") {
+    <main class="flex-1 max-w-6xl mx-auto w-full px-5 sm:px-8 py-8 pb-20">
+      <div class="mb-6 fade-up">
+        <p
+          class="text-[10px] font-semibold uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-2"
+        >
+          Nóminas guardadas
+        </p>
+        <h2 class="text-2xl font-black text-neutral-900 dark:text-white">
+          Historial de <span class="gold-shimmer">Nóminas</span>
+        </h2>
+      </div>
+
+      <div class="flex items-center gap-3 mb-6">
+        <button
+          (click)="irSemanaAnterior()"
+          class="w-9 h-9 rounded-xl flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:border-neutral-400 dark:hover:border-neutral-500 transition"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <div class="flex-1 text-center">
+          <p class="text-sm font-bold text-neutral-900 dark:text-white">
+            {{ labelSemanaHistorial }}
+          </p>
+          @if (semanaHistorialOffset === 0) {
+            <p
+              class="text-[10px] text-yellow-500 font-semibold uppercase tracking-widest mt-0.5"
+            >
+              Semana actual
+            </p>
+          }
+        </div>
+        <button
+          (click)="irSemanaSiguiente()"
+          [disabled]="semanaHistorialOffset === 0"
+          class="w-9 h-9 rounded-xl flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:border-neutral-400 dark:hover:border-neutral-500 transition disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+
+      @if (loadingHistorial) {
+        <div class="flex flex-col items-center justify-center py-20 gap-4">
+          <svg
+            class="w-7 h-7 spinner text-yellow-500"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
+            />
+          </svg>
+          <p class="text-sm text-neutral-400 dark:text-neutral-500">
+            Buscando nómina…
+          </p>
+        </div>
+      }
+
+      @if (!loadingHistorial && !nominaHistorialActual) {
+        <div
+          class="flex flex-col items-center justify-center py-20 text-center gap-4"
+        >
+          <div
+            class="w-16 h-16 rounded-full flex items-center justify-center border border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#d4af37"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-base font-bold text-neutral-800 dark:text-white">
+              Sin nómina esta semana
+            </p>
+            <p
+              class="text-sm text-neutral-400 dark:text-neutral-500 mt-1 max-w-xs"
+            >
+              No se encontró una nómina guardada para esta semana.
+            </p>
+          </div>
+        </div>
+      }
+
+      @if (!loadingHistorial && nominaHistorialActual) {
+        <div class="fade-up">
+          <div
+            class="historial-row rounded-2xl overflow-hidden border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900"
+          >
+            <div class="flex items-center gap-4 p-4">
+              <div
+                class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800/40"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#d4af37"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <rect x="2" y="3" width="20" height="14" rx="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </div>
+              <div
+                class="flex-1 min-w-0 cursor-pointer"
+                (click)="seleccionarNominaHistorial(nominaHistorialActual!)"
+              >
+                <p
+                  class="text-sm font-bold text-neutral-900 dark:text-white truncate"
+                >
+                  Semana {{ nominaHistorialActual.semana }}
+                </p>
+                <p
+                  class="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5"
+                >
+                  {{ nominaHistorialActual.totales.totalEmpleados }} empleados
+                  &nbsp;·&nbsp; Guardada
+                  {{ formatearTimestamp(nominaHistorialActual.fechaGuardado) }}
+                </p>
+              </div>
+              <div
+                class="text-right flex-shrink-0 cursor-pointer"
+                (click)="seleccionarNominaHistorial(nominaHistorialActual!)"
+              >
+                <p
+                  class="text-base font-black text-yellow-600 dark:text-yellow-400"
+                >
+                  ${{ nominaHistorialActual.totales.total | number }}
+                </p>
+                <p
+                  class="text-[10px] text-neutral-400 dark:text-neutral-500 mt-0.5"
+                >
+                  Total nómina
+                </p>
+              </div>
+              <button
+                (click)="confirmarEliminarNomina(nominaHistorialActual!)"
+                class="w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 bg-neutral-100 dark:bg-neutral-800 text-neutral-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-500 dark:hover:text-red-400 transition"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                </svg>
+              </button>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                class="text-neutral-300 dark:text-neutral-600 flex-shrink-0 cursor-pointer"
+                (click)="seleccionarNominaHistorial(nominaHistorialActual!)"
+              >
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      }
+    </main>
+  }
+</div>
+
+@if (mostrarModalExportar) {
+  <div
+    class="overlay-in fixed inset-0 z-50 flex items-end sm:items-center justify-center px-0 sm:px-4 bg-black/50 backdrop-blur-sm"
+    (click)="cerrarModalExportar()"
+  >
+    <div
+      class="modal-in w-full sm:max-w-sm bg-white dark:bg-neutral-900 rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl border border-transparent dark:border-neutral-800"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex justify-center pt-3 pb-1 sm:hidden">
+        <div
+          class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+        ></div>
+      </div>
+      <div class="px-6 pt-5 pb-4 flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span
+              class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_#22c55e]"
+            ></span>
+            <span
+              class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest"
+              >Guardada en Firebase</span
+            >
+          </div>
+          <h2 class="text-base font-bold text-neutral-900 dark:text-white">
+            Descargar Nómina
+          </h2>
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
+            {{ nominaGuardadaData?.semana }}
+          </p>
+        </div>
+        <button
+          (click)="cerrarModalExportar()"
+          class="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 hover:text-neutral-600 dark:hover:text-white transition text-xs"
+        >
+          ✕
+        </button>
+      </div>
+      <div class="h-px bg-neutral-100 dark:bg-neutral-800 mx-6"></div>
+      <div class="p-4 space-y-2">
+        <button
+          (click)="exportarPDFGeneral()"
+          class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all active:scale-[.98] bg-yellow-50 dark:bg-yellow-950/30 hover:bg-yellow-100 dark:hover:bg-yellow-950/50 border border-yellow-200 dark:border-yellow-800/50"
+        >
+          <div
+            class="w-9 h-9 rounded-xl bg-yellow-400 dark:bg-yellow-500 flex items-center justify-center flex-shrink-0 shadow-sm"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-neutral-900"
+            >
+              <path
+                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+              />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+          </div>
+          <div class="text-left flex-1">
+            <p class="text-sm font-bold text-yellow-700 dark:text-yellow-400">
+              PDF Nómina Completa
+            </p>
+            <p class="text-xs text-neutral-400 dark:text-neutral-500">
+              Todos los empleados
+            </p>
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            class="text-yellow-400 dark:text-yellow-700"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+        <button
+          (click)="abrirSelectorTrabajador()"
+          class="w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all active:scale-[.98] bg-neutral-50 dark:bg-neutral-800/60 hover:bg-neutral-100 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700"
+        >
+          <div
+            class="w-9 h-9 rounded-xl bg-neutral-900 dark:bg-white flex items-center justify-center flex-shrink-0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-white dark:text-neutral-900"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <div class="text-left flex-1">
+            <p class="text-sm font-bold text-neutral-800 dark:text-neutral-200">
+              PDF por Trabajador
+            </p>
+            <p class="text-xs text-neutral-400 dark:text-neutral-500">
+              Comprobante individual
+            </p>
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            class="text-neutral-300 dark:text-neutral-600"
+          >
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+      <div class="px-4 pb-6">
+        <button
+          (click)="cerrarModalExportar()"
+          class="w-full py-3 text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-[.98] transition-all"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (nominaHistorialSeleccionada) {
+  <div
+    class="overlay-in fixed inset-0 z-50 flex items-end sm:items-center justify-center px-0 sm:px-4 bg-black/50 backdrop-blur-sm"
+    (click)="cerrarDetalleHistorial()"
+  >
+    <div
+      class="modal-in w-full sm:max-w-lg bg-white dark:bg-neutral-900 rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl border border-transparent dark:border-neutral-800 max-h-[90vh] flex flex-col"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex justify-center pt-3 pb-1 sm:hidden flex-shrink-0">
+        <div
+          class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+        ></div>
+      </div>
+      <div
+        class="px-6 pt-4 pb-4 flex items-start justify-between flex-shrink-0 border-b border-neutral-100 dark:border-neutral-800"
+      >
+        <div>
+          <p
+            class="text-[10px] font-semibold uppercase tracking-widest text-yellow-600 dark:text-yellow-600/70 mb-1"
+          >
+            Nómina guardada
+          </p>
+          <h2 class="text-base font-black text-neutral-900 dark:text-white">
+            Semana {{ nominaHistorialSeleccionada.semana }}
+          </h2>
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
+            {{ nominaHistorialSeleccionada.totales.totalEmpleados }} empleados
+            &nbsp;·&nbsp; Guardada el
+            {{ formatearTimestamp(nominaHistorialSeleccionada.fechaGuardado) }}
+          </p>
+        </div>
+        <button
+          (click)="cerrarDetalleHistorial()"
+          class="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 hover:text-neutral-600 dark:hover:text-white transition text-xs flex-shrink-0 mt-1"
+        >
+          ✕
+        </button>
+      </div>
+      <div
+        class="flex gap-3 px-6 py-4 flex-shrink-0 border-b border-neutral-50 dark:border-neutral-800"
+      >
+        <div
+          class="flex-1 rounded-xl p-3 text-center bg-neutral-50 dark:bg-neutral-800 border border-neutral-100 dark:border-neutral-700"
+        >
+          <p
+            class="text-[10px] uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-1"
+          >
+            Base
+          </p>
+          <p class="text-sm font-black text-neutral-900 dark:text-white">
+            ${{ nominaHistorialSeleccionada.totales.base | number }}
+          </p>
+        </div>
+        <div
+          class="flex-1 rounded-xl p-3 text-center bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40"
+        >
+          <p
+            class="text-[10px] uppercase tracking-widest text-emerald-600 dark:text-emerald-500 mb-1"
+          >
+            Comisiones
+          </p>
+          <p class="text-sm font-black text-emerald-600 dark:text-emerald-400">
+            ${{ nominaHistorialSeleccionada.totales.comisiones | number }}
+          </p>
+        </div>
+        <div
+          class="flex-1 rounded-xl p-3 text-center bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-100 dark:border-yellow-800/40"
+        >
+          <p
+            class="text-[10px] uppercase tracking-widest text-yellow-600 dark:text-yellow-600/70 mb-1"
+          >
+            Total
+          </p>
+          <p class="text-sm font-black text-yellow-600 dark:text-yellow-400">
+            ${{ nominaHistorialSeleccionada.totales.total | number }}
+          </p>
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto px-4 py-3 space-y-1.5">
+        @for (emp of nominaHistorialSeleccionada.empleados; track emp.id) {
+          <div
+            class="flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800 transition"
+          >
+            <div
+              class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-sm text-white"
+              [style.background]="badgeRol(emp.rol)"
+            >
+              {{ emp.nombre.charAt(0).toUpperCase() }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p
+                class="text-sm font-semibold text-neutral-900 dark:text-white truncate"
+              >
+                {{ emp.nombre }}
+              </p>
+              <p
+                class="text-xs capitalize mt-0.5"
+                [style.color]="badgeRol(emp.rol)"
+              >
+                {{ rolLabel(emp.rol) }}
+                @if (emp.rol === "vendedor") {
+                  &nbsp;· {{ emp.zapatosVendidos ?? 0 }} pares
+                  @if (!emp.comisionActiva) {
+                    &nbsp;· <span class="text-neutral-400">(sin comisión)</span>
+                  }
+                }
+                @if ((emp.mediosDias ?? 0) > 0) {
+                  &nbsp;· {{ emp.mediosDias }} ½ días
+                }
+              </p>
+            </div>
+            <div class="text-right flex-shrink-0">
+              <p class="text-sm font-black text-neutral-900 dark:text-white">
+                ${{ emp.total | number }}
+              </p>
+              <p
+                class="text-[10px] text-neutral-400 dark:text-neutral-500 mt-0.5"
+              >
+                {{ emp.diasTrabajados }} días
+              </p>
+            </div>
+            <button
+              (click)="
+                descargarPDFDesdeHistorial(emp); $event.stopPropagation()
+              "
+              class="w-8 h-8 flex items-center justify-center rounded-lg flex-shrink-0 bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 hover:text-yellow-600 dark:hover:text-yellow-400 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </button>
+          </div>
+        }
+      </div>
+      <div
+        class="flex gap-2 p-4 border-t border-neutral-100 dark:border-neutral-800 flex-shrink-0"
+      >
+        <button
+          (click)="exportarPDFGeneralDesdeHistorial()"
+          class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-yellow-400 dark:bg-yellow-500 hover:bg-yellow-300 dark:hover:bg-yellow-400 active:scale-[.98] text-neutral-900 text-sm font-bold transition-all"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" /></svg
+          >PDF Completo
+        </button>
+        <button
+          (click)="cerrarDetalleHistorial()"
+          class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (mostrarSelectorTrabajador) {
+  <div
+    class="overlay-in fixed inset-0 z-[60] flex items-end sm:items-center justify-center px-0 sm:px-4 bg-black/60 backdrop-blur-sm"
+    (click)="cerrarSelectorTrabajador()"
+  >
+    <div
+      class="modal-in w-full sm:max-w-sm bg-white dark:bg-neutral-900 rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl border border-transparent dark:border-neutral-800"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex justify-center pt-3 pb-1 sm:hidden">
+        <div
+          class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+        ></div>
+      </div>
+      <div class="px-6 pt-5 pb-4 flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-bold text-neutral-900 dark:text-white">
+            Seleccionar Trabajador
+          </h2>
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
+            Elige para generar su comprobante
+          </p>
+        </div>
+        <button
+          (click)="cerrarSelectorTrabajador()"
+          class="w-7 h-7 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400 hover:text-neutral-600 dark:hover:text-white transition text-xs"
+        >
+          ✕
+        </button>
+      </div>
+      <div class="h-px bg-neutral-100 dark:bg-neutral-800 mx-6"></div>
+      <div class="p-3 max-h-80 overflow-y-auto space-y-1">
+        @for (emp of nominaGuardadaData?.empleados; track emp.id) {
+          <button
+            (click)="seleccionarYDescargar(emp)"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all active:scale-[.98] hover:bg-neutral-50 dark:hover:bg-neutral-800"
+          >
+            <div
+              class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-sm text-white"
+              [style.background]="badgeRol(emp.rol)"
+            >
+              {{ emp.nombre.charAt(0).toUpperCase() }}
+            </div>
+            <div class="text-left flex-1">
+              <p class="text-sm font-semibold text-neutral-900 dark:text-white">
+                {{ emp.nombre }}
+              </p>
+              <p
+                class="text-xs capitalize mt-0.5"
+                [style.color]="badgeRol(emp.rol)"
+              >
+                {{ rolLabel(emp.rol) }}
+              </p>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-black text-neutral-900 dark:text-white">
+                ${{ emp.total | number }}
+              </p>
+              <p class="text-[10px] text-neutral-400 dark:text-neutral-500">
+                {{ emp.diasTrabajados }} días
+              </p>
+            </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              class="text-neutral-300 dark:text-neutral-600 ml-1"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </button>
+        }
+      </div>
+      <div class="px-4 pb-5 pt-1">
+        <button
+          (click)="cerrarSelectorTrabajador()"
+          class="w-full py-3 text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (mostrarConfirmarEliminarNomina) {
+  <div
+    class="overlay-in fixed inset-0 z-50 flex items-end sm:items-center justify-center px-0 sm:px-4 bg-black/50 backdrop-blur-sm"
+    (click)="cancelarEliminarNomina()"
+  >
+    <div
+      class="modal-in w-full sm:max-w-sm bg-white dark:bg-neutral-900 border border-transparent dark:border-neutral-800 rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex justify-center pt-3 pb-1 sm:hidden">
+        <div
+          class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+        ></div>
+      </div>
+      <div class="p-6 flex flex-col items-center text-center gap-4">
+        <div
+          class="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 flex items-center justify-center"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ef4444"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          >
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-base font-black text-neutral-900 dark:text-white">
+            ¿Eliminar nómina?
+          </h3>
+          <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+            Semana
+            <span class="font-semibold text-neutral-900 dark:text-white">{{
+              nominaAEliminar?.semana
+            }}</span>
+          </p>
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+            Esta acción no se puede deshacer
+          </p>
+        </div>
+        <div class="flex gap-3 w-full">
+          <button
+            (click)="cancelarEliminarNomina()"
+            class="flex-1 py-3 rounded-xl text-sm font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
+          >
+            Cancelar
+          </button>
+          <button
+            (click)="eliminarNomina()"
+            [disabled]="eliminandoNomina"
+            class="flex-1 py-3 rounded-xl text-sm font-bold bg-red-500 hover:bg-red-400 text-white transition active:scale-[.98] disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            @if (eliminandoNomina) {
+              <app-ia-spinner class="w-4 h-4"></app-ia-spinner>
+            }
+            Sí, eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<p-toast position="top-right" />

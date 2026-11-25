@@ -1,0 +1,376 @@
+<div
+  *ngIf="display"
+  class="modal-overlay bg-black/60 dark:bg-black/80"
+  (click)="cerrar()"
+  [@overlayAnim]
+>
+  <div
+    class="modal-sheet bg-stone-50 dark:bg-[#141209] border border-stone-200 dark:border-stone-800 border-t-2 border-t-amber-500"
+    (click)="$event.stopPropagation()"
+    [@sheetAnim]
+  >
+    <div class="modal-handle bg-stone-300 dark:bg-stone-700"></div>
+
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div
+          class="modal-icon-wrap bg-gradient-to-br from-amber-400 to-amber-700 text-stone-900 shadow-amber-400/30"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="modal-title text-stone-900 dark:text-stone-100">
+            {{ esEdicion ? "Editar usuario" : "Nuevo usuario" }}
+          </h2>
+          <p class="modal-subtitle text-stone-400 dark:text-stone-500">
+            {{
+              esEdicion
+                ? "Actualiza los datos del miembro"
+                : "Completa la información del nuevo miembro"
+            }}
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="modal-close text-stone-400 dark:text-stone-600 hover:bg-amber-50 dark:hover:bg-stone-800 hover:text-stone-700 dark:hover:text-stone-200 border border-transparent hover:border-stone-200 dark:hover:border-stone-700"
+        (click)="cerrar()"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div
+      class="modal-divider bg-gradient-to-r from-transparent via-amber-500/60 to-transparent"
+    ></div>
+
+    <form [formGroup]="form" (ngSubmit)="guardar()" class="modal-form">
+      <div class="field-group">
+        <label class="field-label text-stone-500 dark:text-amber-600/80">
+          <span class="field-label-dot bg-amber-500"></span>
+          Rol
+        </label>
+        <div
+          class="select-wrap"
+          [class.field-error]="
+            form.get('rol')?.invalid && form.get('rol')?.touched
+          "
+        >
+          <select
+            formControlName="rol"
+            class="custom-select bg-white dark:bg-[#1c1a14] text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 focus:border-amber-500 dark:focus:border-amber-400"
+            (change)="rolChanged(form.get('rol')?.value)"
+          >
+            <option value="" disabled class="text-stone-400">
+              Seleccione un rol
+            </option>
+            <option
+              *ngFor="let r of roles"
+              [value]="r.value"
+              class="bg-white dark:bg-[#1c1a14]"
+            >
+              {{ r.label }}
+            </option>
+          </select>
+          <svg
+            class="select-arrow text-amber-500"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+        <p
+          class="field-error-msg text-red-500 dark:text-red-400"
+          *ngIf="form.get('rol')?.invalid && form.get('rol')?.touched"
+        >
+          El rol es obligatorio
+        </p>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label text-stone-500 dark:text-amber-600/80">
+          <span class="field-label-dot bg-amber-500"></span>
+          Nombre completo
+        </label>
+        <input
+          type="text"
+          formControlName="nombre"
+          class="custom-input bg-white dark:bg-[#1c1a14] text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 placeholder-stone-300 dark:placeholder-stone-600 focus:border-amber-500 dark:focus:border-amber-400"
+          [class.field-error]="
+            form.get('nombre')?.invalid && form.get('nombre')?.touched
+          "
+          placeholder="Ej: Juan García"
+        />
+        <p
+          class="field-error-msg text-red-500 dark:text-red-400"
+          *ngIf="form.get('nombre')?.invalid && form.get('nombre')?.touched"
+        >
+          El nombre es obligatorio
+        </p>
+      </div>
+
+      <div class="field-group" *ngIf="form.value.rol !== 'patinador'">
+        <label class="field-label text-stone-500 dark:text-amber-600/80">
+          <span class="field-label-dot bg-amber-500"></span>
+          Correo electrónico
+        </label>
+        <input
+          type="email"
+          formControlName="correo"
+          class="custom-input bg-white dark:bg-[#1c1a14] text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 placeholder-stone-300 dark:placeholder-stone-600 focus:border-amber-500 dark:focus:border-amber-400"
+          [class.field-error]="
+            form.get('correo')?.invalid && form.get('correo')?.touched
+          "
+          placeholder="correo@empresa.com"
+        />
+        <p
+          class="field-error-msg text-red-500 dark:text-red-400"
+          *ngIf="form.get('correo')?.invalid && form.get('correo')?.touched"
+        >
+          {{
+            form.get("correo")?.errors?.["required"]
+              ? "El correo es obligatorio"
+              : "Formato de correo inválido"
+          }}
+        </p>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label text-stone-500 dark:text-amber-600/80">
+          <span class="field-label-dot bg-amber-500"></span>
+          Estado
+        </label>
+        <div class="select-wrap">
+          <select
+            formControlName="estado"
+            class="custom-select bg-white dark:bg-[#1c1a14] text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 focus:border-amber-500 dark:focus:border-amber-400"
+          >
+            <option
+              *ngFor="let e of estados"
+              [value]="e.value"
+              class="bg-white dark:bg-[#1c1a14]"
+            >
+              {{ e.label }}
+            </option>
+          </select>
+          <svg
+            class="select-arrow text-amber-500"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </div>
+
+      <div
+        class="field-group"
+        *ngIf="form.value.rol === 'vendedor' || form.value.rol === 'admin'"
+      >
+        <label class="field-label text-stone-500 dark:text-amber-600/80">
+          <span class="field-label-dot bg-amber-500"></span>
+          Local asignado
+        </label>
+        <div
+          class="select-wrap"
+          [class.field-error]="
+            form.get('local')?.invalid && form.get('local')?.touched
+          "
+        >
+          <select
+            formControlName="local"
+            class="custom-select bg-white dark:bg-[#1c1a14] text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 focus:border-amber-500 dark:focus:border-amber-400"
+          >
+            <option value="" disabled selected class="text-stone-400">
+              Seleccione un local
+            </option>
+            <option
+              *ngFor="let l of locales"
+              [value]="l.value"
+              class="bg-white dark:bg-[#1c1a14]"
+            >
+              {{ l.label }}
+            </option>
+          </select>
+          <svg
+            class="select-arrow text-amber-500"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+        <p
+          class="field-error-msg text-red-500 dark:text-red-400"
+          *ngIf="form.get('local')?.invalid && form.get('local')?.touched"
+        >
+          El local es obligatorio
+        </p>
+      </div>
+
+      <div
+        class="field-group"
+        *ngIf="form.value.rol === 'vendedor' || form.value.rol === 'admin'"
+      >
+        <label class="field-label text-stone-500 dark:text-amber-600/80">
+          <span class="field-label-dot bg-amber-500"></span>
+          Préstamos activos
+        </label>
+        <div class="select-wrap">
+          <select
+            formControlName="prestamosActivos"
+            class="custom-select bg-white dark:bg-[#1c1a14] text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 focus:border-amber-500 dark:focus:border-amber-400"
+          >
+            <option
+              *ngFor="let p of prestamosOpciones"
+              [value]="p.value"
+              class="bg-white dark:bg-[#1c1a14]"
+            >
+              {{ p.label }}
+            </option>
+          </select>
+          <svg
+            class="select-arrow text-amber-500"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </div>
+
+      <ng-container *ngIf="!esEdicion && form.value.rol !== 'patinador'">
+        <div class="field-divider-labeled">
+          <span
+            class="text-amber-600 dark:text-amber-500 bg-stone-50 dark:bg-[#141209]"
+            >Credenciales de acceso</span
+          >
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label text-stone-500 dark:text-amber-600/80">
+              <span class="field-label-dot bg-amber-500"></span>
+              Contraseña
+            </label>
+            <input
+              type="password"
+              formControlName="password"
+              class="custom-input bg-white dark:bg-[#1c1a14] text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 placeholder-stone-300 dark:placeholder-stone-600 focus:border-amber-500 dark:focus:border-amber-400"
+              [class.field-error]="
+                form.get('password')?.invalid && form.get('password')?.touched
+              "
+              placeholder="Mínimo 6 caracteres"
+            />
+            <p
+              class="field-error-msg text-red-500 dark:text-red-400"
+              *ngIf="
+                form.get('password')?.invalid && form.get('password')?.touched
+              "
+            >
+              {{
+                form.get("password")?.errors?.["required"]
+                  ? "La contraseña es obligatoria"
+                  : "Mínimo 6 caracteres"
+              }}
+            </p>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label text-stone-500 dark:text-amber-600/80">
+              <span class="field-label-dot bg-amber-500"></span>
+              Confirmar contraseña
+            </label>
+            <input
+              type="password"
+              formControlName="confirmarContrasena"
+              class="custom-input bg-white dark:bg-[#1c1a14] text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 placeholder-stone-300 dark:placeholder-stone-600 focus:border-amber-500 dark:focus:border-amber-400"
+              [class.field-error]="
+                form.get('confirmarContrasena')?.invalid &&
+                form.get('confirmarContrasena')?.touched
+              "
+              placeholder="Repite la contraseña"
+            />
+            <p
+              class="field-error-msg text-red-500 dark:text-red-400"
+              *ngIf="
+                form.get('confirmarContrasena')?.invalid &&
+                form.get('confirmarContrasena')?.touched
+              "
+            >
+              Debes confirmar la contraseña
+            </p>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn-cancel text-stone-500 dark:text-stone-400 border border-stone-200 dark:border-stone-700 hover:bg-amber-50 dark:hover:bg-stone-800 hover:border-amber-400 dark:hover:border-amber-700 hover:text-stone-800 dark:hover:text-stone-100"
+          (click)="cerrar()"
+          [disabled]="loading"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn-submit bg-gradient-to-br from-amber-400 to-amber-700 text-stone-900 shadow-amber-500/30 hover:from-amber-300 hover:to-amber-600 disabled:opacity-60"
+          [disabled]="loading"
+        >
+          <span *ngIf="!loading">{{
+            esEdicion ? "Guardar cambios" : "Crear usuario"
+          }}</span>
+          <span *ngIf="loading" class="btn-spinner">
+            <app-ia-spinner class="w-4 h-4"></app-ia-spinner>
+            Procesando…
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

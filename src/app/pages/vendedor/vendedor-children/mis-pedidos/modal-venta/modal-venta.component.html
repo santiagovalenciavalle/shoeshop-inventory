@@ -1,0 +1,262 @@
+<div
+  *ngIf="visible"
+  class="flex items-end sm:items-center justify-center px-0 sm:px-5 bg-black/40 backdrop-blur-sm"
+  (click)="cerrar.emit()"
+>
+  <div
+    class="mv-panel w-full sm:max-w-xl bg-white dark:bg-neutral-950 sm:rounded-[28px] rounded-t-[28px] max-h-[92vh] flex flex-col shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 shrink-0">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-800"
+      ></div>
+    </div>
+
+    <div
+      class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800 shrink-0"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-[12px] bg-black dark:bg-white flex items-center justify-center shrink-0"
+        >
+          <i class="pi pi-dollar text-white dark:text-black text-sm"></i>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold text-black dark:text-white">
+            Registrar venta
+          </h2>
+          <p class="text-[11px] text-neutral-400 dark:text-neutral-500">
+            Producto y método de pago
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="cerrar.emit()"
+        class="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center hover:bg-neutral-200 dark:hover:bg-neutral-700 active:scale-95 transition-all duration-200"
+      >
+        <i
+          class="pi pi-times text-[10px] text-neutral-500 dark:text-neutral-400"
+        ></i>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-5 mv-scroll">
+      <div
+        class="flex items-center gap-4 p-4 rounded-[16px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800"
+      >
+        <img
+          [src]="pedido?.imagen"
+          [alt]="pedido?.marca"
+          class="w-14 h-14 rounded-[12px] object-cover shrink-0 bg-neutral-200 dark:bg-neutral-800"
+        />
+        <div class="min-w-0">
+          <p class="text-sm font-semibold text-black dark:text-white truncate">
+            {{ pedido?.marca }}
+          </p>
+          <p class="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5">
+            Ref {{ pedido?.referencia }} · Talla {{ pedido?.talla }}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="flex flex-col gap-1.5">
+          <label
+            class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+            >Precio principal</label
+          >
+          <input
+            type="text"
+            inputmode="numeric"
+            [value]="precioPrincipalTexto"
+            (input)="onPrecioPrincipalChange($event)"
+            placeholder="0"
+            class="mv-input w-full px-4 py-3 rounded-[14px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-black dark:text-white text-sm placeholder-neutral-300 dark:placeholder-neutral-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200"
+          />
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label
+            class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+            >Método de pago</label
+          >
+          <select
+            [(ngModel)]="metodoPrincipal"
+            class="mv-input w-full px-4 py-3 rounded-[14px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-black dark:text-white text-sm focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200 appearance-none cursor-pointer"
+          >
+            <option value="">Selecciona método</option>
+            <option *ngFor="let m of metodos" [value]="m.valor">
+              {{ m.nombre }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button
+          *ngIf="!mostrarSegundoMetodo"
+          (click)="mostrarSegundoMetodo = true"
+          class="inline-flex items-center gap-1.5 text-xs font-medium text-yellow-500 hover:text-yellow-600 transition-colors duration-200"
+        >
+          <i class="pi pi-plus text-[10px]"></i>
+          Agregar segundo método de pago
+        </button>
+
+        <div
+          *ngIf="mostrarSegundoMetodo"
+          class="flex flex-col gap-3 p-4 rounded-[16px] border border-dashed border-neutral-200 dark:border-neutral-800"
+        >
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-black dark:text-white"
+              >Segundo método</span
+            >
+            <button
+              (click)="cerrarModalSegundo()"
+              class="text-[11px] text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
+            >
+              Quitar
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1.5">
+              <label
+                class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+                >Precio</label
+              >
+              <input
+                type="text"
+                inputmode="numeric"
+                [value]="precioSegundoTexto"
+                (input)="onPrecioSegundoChange($event)"
+                placeholder="0"
+                class="mv-input w-full px-4 py-3 rounded-[14px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-black dark:text-white text-sm placeholder-neutral-300 dark:placeholder-neutral-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200"
+              />
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label
+                class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+                >Método</label
+              >
+              <select
+                [(ngModel)]="metodoSegundo"
+                class="mv-input w-full px-4 py-3 rounded-[14px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-black dark:text-white text-sm focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200 appearance-none cursor-pointer"
+              >
+                <option value="">Selecciona</option>
+                <option *ngFor="let m of metodos" [value]="m.valor">
+                  {{ m.nombre }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p
+        *ngIf="precioMinimoVenta != null"
+        class="text-[11px] -mt-2"
+        [ngClass]="
+          precioPorDebajoDelPrestamo
+            ? 'text-red-500 dark:text-red-400'
+            : 'text-neutral-400 dark:text-neutral-500'
+        "
+      >
+        <ng-container *ngIf="precioPorDebajoDelPrestamo; else precioOk">
+          El total (${{ totalIngresado.toLocaleString("es-CO") }}) no puede ser
+          menor al precio del préstamo (${{
+            precioMinimoVenta.toLocaleString("es-CO")
+          }}).
+        </ng-container>
+        <ng-template #precioOk>
+          Precio del préstamo: ${{ precioMinimoVenta.toLocaleString("es-CO") }}
+        </ng-template>
+      </p>
+
+      <p
+        *ngIf="validarPrecioMinimoProducto && cargandoPrecioMin"
+        class="text-[11px] -mt-2 text-neutral-400 dark:text-neutral-500"
+      >
+        Verificando precio mínimo del producto…
+      </p>
+
+      <p
+        *ngIf="
+          validarPrecioMinimoProducto &&
+          !cargandoPrecioMin &&
+          precioMinProducto != null
+        "
+        class="text-[11px] -mt-2"
+        [ngClass]="
+          precioPorDebajoDelMinProducto
+            ? 'text-red-500 dark:text-red-400'
+            : 'text-neutral-400 dark:text-neutral-500'
+        "
+      >
+        <ng-container
+          *ngIf="precioPorDebajoDelMinProducto; else precioProductoOk"
+        >
+          El total (${{ totalIngresado.toLocaleString("es-CO") }}) no puede ser
+          menor al precio mínimo del producto (${{
+            precioMinProducto.toLocaleString("es-CO")
+          }}).
+        </ng-container>
+        <ng-template #precioProductoOk>
+          Precio mínimo del producto: ${{
+            precioMinProducto.toLocaleString("es-CO")
+          }}
+        </ng-template>
+      </p>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+          >Número del cliente</label
+        >
+        <input
+          type="number"
+          [(ngModel)]="numCliente"
+          placeholder="Número de contacto"
+          class="mv-input w-full px-4 py-3 rounded-[14px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-black dark:text-white text-sm placeholder-neutral-300 dark:placeholder-neutral-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[10px] uppercase tracking-[0.25em] text-neutral-400 dark:text-neutral-500 font-medium"
+          >Comentario</label
+        >
+        <textarea
+          [(ngModel)]="comentario"
+          rows="3"
+          placeholder="Observaciones sobre la venta..."
+          class="mv-input w-full px-4 py-3 rounded-[14px] bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-black dark:text-white text-sm placeholder-neutral-300 dark:placeholder-neutral-700 focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-200 resize-none"
+        ></textarea>
+      </div>
+    </div>
+
+    <div
+      class="px-6 py-4 border-t border-neutral-100 dark:border-neutral-800 flex gap-3 shrink-0"
+    >
+      <button
+        (click)="cerrar.emit()"
+        class="flex-1 py-3 rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 text-sm font-medium hover:border-neutral-400 active:scale-[0.98] transition-all duration-200"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="confirmarVenta()"
+        [disabled]="cargando || ventaBloqueadaPorPrecio"
+        class="flex-1 py-3 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+      >
+        {{
+          cargandoPrecioMin
+            ? "Verificando precio…"
+            : cargando
+              ? "Procesando…"
+              : "Confirmar venta"
+        }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+.apple-loader {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.apple-loader::before,
+.apple-loader::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+}
+
+.apple-loader::before {
+  border-top-color: rgba(0, 0, 0, 0.7);
+  border-right-color: rgba(0, 0, 0, 0.15);
+  animation: appleSpin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.dark .apple-loader::before {
+  border-top-color: rgba(255, 255, 255, 0.9);
+  border-right-color: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes appleSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(320deg);
+  }
+}
+
+@keyframes fadeInSmooth {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeInSmooth 300ms ease-out;
+}
+
+.spinner-apple {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  border-top: 2.5px solid rgba(70, 70, 70, 0.8);
+  animation: spinApple 0.8s linear infinite;
+}
+
+.dark .spinner-apple {
+  border: 2.5px solid rgba(255, 255, 255, 0.1);
+  border-top: 2.5px solid rgba(247, 0, 0, 0.9);
+}
+
+@keyframes spinApple {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounceArrow {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounceArrow {
+  animation: bounceArrow 1s infinite;
+}

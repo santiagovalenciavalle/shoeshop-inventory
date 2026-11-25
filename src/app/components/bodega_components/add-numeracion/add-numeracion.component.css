@@ -1,0 +1,311 @@
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.size-item {
+    animation: fadeIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.size-item:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.size-item:nth-child(2) {
+    animation-delay: 30ms;
+}
+
+.size-item:nth-child(3) {
+    animation-delay: 60ms;
+}
+
+.size-item:nth-child(4) {
+    animation-delay: 90ms;
+}
+
+.size-item:nth-child(5) {
+    animation-delay: 120ms;
+}
+
+.size-item:nth-child(6) {
+    animation-delay: 150ms;
+}
+
+.size-item:nth-child(7) {
+    animation-delay: 180ms;
+}
+
+.size-item:nth-child(8) {
+    animation-delay: 210ms;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+.apple-btn {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', sans-serif;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 700ms linear infinite;
+}
+
+.print-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+
+.print-modal {
+    background: #0f0f1a;
+    border: 1px solid #2a2a3e;
+    border-radius: 16px;
+    padding: 28px 24px;
+    width: 320px;
+    text-align: center;
+    color: #e0e0e0;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+.print-modal-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+}
+
+.print-modal h3 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.print-modal p {
+    color: #888;
+    font-size: 0.85rem;
+    margin: 0 0 12px;
+}
+
+.tallas-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.talla-chip {
+    background: #1a1a2e;
+    border: 1px solid #2a2a3e;
+    border-radius: 8px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.talla-num {
+    font-weight: bold;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.talla-cant {
+    color: #34a853;
+    font-size: 0.8rem;
+}
+
+.total-stickers {
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+}
+
+.total-stickers strong {
+    color: #fff;
+}
+
+.print-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-imprimir {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-imprimir:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-omitir {
+    background: transparent;
+    color: #666;
+    border: 1px solid #2a2a3e;
+    border-radius: 10px;
+    padding: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-omitir:hover {
+    color: #aaa;
+    border-color: #3a3a5e;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+}
+
+.modal-imprimir {
+    background: #0f0f1a;
+    border: 1px solid #2a2a3e;
+    border-radius: 16px;
+    padding: 24px;
+    width: 320px;
+    color: #e0e0e0;
+    font-family: sans-serif;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-imprimir h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    color: #fff;
+}
+
+.modal-sub {
+    font-size: 0.82rem;
+    color: #666;
+    margin: 0 0 16px;
+}
+
+.tallas-resumen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.talla-chip {
+    background: #1a1a2e;
+    border: 1px solid #2a2a3e;
+    border-radius: 8px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.talla-num {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #a78bfa;
+}
+
+.talla-cant {
+    font-size: 0.78rem;
+    color: #555;
+}
+
+.modal-total {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+.modal-total strong {
+    color: #fff;
+    font-size: 1rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-omitir {
+    flex: 1;
+    background: #1a1a2e;
+    border: 1px solid #2a2a3e;
+    color: #888;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.15s;
+}
+
+.btn-omitir:hover:not(:disabled) {
+    border-color: #4a4a6e;
+    color: #ccc;
+}
+
+.btn-imprimir {
+    flex: 2;
+    background: #1a5c30;
+    border: none;
+    color: #6fff99;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.15s;
+}
+
+.btn-imprimir:hover:not(:disabled) {
+    background: #22753d;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.imprimiendo-hint {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #555;
+    margin: 12px 0 0;
+}

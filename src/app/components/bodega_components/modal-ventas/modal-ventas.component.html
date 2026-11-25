@@ -1,0 +1,378 @@
+<style>
+  @keyframes overlayIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes panelIn {
+    from {
+      opacity: 0;
+      transform: translateY(28px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  .apv-overlay {
+    animation: overlayIn 0.2s ease forwards;
+  }
+  .apv-panel {
+    animation: panelIn 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .s1 {
+    animation: fadeUp 0.36s ease forwards 0.06s;
+    opacity: 0;
+  }
+  .s2 {
+    animation: fadeUp 0.36s ease forwards 0.12s;
+    opacity: 0;
+  }
+  .s3 {
+    animation: fadeUp 0.36s ease forwards 0.18s;
+    opacity: 0;
+  }
+  .s4 {
+    animation: fadeUp 0.36s ease forwards 0.24s;
+    opacity: 0;
+  }
+
+  .apv-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e4e4e4 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  .dark .apv-shimmer {
+    background: linear-gradient(90deg, #262626 25%, #333 50%, #262626 75%);
+    background-size: 200% 100%;
+  }
+
+  .apv-loading {
+    animation: pulse-soft 1.4s ease-in-out infinite;
+  }
+
+  .lift {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .img-zoom {
+    transition: transform 0.3s ease;
+  }
+  .img-host:hover .img-zoom {
+    transform: scale(1.05);
+  }
+
+  .btn-close {
+    transition:
+      opacity 0.16s ease,
+      transform 0.16s ease;
+  }
+  .btn-close:hover {
+    opacity: 0.72;
+  }
+  .btn-close:active {
+    transform: scale(0.95);
+  }
+</style>
+
+<div
+  *ngIf="visible"
+  class="apv-root apv-overlay fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm"
+  (click)="cerrar()"
+>
+  <div
+    class="apv-panel relative w-full sm:max-w-2xl lg:max-w-3xl max-h-[96dvh] sm:max-h-[90vh] overflow-y-auto overflow-x-hidden bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] shadow-2xl dark:shadow-black/60"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="s1 sticky top-0 z-10 flex items-center justify-between px-6 sm:px-8 py-4 bg-white/90 dark:bg-neutral-950/90 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-800"
+    >
+      <div
+        class="absolute top-2.5 left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full bg-neutral-200 dark:bg-neutral-700 sm:hidden"
+      ></div>
+
+      <span
+        class="apv-serif text-[0.65rem] tracking-[0.14em] uppercase text-neutral-400 dark:text-neutral-500"
+      >
+        Ventas del Producto
+      </span>
+
+      <button
+        class="btn-close w-7 h-7 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 border-0 cursor-pointer"
+        (click)="cerrar()"
+        aria-label="Cerrar"
+      >
+        <i class="pi pi-times" style="font-size: 0.65rem"></i>
+      </button>
+    </div>
+
+    <div
+      class="s2 grid grid-cols-1 sm:grid-cols-[170px_1fr] gap-6 sm:gap-8 px-6 sm:px-8 py-7 border-b border-neutral-100 dark:border-neutral-800"
+    >
+      <div
+        class="img-host mx-auto sm:mx-0 w-full max-w-[160px] aspect-square flex items-center justify-center bg-neutral-50 dark:bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-100 dark:border-neutral-800 shadow-sm"
+      >
+        <img
+          *ngIf="producto?.imagen; else noImage"
+          [src]="producto.imagen"
+          alt="Imagen del producto"
+          class="img-zoom w-[85%] h-[85%] object-contain"
+        />
+        <ng-template #noImage>
+          <span class="text-xs text-neutral-400 dark:text-neutral-500 italic"
+            >Sin imagen</span
+          >
+        </ng-template>
+      </div>
+
+      <div class="flex flex-col justify-center gap-4">
+        <h2
+          class="apv-serif text-[1.7rem] sm:text-[2rem] font-normal tracking-tight leading-tight text-neutral-900 dark:text-neutral-50"
+        >
+          {{ producto?.referencia }}
+        </h2>
+
+        <div class="grid grid-cols-2 gap-x-6 gap-y-3">
+          <div>
+            <p
+              class="text-[0.62rem] font-semibold tracking-[0.1em] uppercase text-neutral-400 dark:text-neutral-500 mb-0.5"
+            >
+              Código
+            </p>
+            <p
+              class="text-sm font-medium text-neutral-800 dark:text-neutral-200"
+            >
+              {{ producto?.id }}
+            </p>
+          </div>
+
+          <div>
+            <p
+              class="text-[0.62rem] font-semibold tracking-[0.1em] uppercase text-neutral-400 dark:text-neutral-500 mb-0.5"
+            >
+              Marca
+            </p>
+            <p
+              class="text-sm font-medium text-neutral-800 dark:text-neutral-200"
+            >
+              {{ producto?.marca }}
+            </p>
+          </div>
+
+          <div>
+            <p
+              class="text-[0.62rem] font-semibold tracking-[0.1em] uppercase text-neutral-400 dark:text-neutral-500 mb-0.5"
+            >
+              Precio Mín.
+            </p>
+            <p class="text-sm font-semibold text-amber-600 dark:text-amber-400">
+              {{ producto?.precioMin | currency: "COP" : "symbol" : "1.0-0" }}
+            </p>
+          </div>
+
+          <div>
+            <p
+              class="text-[0.62rem] font-semibold tracking-[0.1em] uppercase text-neutral-400 dark:text-neutral-500 mb-0.5"
+            >
+              Precio Local
+            </p>
+            <p class="text-sm font-semibold text-amber-600 dark:text-amber-400">
+              {{ producto?.pl }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="mx-8 h-px bg-gradient-to-r from-transparent via-amber-400/40 to-transparent"
+    ></div>
+
+    <div
+      class="s3 flex items-center justify-between px-6 sm:px-8 py-5 border-b border-neutral-100 dark:border-neutral-800"
+    >
+      <div class="flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+        <p
+          class="text-[0.62rem] font-semibold tracking-[0.1em] uppercase text-neutral-400 dark:text-neutral-500"
+        >
+          Total Ventas
+        </p>
+        <p
+          class="apv-serif text-xl font-normal text-neutral-900 dark:text-neutral-50 ml-1"
+        >
+          {{ ventas.length }}
+        </p>
+      </div>
+
+      <div class="text-right">
+        <p
+          class="text-[0.62rem] font-semibold tracking-[0.1em] uppercase text-neutral-400 dark:text-neutral-500 mb-0.5"
+        >
+          Suma total
+        </p>
+        <p class="text-base font-semibold text-amber-600 dark:text-amber-400">
+          {{ totalVentas() | currency: "COP" : "symbol" : "1.0-0" }}
+        </p>
+      </div>
+    </div>
+
+    <div class="s4 px-6 sm:px-8 py-7">
+      <h3
+        class="apv-serif text-xl font-normal tracking-tight text-neutral-900 dark:text-neutral-50 mb-6"
+      >
+        Historial de Ventas
+      </h3>
+
+      <ng-container *ngIf="loading">
+        <app-ia-loader mensaje="Cargando ventas…"></app-ia-loader>
+      </ng-container>
+
+      <ng-container *ngIf="!loading && ventas.length === 0">
+        <div class="flex flex-col items-center justify-center py-16 gap-3">
+          <div
+            class="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center"
+          >
+            <i
+              class="pi pi-inbox text-neutral-400 dark:text-neutral-500"
+              style="font-size: 1.1rem"
+            ></i>
+          </div>
+          <p class="text-sm text-neutral-400 dark:text-neutral-500">
+            No se registran ventas para este producto.
+          </p>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!loading && ventas.length > 0">
+        <ng-container *ngFor="let grupo of ventasAgrupadasPorFecha()">
+          <div class="flex items-center gap-3 mb-4 mt-6 first:mt-0">
+            <div class="flex-1 h-px bg-neutral-100 dark:bg-neutral-800"></div>
+            <span
+              class="text-[0.65rem] font-semibold tracking-[0.1em] uppercase text-neutral-400 dark:text-neutral-500 flex-shrink-0"
+            >
+              {{ grupo.fecha }}
+            </span>
+            <div class="flex-1 h-px bg-neutral-100 dark:bg-neutral-800"></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
+            <div
+              *ngFor="let venta of grupo.ventas"
+              class="lift flex flex-col gap-3 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl p-4 cursor-default hover:border-neutral-200 dark:hover:border-neutral-700 hover:shadow-md"
+            >
+              <div class="flex items-center justify-between">
+                <p
+                  class="apv-serif text-lg font-normal text-amber-600 dark:text-amber-400"
+                >
+                  {{ venta.precio | currency: "COP" : "symbol" : "1.0-0" }}
+                </p>
+                <span
+                  class="text-[0.68rem] font-medium px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400"
+                >
+                  {{ venta.local }}
+                </span>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div
+                  class="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300"
+                >
+                  <i
+                    class="pi pi-sort-numeric-up text-amber-500"
+                    style="font-size: 0.7rem"
+                  ></i>
+                  <span
+                    class="text-neutral-400 dark:text-neutral-500 font-medium"
+                    >Talla</span
+                  >
+                  <span class="font-semibold ml-auto">{{ venta.talla }}</span>
+                </div>
+                <div
+                  class="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300"
+                >
+                  <i
+                    class="pi pi-user text-amber-500"
+                    style="font-size: 0.7rem"
+                  ></i>
+                  <span
+                    class="text-neutral-400 dark:text-neutral-500 font-medium"
+                    >Vendedor</span
+                  >
+                  <span class="font-semibold ml-auto truncate max-w-[120px]">{{
+                    venta.vendedor
+                  }}</span>
+                </div>
+                <div
+                  class="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300"
+                >
+                  <i
+                    class="pi pi-tag text-amber-500"
+                    style="font-size: 0.7rem"
+                  ></i>
+                  <span
+                    class="text-neutral-400 dark:text-neutral-500 font-medium"
+                    >Tipo</span
+                  >
+                  <span class="font-semibold ml-auto">{{
+                    venta.tipoVenta
+                  }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <div
+      class="flex justify-end px-6 sm:px-8 py-5 border-t border-neutral-100 dark:border-neutral-800"
+    >
+      <button
+        class="btn-close flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 text-sm font-medium border-0 outline-none cursor-pointer"
+        (click)="cerrar()"
+      >
+        <i class="pi pi-times" style="font-size: 0.72rem"></i>
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

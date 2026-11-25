@@ -1,0 +1,157 @@
+<style>
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .au {
+    animation: fadeUp 0.5s cubic-bezier(0.22, 0.68, 0, 1.15) both;
+  }
+  .ai {
+    animation: fadeIn 0.4s ease both;
+  }
+  .d1 {
+    animation-delay: 0.06s;
+  }
+  .d2 {
+    animation-delay: 0.12s;
+  }
+  .d3 {
+    animation-delay: 0.18s;
+  }
+  .d4 {
+    animation-delay: 0.24s;
+  }
+  .d5 {
+    animation-delay: 0.3s;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    transition: background 0.15s ease;
+  }
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .action-btn {
+    transition:
+      background 0.15s ease,
+      transform 0.12s ease;
+  }
+  .action-btn:hover {
+    background: #9a7d28 !important;
+  }
+  .action-btn:active {
+    transform: scale(0.97);
+  }
+
+  .product-img {
+    transition: transform 0.4s cubic-bezier(0.22, 0.68, 0, 1.2);
+  }
+  .product-img:hover {
+    transform: scale(1.04);
+  }
+</style>
+
+<div class="max-w-lg mx-auto px-4 py-8">
+  <div class="au ai flex flex-col items-center text-center mb-8">
+    <div
+      class="w-28 h-28 rounded-2xl overflow-hidden bg-gray-100 dark:bg-[#1c1c1e] border border-gray-200/60 dark:border-white/10 mb-5"
+    >
+      <img
+        [src]="venta?.imagen"
+        alt="Producto"
+        class="product-img w-full h-full object-cover"
+      />
+    </div>
+
+    <h1
+      class="text-2xl font-semibold text-gray-900 dark:text-white tracking-tight"
+    >
+      {{ venta?.referencia }}
+    </h1>
+    <p
+      class="mt-1 text-sm text-gray-400 dark:text-gray-500 font-light tracking-wide"
+    >
+      Código {{ venta?.zapatoId }}&nbsp;&nbsp;·&nbsp;&nbsp;Talla
+      {{ venta?.talla }}
+    </p>
+  </div>
+
+  <div
+    class="au d1 bg-[#b8962e]/8 dark:bg-[#b8962e]/12 border border-[#b8962e]/20 dark:border-[#b8962e]/25 rounded-2xl px-6 py-5 text-center mb-4"
+  >
+    <p
+      class="text-[11px] font-semibold uppercase tracking-widest text-[#b8962e]/70 mb-1"
+    >
+      Precio
+    </p>
+    <p class="text-3xl font-semibold tracking-tight text-[#b8962e]">
+      {{ venta?.precio | currency: "COP" : "symbol" : "1.0-0" }}
+    </p>
+  </div>
+
+  <div
+    class="au d2 bg-white dark:bg-[#1c1c1e] border border-gray-200/70 dark:border-white/8 rounded-2xl px-5 mb-4 overflow-hidden"
+  >
+    <div class="detail-row">
+      <span class="text-sm text-gray-500 dark:text-gray-400">Vendedor</span>
+      <span class="text-sm font-medium text-gray-900 dark:text-white">{{
+        venta?.vendedor
+      }}</span>
+    </div>
+
+    <div class="detail-row">
+      <span class="text-sm text-gray-500 dark:text-gray-400">Local</span>
+      <span class="text-sm font-medium text-gray-900 dark:text-white">{{
+        venta?.local
+      }}</span>
+    </div>
+
+    <div class="detail-row">
+      <span class="text-sm text-gray-500 dark:text-gray-400"
+        >Método de pago</span
+      >
+      <span class="text-sm font-medium text-gray-900 dark:text-white">{{
+        venta?.metodoPago
+      }}</span>
+    </div>
+
+    <div class="detail-row">
+      <span class="text-sm text-gray-500 dark:text-gray-400"
+        >Fecha de venta</span
+      >
+      <span class="text-sm font-medium text-gray-900 dark:text-white">{{
+        venta?.fechaVenta | date: "dd/MM/yyyy · hh:mm a"
+      }}</span>
+    </div>
+
+    <div *ngIf="venta?.numCliente" class="detail-row">
+      <span class="text-sm text-gray-500 dark:text-gray-400"
+        >Número de cliente</span
+      >
+      <span class="text-sm font-medium text-gray-900 dark:text-white">{{
+        venta?.numCliente
+      }}</span>
+    </div>
+  </div>
+</div>

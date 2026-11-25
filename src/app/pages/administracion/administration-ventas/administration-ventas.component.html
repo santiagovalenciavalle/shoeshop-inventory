@@ -1,0 +1,1291 @@
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+  :host,
+  .ventas-root {
+    font-family:
+      "Inter",
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .fade-in {
+    animation: fadeIn 0.3s ease both;
+  }
+  .delay-1 {
+    animation-delay: 0.05s;
+  }
+  .delay-2 {
+    animation-delay: 0.1s;
+  }
+  .delay-3 {
+    animation-delay: 0.15s;
+  }
+  .delay-4 {
+    animation-delay: 0.2s;
+  }
+  .delay-5 {
+    animation-delay: 0.25s;
+  }
+
+  .table-row-hover {
+    transition: background-color 0.15s ease;
+  }
+  .table-row-hover:hover {
+    background-color: rgba(184, 150, 46, 0.04);
+  }
+  .dark .table-row-hover:hover {
+    background-color: rgba(184, 150, 46, 0.06);
+  }
+
+  .accordion-content {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .accordion-content.open {
+    max-height: 200px;
+  }
+
+  .filter-pill {
+    transition: all 0.15s ease;
+  }
+  .filter-pill:hover {
+    background-color: rgba(184, 150, 46, 0.08);
+  }
+
+  .stat-value {
+    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .chart-bar {
+    transition:
+      height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s ease;
+  }
+  .chart-bar:hover {
+    opacity: 0.8;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #d2d2d7, transparent);
+  }
+  .dark .section-divider {
+    background: linear-gradient(to right, transparent, #3a3a3c, transparent);
+  }
+
+  .donut-ring {
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .scroll-btn {
+    transition: all 0.2s ease;
+  }
+  .scroll-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+  .scroll-btn:active {
+    transform: scale(0.95);
+  }
+
+  .chevron-icon {
+    transition: transform 0.25s ease;
+  }
+  .chevron-icon.rotated {
+    transform: rotate(180deg);
+  }
+</style>
+
+<div
+  class="ventas-root min-h-screen bg-[#f8f8fa] dark:bg-[#09090b] text-[#18181b] dark:text-[#fafafa] transition-colors duration-300"
+>
+  <div
+    class="border-b border-[#e4e4e7] dark:border-[#27272a] bg-white dark:bg-[#09090b]"
+  >
+    <div
+      class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded-lg bg-[#b8962e] flex items-center justify-center flex-shrink-0"
+        >
+          <svg
+            class="w-4 h-4 text-white"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-lg font-semibold tracking-tight leading-none">
+            Reporte de Ventas
+          </h1>
+          <p class="text-xs text-[#71717a] dark:text-[#a1a1aa] mt-0.5">
+            Métricas y análisis del periodo
+          </p>
+        </div>
+      </div>
+      <span
+        class="text-xs font-medium text-[#b8962e] bg-[#b8962e]/8 dark:bg-[#b8962e]/12 px-3 py-1.5 rounded-full border border-[#b8962e]/20"
+      >
+        {{ labelPeriodo }}
+      </span>
+    </div>
+  </div>
+
+  <div
+    class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10 py-8 flex flex-col gap-10"
+  >
+    <section class="fade-in">
+      <div
+        class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-4 sm:p-5"
+      >
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div
+            class="flex items-center gap-1 bg-[#f4f4f5] dark:bg-[#27272a] p-1 rounded-lg flex-wrap"
+          >
+            <button
+              *ngFor="let tab of tabs"
+              (click)="seleccionarModo(tab.value)"
+              class="filter-pill px-3 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-all"
+              [ngClass]="
+                modoFiltro === tab.value
+                  ? 'bg-white dark:bg-[#3f3f46] text-[#b8962e] shadow-sm border border-[#e4e4e7] dark:border-[#52525b]'
+                  : 'text-[#71717a] dark:text-[#a1a1aa]'
+              "
+            >
+              {{ tab.label }}
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3 flex-wrap">
+            <div *ngIf="modoFiltro === 'dia'" class="flex flex-col gap-1">
+              <label
+                class="text-[10px] font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+                >Día</label
+              >
+              <p-datepicker
+                [(ngModel)]="fechaDia"
+                (ngModelChange)="onFechaDiaChange($event)"
+                [appendTo]="'body'"
+                dateFormat="dd/mm/yy"
+                placeholder="Seleccionar día"
+                class="w-44"
+              ></p-datepicker>
+            </div>
+            <div *ngIf="modoFiltro === 'semana'" class="flex flex-col gap-1">
+              <label
+                class="text-[10px] font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+                >Semana</label
+              >
+              <p-datepicker
+                [(ngModel)]="fechaSemana"
+                (ngModelChange)="onFechaSemanaChange($event)"
+                [appendTo]="'body'"
+                dateFormat="dd/mm/yy"
+                placeholder="Cualquier día"
+                class="w-44"
+              ></p-datepicker>
+            </div>
+            <div *ngIf="modoFiltro === 'mes'" class="flex flex-col gap-1">
+              <label
+                class="text-[10px] font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+                >Mes</label
+              >
+              <p-datepicker
+                [(ngModel)]="fechaMes"
+                (ngModelChange)="onFechaMesChange($event)"
+                view="month"
+                dateFormat="mm/yy"
+                [appendTo]="'body'"
+                placeholder="Seleccionar mes"
+                class="w-44"
+              ></p-datepicker>
+            </div>
+            <div *ngIf="modoFiltro === 'anio'" class="flex flex-col gap-1">
+              <label
+                class="text-[10px] font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+                >Año</label
+              >
+              <p-datepicker
+                [(ngModel)]="fechaAnio"
+                (ngModelChange)="onFechaAnioChange($event)"
+                view="year"
+                dateFormat="yy"
+                [appendTo]="'body'"
+                placeholder="Seleccionar año"
+                class="w-40"
+              ></p-datepicker>
+            </div>
+
+            <button
+              (click)="limpiarFiltros()"
+              class="filter-pill inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#e4e4e7] dark:border-[#27272a] text-[#71717a] dark:text-[#a1a1aa] text-xs font-medium cursor-pointer mt-auto"
+            >
+              <svg
+                class="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Limpiar
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="fade-in delay-1">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-1 h-5 bg-[#b8962e] rounded-full"></div>
+          <h2
+            class="text-sm font-semibold uppercase tracking-widest text-[#71717a] dark:text-[#a1a1aa]"
+          >
+            Resumen General
+          </h2>
+        </div>
+        <span class="text-xs text-[#a1a1aa]">{{ textoPeriodo }}</span>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+        <div
+          class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <p
+              class="text-xs font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+            >
+              Ventas Propias
+            </p>
+            <div
+              class="w-6 h-6 rounded-md bg-[#b8962e]/10 flex items-center justify-center"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-[#b8962e]"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"
+                />
+              </svg>
+            </div>
+          </div>
+          <p-skeleton *ngIf="loading" width="120px" height="28px"></p-skeleton>
+          <p
+            *ngIf="!loading"
+            class="stat-value text-xl font-bold text-[#b8962e] leading-none"
+          >
+            {{ ventasPropias | currency: "COP" : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+
+        <div
+          class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <p
+              class="text-xs font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+            >
+              Ventas Otro Local
+            </p>
+            <div
+              class="w-6 h-6 rounded-md bg-[#b8962e]/10 flex items-center justify-center"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-[#b8962e]"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"
+                />
+              </svg>
+            </div>
+          </div>
+          <p-skeleton *ngIf="loading" width="120px" height="28px"></p-skeleton>
+          <p
+            *ngIf="!loading"
+            class="stat-value text-xl font-bold text-[#b8962e] leading-none"
+          >
+            {{ ventasOtroLocal | currency: "COP" : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+
+        <div
+          class="order-first bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <p
+              class="text-xs font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+            >
+              Ventas Totales
+            </p>
+            <div
+              class="w-6 h-6 rounded-md bg-[#b8962e]/10 flex items-center justify-center"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-[#b8962e]"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"
+                />
+              </svg>
+            </div>
+          </div>
+          <p-skeleton *ngIf="loading" width="120px" height="28px"></p-skeleton>
+          <p
+            *ngIf="!loading"
+            class="stat-value text-xl font-bold text-[#b8962e] leading-none"
+          >
+            {{ totalVentas | currency: "COP" : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+
+        <div
+          class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <p
+              class="text-xs font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+            >
+              Unidades
+            </p>
+            <div
+              class="w-6 h-6 rounded-md bg-[#3b82f6]/10 flex items-center justify-center"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-[#3b82f6]"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
+              </svg>
+            </div>
+          </div>
+          <p-skeleton *ngIf="loading" width="80px" height="28px"></p-skeleton>
+          <p *ngIf="!loading" class="stat-value text-xl font-bold leading-none">
+            {{ totalUnidades }}
+          </p>
+        </div>
+
+        <div
+          class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <p
+              class="text-xs font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+            >
+              Ganancias
+            </p>
+            <div
+              class="w-6 h-6 rounded-md bg-emerald-500/10 flex items-center justify-center"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-emerald-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+          </div>
+          <p-skeleton *ngIf="loading" width="120px" height="28px"></p-skeleton>
+          <p
+            *ngIf="!loading"
+            class="stat-value text-xl font-bold text-emerald-500 dark:text-emerald-400 leading-none"
+          >
+            {{ gananciasTotales | currency: "COP" : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+
+        <div
+          class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <p
+              class="text-xs font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+            >
+              Ganancias Propias
+            </p>
+            <div
+              class="w-6 h-6 rounded-md bg-emerald-500/10 flex items-center justify-center"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-emerald-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+          </div>
+          <p-skeleton *ngIf="loading" width="120px" height="28px"></p-skeleton>
+          <p
+            *ngIf="!loading"
+            class="stat-value text-xl font-bold text-emerald-500 dark:text-emerald-400 leading-none"
+          >
+            {{ gananciasPropias | currency: "COP" : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+
+        <div
+          class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <p
+              class="text-xs font-medium text-[#71717a] dark:text-[#a1a1aa] uppercase tracking-wider"
+            >
+              Ventas Hoy
+            </p>
+            <div
+              class="w-6 h-6 rounded-md bg-violet-500/10 flex items-center justify-center"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-violet-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+              </svg>
+            </div>
+          </div>
+          <p-skeleton *ngIf="loading" width="120px" height="28px"></p-skeleton>
+          <p *ngIf="!loading" class="stat-value text-xl font-bold leading-none">
+            {{ ventasHoy | currency: "COP" : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div
+          class="lg:col-span-2 bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5"
+        >
+          <p
+            class="text-xs font-semibold uppercase tracking-wider text-[#71717a] dark:text-[#a1a1aa] mb-4"
+          >
+            Métodos de Pago
+          </p>
+
+          <ng-container *ngIf="loading">
+            <div class="space-y-3">
+              <p-skeleton
+                *ngFor="let s of [1, 2, 3, 4, 5]"
+                height="36px"
+              ></p-skeleton>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="!loading">
+            <div class="space-y-3">
+              <div class="flex items-center gap-3">
+                <span
+                  class="text-xs font-medium text-[#52525b] dark:text-[#a1a1aa] w-28 flex-shrink-0"
+                  >Efectivo</span
+                >
+                <div
+                  class="flex-1 h-1.5 bg-[#f4f4f5] dark:bg-[#27272a] rounded-full overflow-hidden"
+                >
+                  <div
+                    class="h-full bg-[#b8962e] rounded-full transition-all duration-700"
+                    [style.width.%]="
+                      totalVentas > 0 ? (totalEfectivo / totalVentas) * 100 : 0
+                    "
+                  ></div>
+                </div>
+                <span
+                  class="stat-value text-xs font-semibold text-right w-32 flex-shrink-0"
+                >
+                  {{ totalEfectivo | currency: "COP" : "symbol" : "1.0-0" }}
+                </span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span
+                  class="text-xs font-medium text-[#52525b] dark:text-[#a1a1aa] w-28 flex-shrink-0"
+                  >Transferencia</span
+                >
+                <div
+                  class="flex-1 h-1.5 bg-[#f4f4f5] dark:bg-[#27272a] rounded-full overflow-hidden"
+                >
+                  <div
+                    class="h-full bg-[#3b82f6] rounded-full transition-all duration-700"
+                    [style.width.%]="
+                      totalVentas > 0
+                        ? (totalTransferencia / totalVentas) * 100
+                        : 0
+                    "
+                  ></div>
+                </div>
+                <span
+                  class="stat-value text-xs font-semibold text-right w-32 flex-shrink-0"
+                >
+                  {{
+                    totalTransferencia | currency: "COP" : "symbol" : "1.0-0"
+                  }}
+                </span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span
+                  class="text-xs font-medium text-[#52525b] dark:text-[#a1a1aa] w-28 flex-shrink-0"
+                  >Sistecrédito</span
+                >
+                <div
+                  class="flex-1 h-1.5 bg-[#f4f4f5] dark:bg-[#27272a] rounded-full overflow-hidden"
+                >
+                  <div
+                    class="h-full bg-emerald-500 rounded-full transition-all duration-700"
+                    [style.width.%]="
+                      totalVentas > 0
+                        ? (totalSistecredito / totalVentas) * 100
+                        : 0
+                    "
+                  ></div>
+                </div>
+                <span
+                  class="stat-value text-xs font-semibold text-right w-32 flex-shrink-0"
+                >
+                  {{ totalSistecredito | currency: "COP" : "symbol" : "1.0-0" }}
+                </span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span
+                  class="text-xs font-medium text-[#52525b] dark:text-[#a1a1aa] w-28 flex-shrink-0"
+                  >Addi</span
+                >
+                <div
+                  class="flex-1 h-1.5 bg-[#f4f4f5] dark:bg-[#27272a] rounded-full overflow-hidden"
+                >
+                  <div
+                    class="h-full bg-violet-500 rounded-full transition-all duration-700"
+                    [style.width.%]="
+                      totalVentas > 0 ? (totalAddi / totalVentas) * 100 : 0
+                    "
+                  ></div>
+                </div>
+                <span
+                  class="stat-value text-xs font-semibold text-right w-32 flex-shrink-0"
+                >
+                  {{ totalAddi | currency: "COP" : "symbol" : "1.0-0" }}
+                </span>
+              </div>
+              <div class="flex items-center gap-3">
+                <span
+                  class="text-xs font-medium text-[#52525b] dark:text-[#a1a1aa] w-28 flex-shrink-0"
+                  >Bold</span
+                >
+                <div
+                  class="flex-1 h-1.5 bg-[#f4f4f5] dark:bg-[#27272a] rounded-full overflow-hidden"
+                >
+                  <div
+                    class="h-full bg-sky-500 rounded-full transition-all duration-700"
+                    [style.width.%]="
+                      totalVentas > 0 ? (totalBold / totalVentas) * 100 : 0
+                    "
+                  ></div>
+                </div>
+                <span
+                  class="stat-value text-xs font-semibold text-right w-32 flex-shrink-0"
+                >
+                  {{ totalBold | currency: "COP" : "symbol" : "1.0-0" }}
+                </span>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div
+          class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5 flex flex-col"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <p
+              class="text-xs font-semibold uppercase tracking-wider text-[#71717a] dark:text-[#a1a1aa]"
+            >
+              Ganancia Otros Locales
+            </p>
+            <div
+              class="w-6 h-6 rounded-md bg-cyan-500/10 flex items-center justify-center"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-cyan-500"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M3 3v18h18M7 15l4-4 3 3 5-6" />
+              </svg>
+            </div>
+          </div>
+
+          <p-skeleton *ngIf="loading" width="120px" height="28px"></p-skeleton>
+          <p
+            *ngIf="!loading"
+            class="stat-value text-2xl font-bold text-cyan-500 dark:text-cyan-400 leading-none"
+          >
+            {{ gananciaOtrosLocales | currency: "COP" : "symbol" : "1.0-0" }}
+          </p>
+
+          <p class="text-[11px] text-[#a1a1aa] mt-3 leading-snug">
+            Precio de venta − precio de compra, solo ventas tipo "otro local".
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+    <section class="fade-in delay-2">
+      <div class="flex items-center justify-between mb-5">
+        <div class="flex items-center gap-2">
+          <div class="w-1 h-5 bg-[#b8962e] rounded-full"></div>
+          <h2
+            class="text-sm font-semibold uppercase tracking-widest text-[#71717a] dark:text-[#a1a1aa]"
+          >
+            Rendimiento por Locales
+          </h2>
+        </div>
+        <span *ngIf="!loading" class="text-xs text-[#a1a1aa]">
+          {{ locales.length }} local{{ locales.length !== 1 ? "es" : "" }}
+        </span>
+      </div>
+
+      <ng-container *ngIf="loading">
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div
+            *ngFor="let s of [1, 2, 3]"
+            class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl p-5 flex flex-col gap-4"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <p-skeleton shape="circle" size="38px"></p-skeleton>
+                <p-skeleton width="100px" height="14px"></p-skeleton>
+              </div>
+              <p-skeleton
+                width="70px"
+                height="20px"
+                borderRadius="20px"
+              ></p-skeleton>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+              <p-skeleton height="52px" borderRadius="8px"></p-skeleton>
+              <p-skeleton height="52px" borderRadius="8px"></p-skeleton>
+              <p-skeleton height="52px" borderRadius="8px"></p-skeleton>
+            </div>
+            <p-skeleton height="1px"></p-skeleton>
+            <div class="flex flex-col gap-2">
+              <p-skeleton height="18px"></p-skeleton>
+              <p-skeleton height="18px"></p-skeleton>
+              <p-skeleton height="18px"></p-skeleton>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!loading">
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div
+            *ngFor="let local of locales; let i = index"
+            class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl overflow-hidden flex flex-col"
+          >
+            <div
+              class="h-1 w-full"
+              [ngClass]="
+                i === 0
+                  ? 'bg-[#2563eb]'
+                  : i === 1
+                    ? 'bg-[#6d28d9]'
+                    : 'bg-[#dc2626]'
+              "
+            ></div>
+
+            <div class="p-5 flex flex-col gap-4 flex-1">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div
+                    class="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                    [ngClass]="
+                      i === 0
+                        ? 'bg-[#2563eb]/10'
+                        : i === 1
+                          ? 'bg-[#6d28d9]/10'
+                          : 'bg-[#dc2626]/10'
+                    "
+                  >
+                    <svg
+                      class="w-4 h-4 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                      [ngClass]="
+                        i === 0
+                          ? 'text-[#2563eb]'
+                          : i === 1
+                            ? 'text-[#6d28d9]'
+                            : 'text-[#dc2626]'
+                      "
+                    >
+                      <path
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0H5m-2 0h2M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      />
+                    </svg>
+                  </div>
+                  <span class="font-semibold text-sm truncate">{{
+                    local.nombre
+                  }}</span>
+                </div>
+                <span
+                  class="text-[10px] font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ml-2"
+                  [ngClass]="
+                    i === 0
+                      ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20'
+                      : i === locales.length - 1
+                        ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/20'
+                        : 'bg-[#f4f4f5] dark:bg-[#27272a] text-[#71717a] dark:text-[#a1a1aa] border border-[#e4e4e7] dark:border-[#3f3f46]'
+                  "
+                >
+                  {{
+                    i === 0
+                      ? "Top Performer"
+                      : i === locales.length - 1
+                        ? "Atención"
+                        : "Estable"
+                  }}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-3 gap-2">
+                <div
+                  class="bg-[#f8f8fa] dark:bg-[#27272a] rounded-lg p-2.5 flex flex-col gap-1 min-w-0"
+                >
+                  <span
+                    class="text-[9px] font-semibold uppercase tracking-wider text-[#a1a1aa]"
+                    >Ventas</span
+                  >
+                  <span
+                    class="stat-value text-xs font-bold text-[#b8962e] leading-tight break-all"
+                  >
+                    {{ local.ventas | currency: "COP" : "symbol" : "1.0-0" }}
+                  </span>
+                </div>
+                <div
+                  class="bg-[#f8f8fa] dark:bg-[#27272a] rounded-lg p-2.5 flex flex-col gap-1 min-w-0"
+                >
+                  <span
+                    class="text-[9px] font-semibold uppercase tracking-wider text-[#a1a1aa]"
+                    >Unidades</span
+                  >
+                  <span class="stat-value text-xs font-bold leading-tight">{{
+                    local.unidades
+                  }}</span>
+                </div>
+                <div
+                  class="bg-[#f8f8fa] dark:bg-[#27272a] rounded-lg p-2.5 flex flex-col gap-1 min-w-0"
+                >
+                  <span
+                    class="text-[9px] font-semibold uppercase tracking-wider text-[#a1a1aa]"
+                    >Ganancias</span
+                  >
+                  <span
+                    class="stat-value text-xs font-bold text-emerald-500 dark:text-emerald-400 leading-tight break-all"
+                  >
+                    {{ local.ganancias | currency: "COP" : "symbol" : "1.0-0" }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="h-px bg-[#f4f4f5] dark:bg-[#27272a]"></div>
+
+              <div class="flex gap-4 items-start">
+                <div class="flex-1 flex flex-col gap-0.5 min-w-0">
+                  <p
+                    class="text-[9px] font-semibold uppercase tracking-wider text-[#a1a1aa] mb-2 flex items-center gap-1.5"
+                  >
+                    <svg
+                      class="w-3 h-3 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                      <line x1="1" y1="10" x2="23" y2="10" />
+                    </svg>
+                    Métodos de Pago
+                  </p>
+
+                  <div class="flex items-center justify-between py-1">
+                    <div class="flex items-center gap-1.5">
+                      <div
+                        class="w-2 h-2 rounded-full bg-[#b8962e] flex-shrink-0"
+                      ></div>
+                      <span class="text-xs text-[#52525b] dark:text-[#a1a1aa]"
+                        >Efectivo</span
+                      >
+                    </div>
+                    <span class="stat-value text-xs font-semibold">{{
+                      local.totalEfectivo | currency: "COP" : "symbol" : "1.0-0"
+                    }}</span>
+                  </div>
+
+                  <div class="flex items-center justify-between py-1">
+                    <div class="flex items-center gap-1.5">
+                      <div
+                        class="w-2 h-2 rounded-full bg-[#3b82f6] flex-shrink-0"
+                      ></div>
+                      <span class="text-xs text-[#52525b] dark:text-[#a1a1aa]"
+                        >Transferencia</span
+                      >
+                    </div>
+                    <span class="stat-value text-xs font-semibold">{{
+                      local.totalTransferencia
+                        | currency: "COP" : "symbol" : "1.0-0"
+                    }}</span>
+                  </div>
+
+                  <div class="flex items-center justify-between py-1">
+                    <div class="flex items-center gap-1.5">
+                      <div
+                        class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"
+                      ></div>
+                      <span class="text-xs text-[#52525b] dark:text-[#a1a1aa]"
+                        >Sistecrédito</span
+                      >
+                    </div>
+                    <span class="stat-value text-xs font-semibold">{{
+                      local.totalSistecredito
+                        | currency: "COP" : "symbol" : "1.0-0"
+                    }}</span>
+                  </div>
+
+                  <div class="flex items-center justify-between py-1">
+                    <div class="flex items-center gap-1.5">
+                      <div
+                        class="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0"
+                      ></div>
+                      <span class="text-xs text-[#52525b] dark:text-[#a1a1aa]"
+                        >Addi</span
+                      >
+                    </div>
+                    <span class="stat-value text-xs font-semibold">{{
+                      local.totalAddi | currency: "COP" : "symbol" : "1.0-0"
+                    }}</span>
+                  </div>
+                  <div class="flex items-center justify-between py-1">
+                    <div class="flex items-center gap-1.5">
+                      <div
+                        class="w-2 h-2 rounded-full bg-violet-500 flex-shrink-0"
+                      ></div>
+                      <span class="text-xs text-[#52525b] dark:text-[#a1a1aa]"
+                        >Bold</span
+                      >
+                    </div>
+                    <span class="stat-value text-xs font-semibold">{{
+                      local.totalBold | currency: "COP" : "symbol" : "1.0-0"
+                    }}</span>
+                  </div>
+                </div>
+
+                <div *ngIf="local.ventas > 0" class="flex-shrink-0 w-28">
+                  <svg viewBox="0 0 120 120" class="w-28 h-28">
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="38"
+                      fill="none"
+                      stroke="#f4f4f5"
+                      stroke-width="12"
+                    />
+
+                    <!-- Efectivo -->
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="38"
+                      fill="none"
+                      stroke="#b8962e"
+                      stroke-width="12"
+                      [attr.stroke-dasharray]="
+                        donutDash(local.totalEfectivo || 0, local.ventas)
+                      "
+                      stroke-dashoffset="0"
+                      transform="rotate(-90 60 60)"
+                    />
+
+                    <!-- Transferencia -->
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="38"
+                      fill="none"
+                      stroke="#3b82f6"
+                      stroke-width="12"
+                      [attr.stroke-dasharray]="
+                        donutDash(local.totalTransferencia || 0, local.ventas)
+                      "
+                      [attr.stroke-dashoffset]="
+                        donutOffset(local.totalEfectivo || 0, local.ventas)
+                      "
+                      transform="rotate(-90 60 60)"
+                    />
+
+                    <!-- Sistecrédito -->
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="38"
+                      fill="none"
+                      stroke="#10b981"
+                      stroke-width="12"
+                      [attr.stroke-dasharray]="
+                        donutDash(local.totalSistecredito || 0, local.ventas)
+                      "
+                      [attr.stroke-dashoffset]="
+                        donutOffset(
+                          (local.totalEfectivo || 0) +
+                            (local.totalTransferencia || 0),
+                          local.ventas
+                        )
+                      "
+                      transform="rotate(-90 60 60)"
+                    />
+
+                    <!-- Addi -->
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="38"
+                      fill="none"
+                      stroke="#8b5cf6"
+                      stroke-width="12"
+                      [attr.stroke-dasharray]="
+                        donutDash(local.totalAddi || 0, local.ventas)
+                      "
+                      [attr.stroke-dashoffset]="
+                        donutOffset(
+                          (local.totalEfectivo || 0) +
+                            (local.totalTransferencia || 0) +
+                            (local.totalSistecredito || 0),
+                          local.ventas
+                        )
+                      "
+                      transform="rotate(-90 60 60)"
+                    />
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="38"
+                      fill="none"
+                      stroke="#8b5cf6"
+                      stroke-width="12"
+                      [attr.stroke-dasharray]="
+                        donutDash(local.totalBold || 0, local.ventas)
+                      "
+                      [attr.stroke-dashoffset]="
+                        donutOffset(
+                          (local.totalEfectivo || 0) +
+                            (local.totalTransferencia || 0) +
+                            (local.totalSistecredito || 0) +
+                            (local.totalAddi || 0) +
+                            (local.totalBold || 0),
+                          local.ventas
+                        )
+                      "
+                      transform="rotate(-90 60 60)"
+                    />
+
+                    <ng-container *ngFor="let seg of localesSegmentos[i]">
+                      <text
+                        *ngIf="seg.pct >= 8"
+                        [attr.x]="seg.x"
+                        [attr.y]="seg.y"
+                        text-anchor="middle"
+                        dominant-baseline="middle"
+                        font-size="8"
+                        font-weight="700"
+                        [attr.fill]="seg.color"
+                      >
+                        {{ seg.pct }}%
+                      </text>
+                    </ng-container>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <section class="fade-in delay-3">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-1 h-5 bg-[#b8962e] rounded-full"></div>
+          <h2
+            class="text-sm font-semibold uppercase tracking-widest text-[#71717a] dark:text-[#a1a1aa]"
+          >
+            Ventas por Vendedor
+          </h2>
+        </div>
+        <span *ngIf="!loading" class="text-xs text-[#a1a1aa]"
+          >{{ ventasVendedores.length }} vendedor{{
+            ventasVendedores.length !== 1 ? "es" : ""
+          }}</span
+        >
+      </div>
+
+      <ng-container *ngIf="loading">
+        <div
+          class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl overflow-hidden"
+        >
+          <div class="divide-y divide-[#f4f4f5] dark:divide-[#27272a]">
+            <div
+              *ngFor="let s of [1, 2, 3, 4, 5]"
+              class="p-5 flex items-center gap-4"
+            >
+              <p-skeleton shape="circle" size="36px"></p-skeleton>
+              <p-skeleton width="110px" height="14px"></p-skeleton>
+              <div class="flex-1"></div>
+              <p-skeleton width="90px" height="14px"></p-skeleton>
+              <p-skeleton width="60px" height="14px"></p-skeleton>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!loading">
+        <div
+          class="hidden md:grid grid-cols-12 px-5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-[#71717a] dark:text-[#a1a1aa]"
+        >
+          <div class="col-span-4">Vendedor</div>
+          <div class="col-span-3 text-right">Ventas Totales</div>
+          <div class="col-span-2 text-right">Transacciones</div>
+          <div class="col-span-2 text-right">Métodos</div>
+          <div class="col-span-1"></div>
+        </div>
+
+        <div
+          class="bg-white dark:bg-[#18181b] border border-[#e4e4e7] dark:border-[#27272a] rounded-xl overflow-hidden"
+        >
+          <div class="divide-y divide-[#f4f4f5] dark:divide-[#27272a]">
+            <div *ngFor="let vendedor of ventasVendedores; let i = index">
+              <button
+                (click)="vendedor['_open'] = !vendedor['_open']"
+                class="table-row-hover w-full text-left grid grid-cols-1 md:grid-cols-12 px-5 py-4 gap-2 md:gap-0 items-center cursor-pointer focus:outline-none focus:bg-[#f4f4f5] dark:focus:bg-[#27272a] transition-colors"
+                [attr.aria-expanded]="vendedor['_open']"
+              >
+                <div class="md:col-span-4 flex items-center gap-3">
+                  <div
+                    class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold"
+                    [ngClass]="
+                      i === 0
+                        ? 'bg-[#b8962e] text-white'
+                        : i === 1
+                          ? 'bg-[#71717a]/20 text-[#71717a]'
+                          : 'bg-[#f4f4f5] dark:bg-[#27272a] text-[#a1a1aa]'
+                    "
+                  >
+                    {{ i + 1 }}
+                  </div>
+                  <div
+                    class="w-8 h-8 rounded-full bg-[#b8962e]/10 flex items-center justify-center flex-shrink-0"
+                  >
+                    <span class="text-xs font-semibold text-[#b8962e]">{{
+                      vendedor.nombre.charAt(0).toUpperCase()
+                    }}</span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-medium truncate">
+                      {{ vendedor.nombre }}
+                    </p>
+                    <p class="text-[10px] text-[#a1a1aa]">Vendedor</p>
+                  </div>
+                </div>
+
+                <div
+                  class="md:col-span-3 flex justify-between md:justify-end items-center md:block"
+                >
+                  <span
+                    class="md:hidden text-[10px] font-medium text-[#a1a1aa] uppercase"
+                    >Ventas Totales</span
+                  >
+                  <span
+                    class="stat-value text-sm font-semibold text-[#b8962e]"
+                    >{{
+                      vendedor.ventasTotales
+                        | currency: "COP" : "symbol" : "1.0-0"
+                    }}</span
+                  >
+                </div>
+
+                <div
+                  class="md:col-span-2 flex justify-between md:justify-end items-center md:block"
+                >
+                  <span
+                    class="md:hidden text-[10px] font-medium text-[#a1a1aa] uppercase"
+                    >Cantidad Ventas</span
+                  >
+                  <span class="stat-value text-sm font-medium">{{
+                    vendedor.cantidadVentas
+                  }}</span>
+                </div>
+
+                <div class="hidden md:flex md:col-span-1 justify-end">
+                  <svg
+                    class="w-4 h-4 text-[#a1a1aa] chevron-icon"
+                    [ngClass]="{ rotated: vendedor['_open'] }"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </button>
+
+              <div
+                class="accordion-content"
+                [ngClass]="{ open: vendedor['_open'] }"
+              >
+                <div
+                  class="px-5 pb-4 pt-1 bg-[#fafafa] dark:bg-[#111113] border-t border-[#f4f4f5] dark:border-[#27272a]"
+                >
+                  <p
+                    class="text-[10px] font-semibold uppercase tracking-wider text-[#a1a1aa] mb-3"
+                  >
+                    Detalle de Métodos de Pago
+                  </p>
+                  <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <div class="flex flex-col gap-1">
+                      <div class="flex items-center gap-1.5">
+                        <div class="w-2 h-2 rounded-full bg-[#b8962e]"></div>
+                        <span
+                          class="text-[10px] font-medium text-[#a1a1aa] uppercase tracking-wide"
+                          >Efectivo</span
+                        >
+                      </div>
+                      <span class="stat-value text-sm font-semibold pl-3.5">{{
+                        vendedor.totalEfectivo
+                          | currency: "COP" : "symbol" : "1.0-0"
+                      }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex items-center gap-1.5">
+                        <div class="w-2 h-2 rounded-full bg-[#3b82f6]"></div>
+                        <span
+                          class="text-[10px] font-medium text-[#a1a1aa] uppercase tracking-wide"
+                          >Transferencia</span
+                        >
+                      </div>
+                      <span class="stat-value text-sm font-semibold pl-3.5">{{
+                        vendedor.totalTransferencia
+                          | currency: "COP" : "symbol" : "1.0-0"
+                      }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex items-center gap-1.5">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                        <span
+                          class="text-[10px] font-medium text-[#a1a1aa] uppercase tracking-wide"
+                          >Sistecrédito</span
+                        >
+                      </div>
+                      <span class="stat-value text-sm font-semibold pl-3.5">{{
+                        vendedor.totalSistecredito
+                          | currency: "COP" : "symbol" : "1.0-0"
+                      }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex items-center gap-1.5">
+                        <div class="w-2 h-2 rounded-full bg-violet-500"></div>
+                        <span
+                          class="text-[10px] font-medium text-[#a1a1aa] uppercase tracking-wide"
+                          >Addi</span
+                        >
+                      </div>
+                      <span class="stat-value text-sm font-semibold pl-3.5">{{
+                        vendedor.totalAddi
+                          | currency: "COP" : "symbol" : "1.0-0"
+                      }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="flex items-center gap-1.5">
+                        <div class="w-2 h-2 rounded-full bg-sky-500"></div>
+                        <span
+                          class="text-[10px] font-medium text-[#a1a1aa] uppercase tracking-wide"
+                          >Bold</span
+                        >
+                      </div>
+                      <span class="stat-value text-sm font-semibold pl-3.5">{{
+                        vendedor.totalBold
+                          | currency: "COP" : "symbol" : "1.0-0"
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </section>
+  </div>
+
+  <button
+    (click)="scrollToTop()"
+    class="scroll-btn fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full bg-[#b8962e] text-white flex items-center justify-center shadow-lg"
+    aria-label="Volver arriba"
+  >
+    <svg
+      class="w-4 h-4"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      viewBox="0 0 24 24"
+    >
+      <path d="M18 15l-6-6-6 6" />
+    </svg>
+  </button>
+</div>

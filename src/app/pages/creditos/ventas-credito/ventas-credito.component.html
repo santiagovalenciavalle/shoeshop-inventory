@@ -1,0 +1,781 @@
+<style>
+  :host * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  :host {
+    --gold: #c9a84c;
+    --gold-dim: #9a7a30;
+    --gold-glow: rgba(201, 168, 76, 0.18);
+    --gold-border: rgba(201, 168, 76, 0.25);
+    --gold-text: #e8c86a;
+
+    --bg: #080808;
+    --bg-1: #0f0f0f;
+    --bg-2: #161616;
+    --bg-3: #1e1e1e;
+    --bg-4: #262626;
+
+    --line: rgba(255, 255, 255, 0.07);
+    --line-gold: rgba(201, 168, 76, 0.2);
+
+    --text-1: #f0f0f0;
+    --text-2: #a0a0a0;
+    --text-3: #585858;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+
+    display: block;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text-1);
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+  @keyframes pulseGold {
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .au {
+    animation: fadeUp 0.5s cubic-bezier(0.22, 0.68, 0, 1.15) both;
+  }
+  .d1 {
+    animation-delay: 0.06s;
+  }
+  .d2 {
+    animation-delay: 0.12s;
+  }
+  .d3 {
+    animation-delay: 0.18s;
+  }
+  .d4 {
+    animation-delay: 0.24s;
+  }
+
+  .wrap {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 36px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .topbar__eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+  }
+  .topbar__title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    color: var(--text-1);
+  }
+  .topbar__title em {
+    font-style: normal;
+    color: var(--gold-text);
+  }
+
+  .kpi-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .kpi {
+    flex: 1;
+    min-width: 160px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .kpi::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--gold-glow) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .kpi:hover {
+    border-color: var(--gold-border);
+  }
+  .kpi:hover::before {
+    opacity: 1;
+  }
+  .kpi--accent {
+    border-color: var(--gold-border);
+    background: linear-gradient(
+      135deg,
+      rgba(201, 168, 76, 0.12) 0%,
+      var(--bg-2) 60%
+    );
+  }
+  .kpi--accent::before {
+    opacity: 1;
+  }
+  .kpi__label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .kpi__value {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--gold-text);
+    letter-spacing: -0.5px;
+    position: relative;
+  }
+  .kpi--accent .kpi__label {
+    color: var(--gold-dim);
+  }
+  .kpi__sub {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 4px;
+    position: relative;
+  }
+  .kpi__dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    margin-right: 6px;
+    animation: pulseGold 2s ease-in-out infinite;
+    vertical-align: middle;
+  }
+
+  .sec-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .sec-head__line {
+    width: 2px;
+    height: 14px;
+    background: var(--gold);
+    border-radius: 99px;
+    flex-shrink: 0;
+  }
+  .sec-head__label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+
+  .hero {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .hero__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--line);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .hero__head-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--gold-glow);
+    border: 1px solid var(--gold-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .hero__icon svg {
+    width: 14px;
+    height: 14px;
+    color: var(--gold);
+  }
+  .hero__label {
+    font-size: 11px;
+    color: var(--text-3);
+  }
+  .hero__date {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+  .hero__total {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--gold-text);
+    letter-spacing: -0.3px;
+  }
+  .hero__cards {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .hero__cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pc {
+    flex-shrink: 0;
+    width: 162px;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition:
+      border-color 0.18s,
+      transform 0.18s;
+  }
+  .pc:hover {
+    border-color: var(--gold-border);
+    transform: translateY(-2px);
+  }
+  .pc__img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    display: block;
+    background: var(--bg-4);
+  }
+  .pc__body {
+    padding: 10px 12px 12px;
+  }
+  .pc__name {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-1);
+    margin-bottom: 5px;
+  }
+  .pc__meta {
+    font-size: 10.5px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .pc__meta span {
+    color: var(--gold-text);
+    font-weight: 500;
+  }
+  .pc__price {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-1);
+    margin-top: 8px;
+  }
+
+  .month {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .month.is-open {
+    border-color: var(--line-gold);
+  }
+
+  .month__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    cursor: pointer;
+    user-select: none;
+    gap: 12px;
+    transition: background 0.15s;
+  }
+  .month__head:hover {
+    background: var(--bg-2);
+  }
+  .month__head-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .month__num {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gold-dim);
+    min-width: 28px;
+  }
+  .month__name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-1);
+    letter-spacing: -0.2px;
+  }
+  .month__count {
+    font-size: 11px;
+    color: var(--text-3);
+    margin-top: 2px;
+  }
+  .month__head-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-shrink: 0;
+  }
+  .month__total {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--gold-text);
+    letter-spacing: -0.3px;
+  }
+  .month__chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-3);
+    transition: transform 0.22s ease;
+    flex-shrink: 0;
+  }
+  .month.is-open .month__chevron {
+    transform: rotate(180deg);
+    color: var(--gold);
+  }
+
+  .month__body {
+    border-top: 1px solid var(--line);
+  }
+
+  .day {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px 14px 28px;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    transition: background 0.15s;
+    gap: 12px;
+    position: relative;
+  }
+  .day:last-child {
+    border-bottom: none;
+  }
+  .day:hover {
+    background: var(--bg-2);
+  }
+  .day.active {
+    background: rgba(201, 168, 76, 0.04);
+    border-left: 2px solid var(--gold);
+    padding-left: 26px;
+  }
+  .day__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .day__badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-3);
+    color: var(--text-3);
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+    transition:
+      background 0.15s,
+      color 0.15s,
+      border-color 0.15s;
+    font-family: "JetBrains Mono", monospace;
+  }
+  .day.active .day__badge {
+    background: var(--gold);
+    color: #000;
+    border-color: var(--gold);
+  }
+  .day__date {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-1);
+  }
+  .day__items {
+    font-size: 10.5px;
+    color: var(--text-3);
+    margin-top: 2px;
+  }
+  .day__right {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .day__total {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+
+  .day-panel {
+    display: flex;
+    gap: 10px;
+    padding: 12px 22px 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: rgba(201, 168, 76, 0.03);
+    border-bottom: 1px solid var(--line-gold);
+  }
+  .day-panel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .local {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .local__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .local__name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+  }
+  .local__badge {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gold-dim);
+    background: var(--gold-glow);
+    border: 1px solid var(--gold-border);
+    padding: 3px 12px;
+    border-radius: 99px;
+    letter-spacing: 0.04em;
+  }
+  .local__cards {
+    display: flex;
+    gap: 12px;
+    padding: 14px 18px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .local__cards::-webkit-scrollbar {
+    display: none;
+  }
+  .local__more {
+    font-size: 11px;
+    color: var(--text-3);
+    padding: 0 22px 14px;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 64px 20px;
+    color: var(--text-3);
+    font-size: 13px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--line);
+  }
+
+  @media (max-width: 600px) {
+    .wrap {
+      padding: 22px 14px 60px;
+    }
+    .topbar__title {
+      font-size: 22px;
+    }
+    .kpi__value {
+      font-size: 18px;
+    }
+    .month__total {
+      font-size: 14px;
+    }
+  }
+</style>
+
+<div class="wrap">
+  <header class="topbar au">
+    <div>
+      <p class="topbar__eyebrow">Panel de crédito</p>
+      <h1 class="topbar__title">
+        Pagos&nbsp;&mdash;&nbsp;<em>{{ credito | titlecase }}</em>
+      </h1>
+    </div>
+  </header>
+
+  <div class="kpi-row au d1">
+    <div class="kpi">
+      <p class="kpi__label">Total deuda</p>
+      <p class="kpi__value">$ {{ totalDeuda | number }}</p>
+      <p class="kpi__sub">Pagos pendientes totales</p>
+    </div>
+    <div class="kpi kpi--accent">
+      <p class="kpi__label"><span class="kpi__dot"></span>Pago este mes</p>
+      <p class="kpi__value">$ {{ totalMesActual | number }}</p>
+      <p class="kpi__sub">Consignaciones del mes en curso</p>
+    </div>
+    <div class="kpi">
+      <p class="kpi__label">Próximo vencimiento</p>
+      <p class="kpi__value" style="font-size: 15px; padding-top: 4px">
+        {{ proximos[fechaActiva]?.fecha || "—" }}
+      </p>
+      <p class="kpi__sub">
+        $ {{ proximos[fechaActiva]?.total | number }} a consignar
+      </p>
+    </div>
+  </div>
+
+  <section *ngIf="proximos.length" class="au d2">
+    <div class="sec-head">
+      <span class="sec-head__line"></span>
+      <span class="sec-head__label">Próximo pago seleccionado</span>
+    </div>
+    <div class="hero">
+      <div class="hero__head">
+        <div class="hero__head-left">
+          <div class="hero__icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="3" />
+              <path d="M16 2v4M8 2v4M3 10h18" />
+            </svg>
+          </div>
+          <div>
+            <p class="hero__label">Fecha de consignación</p>
+            <p class="hero__date">{{ proximos[fechaActiva]?.fecha }}</p>
+          </div>
+        </div>
+        <span class="hero__total"
+          >$ {{ proximos[fechaActiva]?.total | number }}</span
+        >
+      </div>
+      <div class="hero__cards">
+        <div *ngFor="let v of proximos[fechaActiva]?.ventas" class="pc">
+          <img
+            [src]="v.imagen || '/logo.svg'"
+            alt="{{ v.referencia }}"
+            class="pc__img"
+          />
+          <div class="pc__body">
+            <p class="pc__name">{{ v.marca }} — {{ v.referencia }}</p>
+            <div class="pc__meta">
+              <div>Local: {{ v.local }}</div>
+              <div>
+                Pago: <span>{{ v.pago }}</span>
+              </div>
+            </div>
+            <p class="pc__price">$ {{ v.precio | number }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="au d3">
+    <div class="sec-head">
+      <span class="sec-head__line"></span>
+      <span class="sec-head__label"
+        >Cronograma de pagos — más reciente primero</span
+      >
+    </div>
+
+    <div
+      *ngFor="let mes of porMes; trackBy: trackByMes"
+      class="month"
+      [class.is-open]="mesActivo === mes.mesKey"
+    >
+      <div class="month__head" (click)="toggleMes(mes.mesKey)">
+        <div class="month__head-left">
+          <span class="month__num">{{ mes.dias.length }} d</span>
+          <div>
+            <p class="month__name">{{ mes.mes }}</p>
+            <p class="month__count">
+              {{ mes.dias.length }} fecha{{ mes.dias.length !== 1 ? "s" : "" }}
+              de pago
+            </p>
+          </div>
+        </div>
+        <div class="month__head-right">
+          <span class="month__total">$ {{ mes.totalMes | number }}</span>
+          <svg
+            class="month__chevron"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </div>
+      </div>
+
+      <div *ngIf="mesActivo === mes.mesKey" class="month__body">
+        <ng-container *ngFor="let dia of mes.dias; trackBy: trackByFecha">
+          <div
+            class="day"
+            [class.active]="proximos[fechaActiva]?.fecha === dia.fecha"
+            (click)="seleccionarFecha(proximos.indexOf(dia))"
+          >
+            <div class="day__left">
+              <span class="day__badge">{{ dia.ventas.length }}</span>
+              <div>
+                <p class="day__date">{{ dia.fecha }}</p>
+                <p class="day__items">
+                  {{ dia.ventas.length }} artículo{{
+                    dia.ventas.length !== 1 ? "s" : ""
+                  }}
+                </p>
+              </div>
+            </div>
+            <div class="day__right">
+              <p class="day__total">$ {{ dia.total | number }}</p>
+            </div>
+          </div>
+
+          <div
+            *ngIf="proximos[fechaActiva]?.fecha === dia.fecha"
+            class="day-panel"
+          >
+            <div *ngFor="let v of dia.ventas" class="pc" style="width: 150px">
+              <img
+                [src]="v.imagen || '/logo.svg'"
+                alt="{{ v.referencia }}"
+                class="pc__img"
+              />
+              <div class="pc__body">
+                <p class="pc__name">{{ v.referencia }}</p>
+                <div class="pc__meta">
+                  <div>Local: {{ v.local }}</div>
+                  <div>Venta: {{ v.venta }}</div>
+                </div>
+                <p class="pc__price">$ {{ v.precio | number }}</p>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <div *ngIf="!porMes.length" class="empty">
+      Sin pagos pendientes registrados.
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section *ngIf="locales.length" class="au d4">
+    <div class="sec-head">
+      <span class="sec-head__line"></span>
+      <span class="sec-head__label">Desglose por local</span>
+    </div>
+
+    <div *ngFor="let local of locales" class="local">
+      <div class="local__head">
+        <span class="local__name">{{ local.nombre }}</span>
+        <span class="local__badge"
+          >{{ local.ventas.length }} / {{ local.totalVentas }} ventas</span
+        >
+      </div>
+      <div class="local__cards">
+        <div *ngFor="let v of local.ventas" class="pc">
+          <img
+            [src]="v.imagen || '/logo.svg'"
+            alt="{{ v.referencia }}"
+            class="pc__img"
+          />
+          <div class="pc__body">
+            <p class="pc__name">{{ v.referencia }}</p>
+            <div class="pc__meta">
+              <div>
+                Cód: <span>{{ v.zapatoId }}</span>
+              </div>
+              <div>Venta: {{ v.venta }}</div>
+              <div>
+                Pago: <span>{{ v.pago }}</span>
+              </div>
+            </div>
+            <p class="pc__price">$ {{ v.precio | number }}</p>
+          </div>
+        </div>
+      </div>
+      <p *ngIf="local.totalVentas > 3" class="local__more">
+        + {{ local.totalVentas - 3 }} ventas más en este local
+      </p>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,214 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+></p-toast>
+
+<div *ngIf="loadingPantalla" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-md px-4 text-neutral-900 dark:text-white">
+  <app-ia-loader detalle="ShoeShop" [mensajes]="['Conectando con tus datos…', 'Cargando Locales…', 'Casi listo…']"></app-ia-loader>
+</div>
+
+<div
+  class="min-h-screen bg-[#f0f2f5] dark:bg-[#0a0a0a] text-[#1d1d1f] dark:text-[#f5f5f7] transition-colors duration-300"
+>
+  <header
+    class="sticky top-0 z-40 bg-white/80 dark:bg-[#111111]/90 backdrop-blur-xl border-b border-[#e5e5ea] dark:border-[#2c2c2e] px-4 sm:px-6 h-14 flex items-center justify-between gap-4"
+  >
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div
+        class="w-7 h-7 rounded-lg bg-[#b8962e]/15 dark:bg-[#b8962e]/20 flex items-center justify-center flex-shrink-0"
+      >
+        <i class="pi pi-chart-bar text-[#b8962e] text-xs"></i>
+      </div>
+      <span
+        class="font-semibold text-sm tracking-tight truncate hidden sm:block"
+        >Ventas Local</span
+      >
+    </div>
+
+    <div class="flex items-center gap-2.5 flex-shrink-0">
+      <div class="relative">
+        <select
+          [(ngModel)]="localSeleccionadoParaVer"
+          (ngModelChange)="onLocalChange($event)"
+          class="appearance-none pl-3 pr-8 py-2 rounded-xl bg-[#1d3557] dark:bg-[#1d3557] text-white text-xs font-semibold cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#b8962e]/40 min-w-[120px]"
+        >
+          <option value="todos">Ver Todos</option>
+          <option *ngFor="let local of locales$ | async" [value]="local.nombre">
+            Local {{ local.nombre }}
+          </option>
+        </select>
+        <i
+          class="pi pi-chevron-down text-white text-[9px] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"
+        ></i>
+      </div>
+
+      <button
+        (click)="abrirModalAgregar()"
+        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#b8962e] text-white text-xs font-semibold transition-all duration-150 hover:bg-[#a07828] active:scale-95 shadow-sm"
+        aria-label="Agregar nuevo local"
+      >
+        <i class="pi pi-plus text-[10px]"></i>
+        <span class="hidden sm:inline">Nuevo Local</span>
+      </button>
+
+      <button
+        (click)="mostrarGestionLocales = !mostrarGestionLocales"
+        class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-[#6e6e73] dark:text-[#86868b] transition-all duration-150 hover:bg-[#e5e5ea] dark:hover:bg-[#3a3a3c] active:scale-95"
+        aria-label="Gestionar locales"
+      >
+        <i class="pi pi-sliders-h text-xs"></i>
+      </button>
+    </div>
+  </header>
+
+  <div
+    *ngIf="mostrarGestionLocales"
+    class="bg-white dark:bg-[#111111] border-b border-[#e5e5ea] dark:border-[#2c2c2e] px-4 sm:px-6 py-4"
+  >
+    <div class="max-w-5xl mx-auto">
+      <p
+        class="text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b] mb-3"
+      >
+        Gestión de Locales
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <div
+          *ngFor="let local of locales$ | async"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#f5f5f7] dark:bg-[#1c1c1e] border border-[#e5e5ea] dark:border-[#3a3a3c]"
+        >
+          <span
+            class="w-1.5 h-1.5 rounded-full flex-shrink-0"
+            [ngClass]="{
+              'bg-emerald-500': local.estado === 'Activo',
+              'bg-red-500': local.estado === 'Inactivo',
+            }"
+          ></span>
+          <span class="text-xs font-medium">{{ local.nombre }}</span>
+          <div class="flex items-center gap-1 ml-1">
+            <button
+              (click)="confirmarEliminacion(local.id)"
+              class="w-5 h-5 flex items-center justify-center rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              aria-label="Eliminar local"
+            >
+              <i class="pi pi-trash text-[9px]"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+    <app-venta-local
+      *ngIf="localSeleccionadoParaVer"
+      [localNombre]="localSeleccionadoParaVer"
+      [filtroInicial]="filtroInicial"
+    ></app-venta-local>
+
+    <div
+      *ngIf="!localSeleccionadoParaVer"
+      class="flex flex-col items-center justify-center py-24 gap-4 text-center"
+    >
+      <div
+        class="w-16 h-16 rounded-2xl bg-[#b8962e]/10 flex items-center justify-center"
+      >
+        <i class="pi pi-store text-[#b8962e] text-2xl"></i>
+      </div>
+      <p class="text-sm font-medium text-[#6e6e73] dark:text-[#86868b]">
+        No hay locales disponibles.<br />Agrega un local para comenzar.
+      </p>
+      <button
+        (click)="abrirModalAgregar()"
+        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#b8962e] text-white text-sm font-semibold transition-all hover:bg-[#a07828] active:scale-95"
+      >
+        <i class="pi pi-plus text-xs"></i>
+        Agregar Local
+      </button>
+    </div>
+  </main>
+</div>
+
+<p-confirmDialog></p-confirmDialog>
+
+<p-dialog
+  [(visible)]="mostrarDialogo"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '28rem' }"
+  [baseZIndex]="10000"
+  [header]="modoEdicion ? 'Editar Local' : 'Nuevo Local'"
+>
+  <p class="text-sm text-[#6e6e73] dark:text-[#86868b] mb-5">
+    {{
+      modoEdicion
+        ? "Modifica los campos para actualizar el local."
+        : "Completa la información para crear un nuevo local."
+    }}
+  </p>
+
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-1.5">
+      <label
+        class="text-xs font-semibold text-[#6e6e73] dark:text-[#86868b] uppercase tracking-wide"
+      >
+        Nombre o Número del Local
+      </label>
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="localSeleccionado.nombre"
+        class="w-full px-4 py-2.5 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#d2d2d7] dark:border-[#3a3a3c] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8962e]/30"
+        placeholder="Ej: Local 1"
+      />
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label
+        class="text-xs font-semibold text-[#6e6e73] dark:text-[#86868b] uppercase tracking-wide"
+      >
+        Estado
+      </label>
+      <select
+        [(ngModel)]="localSeleccionado.estado"
+        class="w-full px-4 py-2.5 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#d2d2d7] dark:border-[#3a3a3c] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8962e]/30 appearance-none cursor-pointer"
+      >
+        <option value="Activo">Activo</option>
+        <option value="Inactivo">Inactivo</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-2.5 mt-6">
+    <button
+      (click)="cerrarDialogo()"
+      class="px-4 py-2.5 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#d2d2d7] dark:border-[#3a3a3c] text-sm font-medium transition-all hover:bg-[#e5e5ea] dark:hover:bg-[#3a3a3c] active:scale-95"
+    >
+      Cancelar
+    </button>
+    <button
+      (click)="guardarLocal()"
+      [disabled]="!localSeleccionado.nombre"
+      class="px-4 py-2.5 rounded-xl bg-[#b8962e] text-white text-sm font-semibold shadow-sm disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:bg-[#a07828] active:scale-95"
+    >
+      {{ modoEdicion ? "Actualizar" : "Agregar Local" }}
+    </button>
+  </div>
+</p-dialog>
+<button
+  (click)="scrollToTop()"
+  aria-label="Volver arriba"
+  class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-yellow-600 hover:bg-yellow-500 text-white flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
+>
+  <svg
+    class="w-5 h-5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+  >
+    <polyline points="18 15 12 9 6 15"></polyline>
+  </svg>
+</button>

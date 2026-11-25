@@ -1,0 +1,88 @@
+@keyframes loaderFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.loader-fade {
+    animation: loaderFade 0.25s ease forwards;
+}
+
+.ios-spinner {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.ios-spinner span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 3px;
+    height: 10px;
+    margin-left: -1.5px;
+    border-radius: 3px;
+    background: #a3a3a3;
+    transform-origin: 50% 20px;
+    animation: iosSpin 1.2s linear infinite;
+}
+
+@keyframes iosSpin {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.1;
+    }
+}
+
+@keyframes cardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-enter {
+    animation: cardEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes overlayIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes sheetIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-overlay {
+    animation: overlayIn 0.2s ease forwards;
+}
+
+.modal-sheet {
+    animation: sheetIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

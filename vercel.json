@@ -1,0 +1,14 @@
+{
+  "installCommand": "npm install --legacy-peer-deps",
+  "headers": [
+    {
+      "source": "/ngsw.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+<div
+  *ngIf="display"
+  class="z-50 flex items-center justify-center p-4 bg-white dark:bg-[#1C1C1E]"
+  (click)="cerrar.emit()"
+>
+  <div
+    class="w-full max-w-[400px] max-h-[90vh] flex flex-col bg-white dark:bg-[#1C1C1E] border border-gray-200 dark:border-[#2C2C2E] rounded-3xl shadow-2xl modal-enter"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-[#2C2C2E]"
+    >
+      <h2
+        class="text-[16px] font-semibold tracking-[-0.3px] text-gray-900 dark:text-white"
+      >
+        Redimir Bono
+      </h2>
+      <button
+        type="button"
+        (click)="cerrar.emit()"
+        class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100 dark:bg-[#2C2C2E] border border-gray-200 dark:border-[#3A3A3C] text-gray-400 dark:text-[#6E6E73] hover:opacity-60 transition-opacity"
+      >
+        <svg
+          class="w-[10px] h-[10px]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div
+      class="flex-1 min-h-0 overflow-y-auto px-5 py-5 flex flex-col gap-4"
+      style="-webkit-overflow-scrolling: touch; scrollbar-width: none"
+    >
+      <div>
+        <label
+          class="block text-[11px] font-medium tracking-[0.4px] uppercase text-[#AEAEB2] dark:text-[#6E6E73] mb-2"
+        >
+          Código del bono
+        </label>
+        <div class="flex gap-2">
+          <input
+            id="codigo"
+            type="text"
+            [(ngModel)]="codigoBono"
+            placeholder="Ej. 71a"
+            class="flex-1 px-3 py-2.5 bg-gray-50 dark:bg-[#2C2C2E] border border-gray-200 dark:border-[#3A3A3C] rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-[#6E6E73] outline-none transition-all focus:border-[#B8986A] focus:ring-2 focus:ring-[#B8986A]/10"
+          />
+          <button
+            type="button"
+            (click)="buscarBono()"
+            class="w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:opacity-75 transition-opacity active:scale-95"
+          >
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <ng-container *ngIf="bonoEncontrado">
+        <div
+          class="bg-gray-50 dark:bg-[#2C2C2E] border border-gray-200 dark:border-[#3A3A3C] rounded-2xl p-4 flex flex-col gap-4"
+        >
+          <div class="text-center">
+            <p class="text-[28px] font-bold tracking-tight text-[#B8986A]">
+              {{
+                bonoEncontrado.precioBono | currency: "COP" : "symbol" : "1.0-0"
+              }}
+            </p>
+            <p class="text-xs text-gray-400 dark:text-[#6E6E73] -mt-1">
+              Valor del bono
+            </p>
+          </div>
+
+          <div class="h-px bg-gray-200 dark:bg-[#3A3A3C]"></div>
+
+          <div>
+            <label
+              class="block text-[11px] font-medium tracking-[0.4px] uppercase text-[#AEAEB2] dark:text-[#6E6E73] mb-2"
+            >
+              Excedente (precio venta)
+            </label>
+            <input
+              type="number"
+              [(ngModel)]="excedente"
+              placeholder="0"
+              [min]="0"
+              class="w-full px-3 py-2.5 bg-white dark:bg-[#1C1C1E] border border-gray-200 dark:border-[#3A3A3C] rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-300 dark:placeholder-[#6E6E73] outline-none transition-all focus:border-[#B8986A] focus:ring-2 focus:ring-[#B8986A]/10"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block text-[11px] font-medium tracking-[0.4px] uppercase text-[#AEAEB2] dark:text-[#6E6E73] mb-2"
+            >
+              Método de pago del excedente
+              <span class="text-red-500" *ngIf="excedente > 0">*</span>
+            </label>
+            <select
+              [(ngModel)]="metodoSeleccionado"
+              [disabled]="excedente === 0"
+              class="w-full px-3 py-2.5 bg-white dark:bg-[#1C1C1E] border border-gray-200 dark:border-[#3A3A3C] rounded-xl text-sm text-gray-900 dark:text-white outline-none transition-all focus:border-[#B8986A] focus:ring-2 focus:ring-[#B8986A]/10 disabled:opacity-40 disabled:cursor-not-allowed appearance-none cursor-pointer"
+            >
+              <option value="" disabled [selected]="!metodoSeleccionado">
+                Selecciona método
+              </option>
+              <option *ngFor="let m of metodos" [ngValue]="m">
+                {{ m.nombre }}
+              </option>
+            </select>
+            <p
+              class="text-red-500 text-[11px] mt-1.5"
+              *ngIf="excedente > 0 && !metodoSeleccionado"
+            >
+              Selecciona un método de pago.
+            </p>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div
+      class="flex-shrink-0 flex items-center justify-end gap-2.5 px-5 py-4 border-t border-gray-100 dark:border-[#2C2C2E] bg-white dark:bg-[#1C1C1E] rounded-b-3xl"
+    >
+      <button
+        type="button"
+        (click)="cerrar.emit()"
+        class="px-5 py-2.5 rounded-xl text-sm font-medium bg-gray-100 dark:bg-[#2C2C2E] border border-gray-200 dark:border-[#3A3A3C] text-gray-700 dark:text-[#F5F5F7] hover:opacity-70 transition-opacity active:scale-[0.97]"
+      >
+        Cerrar
+      </button>
+      <button
+        *ngIf="bonoEncontrado"
+        type="button"
+        (click)="redimirBono()"
+        [disabled]="excedente > 0 && !metodoSeleccionado"
+        class="px-5 py-2.5 rounded-xl text-sm font-medium bg-[#B8986A] text-white border-transparent hover:bg-[#C9A97A] transition-colors active:scale-[0.97] disabled:opacity-35 disabled:cursor-not-allowed disabled:active:scale-100"
+      >
+        Redimir bono
+      </button>
+    </div>
+  </div>
+</div>

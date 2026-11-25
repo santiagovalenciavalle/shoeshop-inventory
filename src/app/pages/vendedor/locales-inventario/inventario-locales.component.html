@@ -1,0 +1,1383 @@
+<style>
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .fade-up {
+    animation: fadeUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+  .fade-up-1 {
+    animation-delay: 0.05s;
+  }
+  .fade-up-2 {
+    animation-delay: 0.12s;
+  }
+  .fade-up-3 {
+    animation-delay: 0.18s;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .modal-enter {
+    animation: slideUp 0.35s cubic-bezier(0.34, 1.26, 0.64, 1) both;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .overlay-enter {
+    animation: fadeIn 0.25s ease both;
+  }
+
+  .card-lift {
+    transition:
+      transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 0.28s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+  }
+
+  .row-hover {
+    transition: background-color 0.18s ease;
+  }
+
+  .ios-select {
+    appearance: none;
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+</style>
+
+<div
+  class="flex flex-col min-h-0 bg-white dark:bg-black text-black dark:text-white"
+>
+  <div
+    class="relativetop-0 z-10 px-5 sm:px-8 py-5 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-neutral-100 dark:border-neutral-900"
+  >
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-base sm:text-lg font-semibold tracking-tight">
+        Inventario en Locales
+      </h1>
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          (click)="abrirModalExhibicion()"
+          class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-white hover:bg-amber-600 active:scale-95 transition-all"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+          Enviar Exhibición
+        </button>
+        <span class="text-xs text-neutral-400 dark:text-neutral-600">
+          {{ inventarioFiltrado().length }} resultado{{
+            inventarioFiltrado().length === 1 ? "" : "s"
+          }}
+        </span>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[0.68rem] font-medium text-neutral-500 dark:text-neutral-500"
+        >
+          Local
+        </label>
+        <select
+          [ngModel]="localSeleccionado()"
+          (ngModelChange)="localSeleccionado.set($event)"
+          class="w-full px-3 py-2 text-sm bg-neutral-100 dark:bg-neutral-900 text-black dark:text-white border border-transparent rounded-xl outline-none transition-all focus:border-neutral-300 dark:focus:border-neutral-700 focus:bg-white dark:focus:bg-neutral-950"
+        >
+          <option [ngValue]="null">Todos</option>
+          <option *ngFor="let l of locales()" [ngValue]="l.id">
+            {{ l.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[0.68rem] font-medium text-neutral-500 dark:text-neutral-500"
+        >
+          Código
+        </label>
+        <div class="flex gap-2">
+          <input
+            type="text"
+            inputmode="numeric"
+            [ngModel]="codigoBusqueda()"
+            (ngModelChange)="codigoBusqueda.set($event)"
+            placeholder="Ej. 1024"
+            class="flex-1 min-w-0 px-3 py-2 text-sm bg-neutral-100 dark:bg-neutral-900 text-black dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 border border-transparent rounded-xl outline-none transition-all focus:border-neutral-300 dark:focus:border-neutral-700 focus:bg-white dark:focus:bg-neutral-950"
+          />
+          <button
+            type="button"
+            (click)="abrirEscaner()"
+            title="Escanear QR"
+            class="shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-amber-500 text-white hover:bg-amber-600 active:scale-95 transition-all"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="3" height="3" rx="0.5" />
+              <rect x="18" y="14" width="3" height="3" rx="0.5" />
+              <rect x="14" y="18" width="3" height="3" rx="0.5" />
+              <rect x="18" y="18" width="3" height="3" rx="0.5" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[0.68rem] font-medium text-neutral-500 dark:text-neutral-500"
+        >
+          Talla
+        </label>
+        <select
+          [ngModel]="tallaSeleccionada()"
+          (ngModelChange)="tallaSeleccionada.set($event)"
+          class="w-full px-3 py-2 text-sm bg-neutral-100 dark:bg-neutral-900 text-black dark:text-white border border-transparent rounded-xl outline-none transition-all focus:border-neutral-300 dark:focus:border-neutral-700 focus:bg-white dark:focus:bg-neutral-950"
+        >
+          <option [ngValue]="null">Todas</option>
+          <option *ngFor="let t of tallasFiltro" [ngValue]="t">{{ t }}</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5 col-span-2 sm:col-span-1">
+        <label
+          class="text-[0.68rem] font-medium text-neutral-500 dark:text-neutral-500"
+        >
+          Marca / Referencia
+        </label>
+        <input
+          type="search"
+          [ngModel]="textoBusqueda()"
+          (ngModelChange)="textoBusqueda.set($event)"
+          placeholder="Buscar…"
+          class="w-full px-3 py-2 text-sm bg-neutral-100 dark:bg-neutral-900 text-black dark:text-white placeholder:text-neutral-400 dark:placeholder:text-neutral-600 border border-transparent rounded-xl outline-none transition-all focus:border-neutral-300 dark:focus:border-neutral-700 focus:bg-white dark:focus:bg-neutral-950"
+        />
+      </div>
+    </div>
+    <button
+      *ngIf="hayFiltrosActivos()"
+      type="button"
+      (click)="limpiarFiltros()"
+      class="mt-3 text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline"
+    >
+      Limpiar filtros
+    </button>
+  </div>
+
+  <div
+    *ngIf="cargando()"
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 px-5 sm:px-8 py-6"
+  >
+    <div
+      *ngFor="let i of [1, 2, 3, 4, 5, 6]"
+      class="h-40 rounded-2xl lux-shimmer"
+    ></div>
+  </div>
+  <div
+    *ngIf="cargando()"
+    class="grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3 sm:gap-4 px-5 sm:px-8 py-6"
+  >
+    <div
+      *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+      class="rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-900"
+    >
+      <div class="aspect-square lux-shimmer"></div>
+      <div class="p-3 space-y-2">
+        <div class="h-3.5 w-2/3 rounded lux-shimmer"></div>
+        <div class="h-3 w-1/2 rounded lux-shimmer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="!cargando()"
+    class="grid grid-cols-2 md:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3 sm:gap-4 px-5 sm:px-8 py-6"
+  >
+    <article
+      *ngFor="
+        let item of inventarioFiltrado().slice(0, limite());
+        trackBy: trackById
+      "
+      (click)="abrirProducto(item)"
+      tabindex="0"
+      class="card-lift group flex flex-col rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-900 bg-white dark:bg-neutral-950 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-black/50 hover:border-amber-300 dark:hover:border-amber-700/50"
+    >
+      <div
+        class="relative w-full aspect-square overflow-hidden bg-neutral-100 dark:bg-neutral-900"
+      >
+        <img
+          [src]="item.imagen || '/logo.svg'"
+          [alt]="item.marca"
+          loading="lazy"
+          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+
+        <div
+          class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/70 to-transparent pointer-events-none"
+        ></div>
+
+        <span
+          class="absolute top-2 left-2 text-[0.62rem] font-semibold px-2 py-1 rounded-full bg-white/90 dark:bg-neutral-950/90 backdrop-blur text-neutral-700 dark:text-neutral-200 shadow-sm"
+        >
+          cod. {{ item.productoId }}
+        </span>
+
+        <span
+          class="absolute top-2 right-2 text-[0.62rem] font-semibold px-2 py-1 rounded-full backdrop-blur shadow-sm text-white"
+          [class]="item.stock > 0 ? 'bg-emerald-500/90' : 'bg-red-500/90'"
+        >
+          {{ item.stock > 0 ? item.stock + " uds." : "Agotado" }}
+        </span>
+
+        <span
+          class="absolute bottom-2 left-2 flex items-center gap-1 text-[0.7rem] font-medium text-white"
+        >
+          <svg
+            width="11"
+            height="12"
+            viewBox="0 0 11 12"
+            fill="none"
+            class="text-amber-300 flex-shrink-0"
+          >
+            <path
+              d="M5.5 0.5C2.85 0.5 0.75 2.6 0.75 5.15c0 3.45 4.75 6.35 4.75 6.35s4.75-2.9 4.75-6.35C10.25 2.6 8.15 0.5 5.5 0.5Z"
+              fill="currentColor"
+            />
+            <circle cx="5.5" cy="5" r="1.5" fill="white" />
+          </svg>
+          {{ item.localNombre }}
+        </span>
+      </div>
+
+      <div class="p-3 flex flex-col gap-1.5">
+        <p class="text-sm font-semibold truncate">{{ item.marca }}</p>
+        <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+          {{ item.referencia }}
+        </p>
+
+        <div
+          class="flex flex-wrap gap-1.5 pt-1.5 mt-0.5 border-t border-neutral-100 dark:border-neutral-900"
+        >
+          <span
+            *ngFor="let t of tallasOrdenadas(item)"
+            class="text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-900 text-neutral-500 dark:text-neutral-400"
+          >
+            T.{{ t.talla }} ({{ t.cantidad }})
+          </span>
+        </div>
+      </div>
+    </article>
+
+    <div
+      *ngIf="inventarioFiltrado().length === 0"
+      class="col-span-full flex flex-col items-center justify-center py-20 text-center"
+    >
+      <svg
+        class="w-8 h-8 mb-3 text-neutral-300 dark:text-neutral-800"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <p class="text-[0.82rem] text-neutral-400 dark:text-neutral-700">
+        No se encontraron productos con estos filtros.
+      </p>
+    </div>
+  </div>
+  <div
+    *ngIf="!cargando() && quedanMasPorMostrar()"
+    class="flex justify-center px-6 pb-8"
+  >
+    <button
+      type="button"
+      (click)="verMas()"
+      class="ver-mas-btn inline-flex items-center gap-1.5 px-6 py-2 rounded-full text-[0.8rem] font-medium tracking-tight border border-neutral-200 dark:border-neutral-800 hover:border-amber-600 dark:hover:border-amber-500 transition"
+    >
+      Ver más ({{ limite() }} / {{ inventarioFiltrado().length }})
+    </button>
+  </div>
+</div>
+
+<div
+  *ngIf="modalVisible()"
+  class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
+  (click)="onBackdropClick()"
+>
+  <div
+    *ngIf="productoSeleccionado() as producto"
+    (click)="$event.stopPropagation()"
+    class="w-full sm:max-w-sm max-h-[92dvh] overflow-y-auto rounded-t-[28px] sm:rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-black dark:text-white shadow-xl animate-fade-slide-up"
+  >
+    <div
+      class="flex items-center justify-between gap-3 px-5 py-4 border-b border-neutral-100 dark:border-neutral-900"
+    >
+      <span
+        class="text-[0.62rem] font-semibold tracking-[0.18em] uppercase text-neutral-400 dark:text-neutral-500"
+        >Sesión del producto</span
+      >
+      <button
+        type="button"
+        (click)="cerrarModal()"
+        aria-label="Cerrar"
+        class="w-8 h-8 flex items-center justify-center rounded-full text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition"
+      >
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+          <path
+            d="M1 1L10 10M10 1L1 10"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-4 px-5 py-5">
+      <div
+        class="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center"
+      >
+        <img
+          [src]="producto.imagen || '/logo.svg'"
+          [alt]="producto.marca"
+          class="w-full h-full object-contain p-2"
+        />
+      </div>
+      <div class="min-w-0">
+        <p class="text-sm font-semibold truncate">{{ producto.marca }}</p>
+        <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+          {{ producto.referencia }}
+        </p>
+        <p class="text-[0.68rem] text-neutral-400 dark:text-neutral-600">
+          Cód. {{ producto.productoId }} · {{ producto.localNombre }}
+        </p>
+      </div>
+    </div>
+
+    <div *ngIf="esMiLocal()" class="px-5 pb-5 flex flex-col gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label
+          class="text-[0.68rem] font-medium text-neutral-500 dark:text-neutral-500"
+        >
+          Talla
+        </label>
+        <select
+          [ngModel]="tallaSeleccionadaModal()"
+          (ngModelChange)="tallaSeleccionadaModal.set($event)"
+          class="filtro-select w-full px-3 py-2.5 text-sm bg-neutral-100 dark:bg-neutral-900 text-black dark:text-white border border-transparent rounded-xl outline-none transition-all focus:border-neutral-300 dark:focus:border-neutral-700 focus:bg-white dark:focus:bg-neutral-950"
+        >
+          <option *ngFor="let t of tallasModal()" [ngValue]="t.talla">
+            Talla {{ t.talla }} — {{ t.cantidad }} uds.
+          </option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <button
+          (click)="abrirVenta()"
+          type="button"
+          class="px-4 py-2.5 rounded-xl text-[0.82rem] font-semibold tracking-tight bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 active:scale-[0.97] transition-all"
+        >
+          Vender
+        </button>
+        <button
+          (click)="abrirPrestamo()"
+          type="button"
+          class="px-4 py-2.5 rounded-xl text-[0.82rem] font-semibold tracking-tight bg-amber-500 text-white hover:bg-amber-600 active:scale-[0.97] transition-all"
+        >
+          Prestar
+        </button>
+        <button
+          (click)="abrirCambio()"
+          type="button"
+          class="px-4 py-2.5 rounded-xl text-[0.82rem] font-semibold tracking-tight bg-neutral-100 dark:bg-white/[0.08] text-black dark:text-white hover:bg-neutral-200 dark:hover:bg-white/[0.14] active:scale-[0.97] transition-all"
+        >
+          Cambiar
+        </button>
+        <button
+          (click)="abrirBono()"
+          type="button"
+          class="px-4 py-2.5 rounded-xl text-[0.82rem] font-semibold tracking-tight bg-neutral-100 dark:bg-white/[0.08] text-black dark:text-white hover:bg-neutral-200 dark:hover:bg-white/[0.14] active:scale-[0.97] transition-all"
+        >
+          Bono
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!esMiLocal()" class="px-5 pb-5 flex flex-col gap-4">
+      <div
+        *ngIf="solicitudConfirmada(); else formularioSolicitud"
+        class="flex flex-col items-center gap-2 py-6 text-center"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 flex items-center justify-center"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#d4a843"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 6v6l4 2" />
+            <circle cx="12" cy="12" r="9" />
+          </svg>
+        </div>
+        <p class="text-sm font-semibold">Zapato solicitado</p>
+        <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-[220px]">
+          Espera a que un vendedor de {{ producto.localNombre }} lo acepte.
+        </p>
+      </div>
+
+      <ng-template #formularioSolicitud>
+        <div
+          *ngIf="cargandoTallasParaSolicitar()"
+          class="flex flex-col items-center justify-center gap-2 py-10"
+        >
+          <app-ia-loader mensaje="Verificando tallas disponibles…"></app-ia-loader>
+        </div>
+
+        <ng-container *ngIf="!cargandoTallasParaSolicitar()">
+          <div
+            *ngIf="tallasParaSolicitar().length > 0; else sinTallas"
+            class="flex flex-col gap-4"
+          >
+            <div class="flex flex-col gap-2">
+              <label
+                class="text-[0.68rem] font-medium text-neutral-500 dark:text-neutral-500"
+              >
+                Talla
+              </label>
+              <div class="grid grid-cols-4 gap-2">
+                <button
+                  *ngFor="let t of tallasParaSolicitar()"
+                  type="button"
+                  class="flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-xl border text-sm font-semibold transition-all"
+                  [class.bg-black]="tallaSeleccionadaModal() === t.talla"
+                  [class.dark:bg-white]="tallaSeleccionadaModal() === t.talla"
+                  [class.text-white]="tallaSeleccionadaModal() === t.talla"
+                  [class.dark:text-black]="tallaSeleccionadaModal() === t.talla"
+                  [class.border-black]="tallaSeleccionadaModal() === t.talla"
+                  [class.dark:border-white]="
+                    tallaSeleccionadaModal() === t.talla
+                  "
+                  [class.bg-neutral-100]="tallaSeleccionadaModal() !== t.talla"
+                  [class.dark:bg-neutral-900]="
+                    tallaSeleccionadaModal() !== t.talla
+                  "
+                  [class.text-black]="tallaSeleccionadaModal() !== t.talla"
+                  [class.dark:text-white]="tallaSeleccionadaModal() !== t.talla"
+                  [class.border-transparent]="
+                    tallaSeleccionadaModal() !== t.talla
+                  "
+                >
+                  <span>{{ t.talla }}</span>
+                  <span class="text-[0.6rem] font-medium opacity-70"
+                    >{{ t.cantidad }} uds.</span
+                  >
+                </button>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label
+                class="text-[0.68rem] font-medium text-neutral-500 dark:text-neutral-500"
+              >
+                Talla
+              </label>
+              <select
+                [ngModel]="tallaSeleccionadaModal()"
+                (ngModelChange)="tallaSeleccionadaModal.set($event)"
+                class="filtro-select w-full px-3 py-2.5 text-sm bg-neutral-100 dark:bg-neutral-900 text-black dark:text-white border border-transparent rounded-xl outline-none transition-all focus:border-neutral-300 dark:focus:border-neutral-700 focus:bg-white dark:focus:bg-neutral-950"
+              >
+                <option
+                  *ngFor="let t of tallasParaSolicitar()"
+                  [ngValue]="t.talla"
+                >
+                  Talla {{ t.talla }} — {{ t.cantidad }} uds.
+                </option>
+              </select>
+            </div>
+
+            <button
+              type="button"
+              [disabled]="solicitando()"
+              (click)="solicitarZapato()"
+              class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[0.82rem] font-semibold tracking-tight bg-amber-500 text-white hover:bg-amber-600 active:scale-[0.97] transition-all disabled:opacity-60"
+            >
+              <app-ia-spinner *ngIf="solicitando()" class="w-3.5 h-3.5 text-white"></app-ia-spinner>
+              {{
+                solicitando()
+                  ? "Solicitando…"
+                  : "Solicitar zapato a " + producto.localNombre
+              }}
+            </button>
+          </div>
+
+          <ng-template #sinTallas>
+            <p
+              class="text-xs text-neutral-500 dark:text-neutral-400 text-center py-6"
+            >
+              Ya solicitaste todas las tallas disponibles de este producto en
+              {{ producto.localNombre }}.
+            </p>
+          </ng-template>
+        </ng-container>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarEscaner()"
+  class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+  (click)="cerrarEscaner()"
+>
+  <div
+    class="relative w-full max-w-sm mx-5 rounded-[28px] overflow-hidden bg-black border border-amber-500/20 shadow-2xl shadow-amber-500/10"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center"
+        >
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#d4a843"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-white leading-none">Escanear QR</p>
+          <p class="text-[10px] text-neutral-500 mt-0.5">
+            Apunta al código del producto
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="cerrarEscaner()"
+        class="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-400 transition-colors"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="relative aspect-square w-full bg-neutral-950">
+      <video
+        #videoEl
+        class="w-full h-full object-cover"
+        autoplay
+        playsinline
+        muted
+      ></video>
+      <canvas #canvasEl class="hidden"></canvas>
+
+      <div
+        class="absolute inset-0 flex items-center justify-center pointer-events-none"
+      >
+        <div class="relative w-56 h-56">
+          <span
+            class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-amber-500 rounded-tl-lg"
+          ></span>
+          <span
+            class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-amber-500 rounded-tr-lg"
+          ></span>
+          <span
+            class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-amber-500 rounded-bl-lg"
+          ></span>
+          <span
+            class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-amber-500 rounded-br-lg"
+          ></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="px-5 py-4">
+      <div
+        *ngIf="qrError()"
+        class="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs mb-3"
+      >
+        {{ qrError() }}
+      </div>
+      <div
+        *ngIf="!qrError()"
+        class="flex items-center justify-center gap-2 text-neutral-500 text-xs"
+      >
+        Detectando código QR en tiempo real…
+      </div>
+    </div>
+  </div>
+</div>
+
+<button
+  *ngIf="currentUser()"
+  type="button"
+  (click)="togglePanelPendientes()"
+  class="fixed right-4 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center w-12 h-12 rounded-full bg-black dark:bg-white text-white dark:text-black shadow-lg active:scale-95 transition-all"
+>
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+  <span
+    *ngIf="totalPendientes() > 0"
+    class="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500 text-white text-[0.62rem] font-bold"
+  >
+    {{ totalPendientes() > 99 ? "99+" : totalPendientes() }}
+  </span>
+</button>
+
+<button
+  *ngIf="totalAvisosLocal() > 0"
+  type="button"
+  (click)="toggleModalAvisosLocal()"
+  class="fixed left-4 top-1/2 -translate-y-1/2 z-40 flex items-center justify-center w-12 h-12 rounded-full bg-black dark:bg-white text-white dark:text-black shadow-lg active:scale-95 transition-all"
+>
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line x1="22" y1="2" x2="11" y2="13" />
+    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>
+  <span
+    class="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500 text-white text-[0.62rem] font-bold"
+  >
+    {{ totalAvisosLocal() > 99 ? "99+" : totalAvisosLocal() }}
+  </span>
+</button>
+
+<div
+  *ngIf="panelPendientesVisible()"
+  class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
+  (click)="togglePanelPendientes()"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="w-full sm:max-w-md h-[85dvh] sm:h-[600px] flex flex-col rounded-t-[28px] sm:rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-black dark:text-white shadow-xl animate-fade-slide-up overflow-hidden"
+  >
+    <div
+      class="flex items-center justify-between gap-3 px-5 py-4 border-b border-neutral-100 dark:border-neutral-900 shrink-0"
+    >
+      <span class="text-sm font-semibold">Pendientes</span>
+      <button
+        type="button"
+        (click)="togglePanelPendientes()"
+        aria-label="Cerrar"
+        class="w-8 h-8 flex items-center justify-center rounded-full text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition"
+      >
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+          <path
+            d="M1 1L10 10M10 1L1 10"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-6">
+      <div
+        *ngIf="cargandoPendientes()"
+        class="flex flex-col items-center justify-center py-16 gap-3"
+      >
+        <app-ia-loader mensaje="Cargando pendientes…"></app-ia-loader>
+      </div>
+
+      <ng-container *ngIf="!cargandoPendientes()">
+        <div
+          *ngIf="pendientesPorAceptar().length > 0"
+          class="flex flex-col gap-3"
+        >
+          <p
+            class="text-[0.68rem] font-semibold tracking-wide uppercase text-neutral-400"
+          >
+            Pendientes por aceptar
+          </p>
+          <div
+            *ngFor="let p of pendientesPorAceptar()"
+            class="flex flex-col gap-2 p-3 rounded-xl border border-neutral-200 dark:border-neutral-900"
+          >
+            <div class="flex items-center gap-3">
+              <img
+                [src]="p.imagen || '/logo.svg'"
+                class="w-10 h-10 rounded-lg object-contain bg-neutral-100 dark:bg-neutral-900"
+              />
+              <div class="min-w-0 flex-1">
+                <p class="text-xs font-semibold truncate">
+                  {{ p.marca }} · {{ p.referencia }}
+                </p>
+                <p class="text-[0.68rem] text-neutral-500">
+                  Talla {{ p.talla }}
+                </p>
+              </div>
+            </div>
+            <p class="text-[0.68rem] text-neutral-500">
+              Solicitado por
+              <span class="font-medium">{{ p.solicitadoPorNombre }}</span> ·
+              {{ toDate(p.fechaSolicitud) | date: "d MMM, h:mm a" }}
+            </p>
+            <button
+              type="button"
+              (click)="aceptarPedido(p)"
+              [disabled]="estaProcesando(p.id)"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold bg-black dark:bg-white text-white dark:text-black active:scale-[0.97] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <app-ia-spinner *ngIf="estaProcesando(p.id)" class="w-3.5 h-3.5 text-white dark:text-black"></app-ia-spinner>
+              {{ estaProcesando(p.id) ? "Aceptando…" : "Aceptar" }}
+            </button>
+          </div>
+        </div>
+
+        <div
+          *ngIf="devolucionesPorAceptar().length > 0"
+          class="flex flex-col gap-3"
+        >
+          <p
+            class="text-[0.68rem] font-semibold tracking-wide uppercase text-neutral-400"
+          >
+            Devoluciones por aceptar
+          </p>
+          <div
+            *ngFor="let p of devolucionesPorAceptar()"
+            class="flex flex-col gap-2 p-3 rounded-xl border border-neutral-200 dark:border-neutral-900"
+          >
+            <div class="flex items-center gap-3">
+              <img
+                [src]="p.imagen || '/logo.svg'"
+                class="w-10 h-10 rounded-lg object-contain bg-neutral-100 dark:bg-neutral-900"
+              />
+              <div class="min-w-0 flex-1">
+                <p class="text-xs font-semibold truncate">
+                  {{ p.marca }} · {{ p.referencia }}
+                </p>
+                <p class="text-[0.68rem] font-semibold truncate">
+                  Código · {{ p.productoId }}
+                </p>
+                <p class="text-[0.68rem] text-neutral-500">
+                  Talla {{ p.talla }}
+                </p>
+              </div>
+            </div>
+            <p class="text-[0.68rem] text-neutral-500">
+              Devuelto por
+              <span class="font-medium">{{ p.devueltoPorNombre }}</span> ·
+              {{ toDate(p.fechaDevolucion) | date: "d MMM, h:mm a" }}
+            </p>
+            <button
+              type="button"
+              (click)="aceptarDevolucionPedido(p)"
+              [disabled]="estaProcesando(p.id)"
+              class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold bg-amber-500 text-white active:scale-[0.97] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <app-ia-spinner *ngIf="estaProcesando(p.id)" class="w-3.5 h-3.5 text-white"></app-ia-spinner>
+              {{ estaProcesando(p.id) ? "Aceptando…" : "Aceptar devolución" }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="misSolicitudes().length > 0" class="flex flex-col gap-3">
+          <p
+            class="text-[0.68rem] font-semibold tracking-wide uppercase text-neutral-400"
+          >
+            Mis solicitudes
+          </p>
+          <div
+            *ngFor="let p of misSolicitudes()"
+            class="flex flex-col gap-2 p-3 rounded-xl border border-neutral-200 dark:border-neutral-900"
+          >
+            <div class="flex items-center gap-3">
+              <img
+                [src]="p.imagen || '/logo.svg'"
+                class="w-10 h-10 rounded-lg object-contain bg-neutral-100 dark:bg-neutral-900"
+              />
+              <div class="min-w-0 flex-1">
+                <p class="text-xs font-semibold truncate">
+                  {{ p.marca }} · {{ p.referencia }}
+                </p>
+                <p class="text-[0.68rem] font-semibold truncate">
+                  Código · {{ p.productoId }}
+                </p>
+                <p class="text-[0.68rem] text-neutral-500">
+                  Talla {{ p.talla }} · {{ p.localOrigenNombre }}
+                </p>
+              </div>
+              <span
+                class="text-[0.6rem] font-semibold px-2 py-0.5 rounded-full shrink-0"
+                [class.bg-amber-50]="p.estado === 'solicitado'"
+                [class.text-amber-600]="p.estado === 'solicitado'"
+                [class.bg-emerald-50]="p.estado === 'aceptado'"
+                [class.text-emerald-600]="p.estado === 'aceptado'"
+                [class.bg-neutral-100]="p.estado === 'devuelto'"
+                [class.text-neutral-500]="p.estado === 'devuelto'"
+              >
+                {{ p.estado }}
+              </span>
+            </div>
+
+            <p
+              *ngIf="p.estado === 'solicitado'"
+              class="text-[0.72rem] text-neutral-500"
+            >
+              Esperando que {{ p.localOrigenNombre }} lo acepte.
+            </p>
+
+            <div *ngIf="p.estado === 'aceptado'" class="flex flex-col gap-2">
+              <div class="grid grid-cols-2 gap-2">
+                <button
+                  (click)="abrirVenta(p)"
+                  type="button"
+                  class="px-3 py-1.5 rounded-lg text-[0.72rem] font-semibold bg-black dark:bg-white text-white dark:text-black"
+                >
+                  Vender
+                </button>
+                <button
+                  (click)="abrirPrestamo(p)"
+                  type="button"
+                  class="px-3 py-1.5 rounded-lg text-[0.72rem] font-semibold bg-amber-500 text-white"
+                >
+                  Prestar
+                </button>
+                <button
+                  (click)="abrirCambio(p)"
+                  type="button"
+                  class="px-3 py-1.5 rounded-lg text-[0.72rem] font-semibold bg-neutral-100 dark:bg-white/[0.08]"
+                >
+                  Cambiar
+                </button>
+                <button
+                  (click)="abrirBono(p)"
+                  type="button"
+                  class="px-3 py-1.5 rounded-lg text-[0.72rem] font-semibold bg-neutral-100 dark:bg-white/[0.08]"
+                >
+                  Bono
+                </button>
+              </div>
+              <button
+                type="button"
+                (click)="devolverPedido(p)"
+                [disabled]="estaProcesando(p.id)"
+                class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold border border-neutral-300 dark:border-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <app-ia-spinner *ngIf="estaProcesando(p.id)" class="w-3.5 h-3.5 text-neutral-700 dark:text-neutral-200"></app-ia-spinner>
+                {{ estaProcesando(p.id) ? "Devolviendo…" : "Devolver" }}
+              </button>
+            </div>
+
+            <p
+              *ngIf="p.estado === 'devuelto'"
+              class="text-[0.72rem] text-amber-600 dark:text-amber-400"
+            >
+              Espera a que un vendedor de {{ p.localOrigenNombre }} acepte tu
+              devolución. Sigues siendo responsable de este zapato.
+            </p>
+          </div>
+        </div>
+
+        <p
+          *ngIf="
+            pendientesPorAceptar().length === 0 &&
+            devolucionesPorAceptar().length === 0 &&
+            misSolicitudes().length === 0
+          "
+          class="text-center text-xs text-neutral-400 py-10"
+        >
+          No tienes pendientes por ahora.
+        </p>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mensajeAccion() as msg"
+  class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[999] px-4 py-2.5 rounded-xl text-sm font-medium shadow-lg"
+  [class.bg-emerald-500]="msg.tipo === 'success'"
+  [class.bg-red-500]="msg.tipo === 'error'"
+  [class.bg-amber-500]="msg.tipo === 'warn'"
+  [class.text-white]="true"
+>
+  {{ msg.texto }}
+</div>
+
+<div
+  *ngIf="mostrarModalVenta()"
+  class="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
+  (click)="cerrarModalesAccion()"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="relative w-full sm:max-w-sm max-h-[85vh] sm:max-h-[80vh] overflow-y-auto rounded-t-[28px] sm:rounded-2xl bg-white dark:bg-neutral-950"
+  >
+    <div
+      *ngIf="procesandoAccionLocal()"
+      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white/85 dark:bg-neutral-950/85 backdrop-blur-sm rounded-t-[28px] sm:rounded-2xl"
+    >
+      <app-ia-loader mensaje="Procesando…"></app-ia-loader>
+    </div>
+    <app-modal-venta
+      [visible]="mostrarModalVenta()"
+      [pedido]="productoParaModal()"
+      (cerrar)="cerrarModalesAccion()"
+      (confirmar)="confirmarVentaLocal($event)"
+    ></app-modal-venta>
+  </div>
+</div>
+<div
+  *ngIf="mostrarModalPrestamo()"
+  class="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
+  (click)="cerrarModalesAccion()"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="relative w-full sm:max-w-sm max-h-[85vh] sm:max-h-[80vh] overflow-y-auto rounded-t-[28px] sm:rounded-2xl bg-white dark:bg-neutral-950"
+  >
+    <div
+      *ngIf="procesandoAccionLocal()"
+      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white/85 dark:bg-neutral-950/85 backdrop-blur-sm rounded-t-[28px] sm:rounded-2xl"
+    >
+      <app-ia-loader mensaje="Procesando…"></app-ia-loader>
+    </div>
+    <app-modal-prestamo
+      [visible]="mostrarModalPrestamo()"
+      [pedido]="productoParaModal()"
+      [plMinimo]="plSeleccionado()"
+      (cerrar)="cerrarModalesAccion()"
+      (confirmar)="confirmarPrestamoLocal($event)"
+    ></app-modal-prestamo>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalBono()"
+  class="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
+  (click)="cerrarModalesAccion()"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="relative w-full sm:max-w-sm max-h-[85vh] sm:max-h-[80vh] overflow-y-auto rounded-t-[28px] sm:rounded-2xl bg-white dark:bg-neutral-950"
+  >
+    <div
+      *ngIf="procesandoAccionLocal()"
+      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white/85 dark:bg-neutral-950/85 backdrop-blur-sm rounded-t-[28px] sm:rounded-2xl"
+    >
+      <app-ia-loader mensaje="Procesando…"></app-ia-loader>
+    </div>
+    <app-modal-bono
+      [display]="mostrarModalBono()"
+      (cerrar)="cerrarModalesAccion()"
+      (bonoRedimido)="onBonoRedimidoLocal($event)"
+    ></app-modal-bono>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalCambio()"
+  class="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
+  (click)="cerrarModalesAccion()"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="relative w-full sm:max-w-sm max-h-[85vh] sm:max-h-[80vh] overflow-y-auto rounded-t-[28px] sm:rounded-2xl bg-white dark:bg-neutral-950"
+  >
+    <div
+      *ngIf="procesandoAccionLocal()"
+      class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white/85 dark:bg-neutral-950/85 backdrop-blur-sm rounded-t-[28px] sm:rounded-2xl"
+    >
+      <app-ia-loader mensaje="Procesando…"></app-ia-loader>
+    </div>
+    <app-cambios
+      (procesarCambio)="confirmarCambioLocal($event)"
+      (cancelar)="cerrarModalesAccion()"
+    ></app-cambios>
+  </div>
+</div>
+<button
+  (click)="scrollToTop()"
+  class="fixed bottom-3 right-6 z-50 w-12 h-12 rounded-full bg-neutral-600 text-white dark:text-black flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
+>
+  <svg
+    class="w-5 h-5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+  >
+    <polyline points="18 15 12 9 6 15"></polyline>
+  </svg>
+</button>
+<div
+  *ngIf="modalExhibicion()"
+  class="fixed inset-0 z-[70] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+  (click)="modalExhibicion.set(false)"
+>
+  <div
+    class="w-full sm:max-w-4xl sm:mx-4 bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-900 rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden max-h-[92vh] flex flex-col"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="flex items-center justify-between px-6 pt-4 pb-3.5 border-b border-neutral-100 dark:border-neutral-900"
+    >
+      <h2 class="text-base font-bold">Enviar exhibición desde tu local</h2>
+      <button
+        (click)="modalExhibicion.set(false)"
+        class="w-8 h-8 flex items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-900"
+      >
+        ✕
+      </button>
+    </div>
+    <div class="overflow-y-auto flex-1">
+      <app-modal-enviar-exhibicion-local
+        (cerrar)="modalExhibicion.set(false)"
+        (enviarProductoConTalla)="enviarExhibicionLocal($event)"
+      ></app-modal-enviar-exhibicion-local>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="modalAvisosLocalVisible()"
+  class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
+  (click)="toggleModalAvisosLocal()"
+>
+  <div
+    (click)="$event.stopPropagation()"
+    class="w-full sm:max-w-md h-[85dvh] sm:h-[600px] flex flex-col rounded-t-[28px] sm:rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-black dark:text-white shadow-xl animate-fade-slide-up overflow-hidden"
+  >
+    <div
+      class="flex items-center justify-between gap-3 px-5 py-4 border-b border-neutral-100 dark:border-neutral-900 shrink-0"
+    >
+      <span class="text-sm font-semibold">
+        {{
+          avisoSeleccionado()
+            ? "Reenviar exhibición"
+            : "Exhibiciones pendientes"
+        }}
+      </span>
+      <button
+        type="button"
+        (click)="toggleModalAvisosLocal()"
+        aria-label="Cerrar"
+        class="w-8 h-8 flex items-center justify-center rounded-full text-neutral-400 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900 transition"
+      >
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+          <path
+            d="M1 1L10 10M10 1L1 10"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div
+      *ngIf="!avisoSeleccionado()"
+      class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-3"
+    >
+      <p
+        *ngIf="misAvisosLocal().length === 0"
+        class="text-center text-xs text-neutral-400 py-10"
+      >
+        No tienes exhibiciones pendientes por reenviar.
+      </p>
+
+      <div
+        *ngFor="let aviso of misAvisosLocal()"
+        class="flex flex-col gap-2.5 p-3 rounded-xl border border-neutral-200 dark:border-neutral-900"
+      >
+        <div class="flex items-center gap-3">
+          <img
+            [src]="aviso.image || '/logo.svg'"
+            class="w-12 h-12 rounded-lg object-contain bg-neutral-100 dark:bg-neutral-900 shrink-0"
+          />
+          <div class="min-w-0 flex-1">
+            <p class="text-xs font-semibold truncate">
+              {{ aviso.producto.nombre }} · {{ aviso.producto.referencia }}
+            </p>
+            <p class="text-[0.68rem] text-neutral-500">
+              Talla vendida {{ aviso.producto.talla }} · {{ aviso.fecha }}
+            </p>
+            <p class="text-[0.68rem] text-neutral-400 leading-relaxed">
+              {{ aviso.mensaje }}
+            </p>
+          </div>
+        </div>
+
+        <div
+          *ngIf="avisoConfirmandoEliminarId() === aviso.id; else accionesAviso"
+          class="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40"
+        >
+          <span class="text-xs font-medium text-red-600 dark:text-red-400">
+            ¿Eliminar esta notificación?
+          </span>
+          <div class="flex gap-1.5 shrink-0">
+            <button
+              type="button"
+              (click)="cancelarConfirmacionEliminar()"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+            >
+              No
+            </button>
+            <button
+              type="button"
+              (click)="confirmarEliminarAviso(aviso)"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500 text-white"
+            >
+              Sí, eliminar
+            </button>
+          </div>
+        </div>
+
+        <ng-template #accionesAviso>
+          <div class="flex gap-2">
+            <button
+              type="button"
+              (click)="abrirDetalleAviso(aviso)"
+              class="flex-1 px-3 py-1.5 rounded-lg text-[0.72rem] font-semibold bg-amber-500 text-white"
+            >
+              Enviar
+            </button>
+            <button
+              type="button"
+              (click)="pedirConfirmacionEliminar(aviso)"
+              class="flex-1 px-3 py-1.5 rounded-lg text-[0.72rem] font-semibold border border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400"
+            >
+              Eliminar
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <div
+      *ngIf="avisoSeleccionado() as aviso"
+      class="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4"
+    >
+      <button
+        type="button"
+        (click)="cerrarDetalleAviso()"
+        class="flex items-center gap-1.5 text-xs font-bold text-neutral-500 dark:text-neutral-400 self-start"
+      >
+        ← Volver a la lista
+      </button>
+
+      <div
+        class="flex items-center gap-3 p-3 rounded-xl border border-neutral-200 dark:border-neutral-900"
+      >
+        <img
+          [src]="aviso.image || '/logo.svg'"
+          class="w-14 h-14 rounded-lg object-contain bg-neutral-100 dark:bg-neutral-900 shrink-0"
+        />
+        <div class="min-w-0">
+          <p class="text-sm font-semibold truncate">
+            {{ aviso.producto.nombre }} · {{ aviso.producto.referencia }}
+          </p>
+          <p class="text-xs text-neutral-500">
+            Se vendió talla {{ aviso.producto.talla }}
+          </p>
+        </div>
+      </div>
+
+      <div *ngIf="sinStockReenvio()" class="flex flex-col gap-3">
+        <p class="text-sm text-red-500 font-semibold text-center py-4">
+          Esta referencia está agotada en tu local.
+        </p>
+
+        <div
+          *ngIf="
+            avisoConfirmandoEliminarId() === aviso.id;
+            else botonEliminarAgotado
+          "
+          class="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40"
+        >
+          <span class="text-xs font-medium text-red-600 dark:text-red-400">
+            ¿Eliminar esta notificación?
+          </span>
+          <div class="flex gap-1.5 shrink-0">
+            <button
+              type="button"
+              (click)="cancelarConfirmacionEliminar()"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+            >
+              No
+            </button>
+            <button
+              type="button"
+              (click)="confirmarEliminarAviso(aviso)"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500 text-white"
+            >
+              Sí, eliminar
+            </button>
+          </div>
+        </div>
+
+        <ng-template #botonEliminarAgotado>
+          <button
+            type="button"
+            [disabled]="procesandoReenvio()"
+            (click)="pedirConfirmacionEliminar(aviso)"
+            class="w-full py-2.5 rounded-xl text-sm font-semibold border border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Eliminar notificación
+          </button>
+        </ng-template>
+      </div>
+
+      <div *ngIf="!sinStockReenvio()" class="flex flex-col gap-3">
+        <label class="text-[0.68rem] font-medium text-neutral-500">
+          ¿Qué talla deseas reponerle?
+        </label>
+        <select
+          [ngModel]="tallaReenvio()"
+          (ngModelChange)="tallaReenvio.set($event)"
+          class="w-full px-3 py-2.5 text-sm bg-neutral-100 dark:bg-neutral-900 rounded-xl outline-none border border-transparent"
+        >
+          <option [ngValue]="null">Selecciona talla</option>
+          <option
+            *ngFor="let t of tallasDisponiblesReenvio()"
+            [ngValue]="t.talla"
+          >
+            Talla {{ t.talla }} — {{ t.cantidad }} uds.
+          </option>
+        </select>
+
+        <button
+          type="button"
+          [disabled]="tallaReenvio() == null || procesandoReenvio()"
+          (click)="confirmarReenvioExhibicion()"
+          class="w-full py-2.5 rounded-xl text-sm font-semibold bg-amber-500 text-white disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {{ procesandoReenvio() ? "Enviando…" : "Enviar exhibición" }}
+        </button>
+
+        <div
+          *ngIf="
+            avisoConfirmandoEliminarId() === aviso.id;
+            else botonEliminarConStock
+          "
+          class="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40"
+        >
+          <span class="text-xs font-medium text-red-600 dark:text-red-400">
+            ¿Eliminar esta notificación?
+          </span>
+          <div class="flex gap-1.5 shrink-0">
+            <button
+              type="button"
+              (click)="cancelarConfirmacionEliminar()"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold text-neutral-500 dark:text-neutral-400"
+            >
+              No
+            </button>
+            <button
+              type="button"
+              (click)="confirmarEliminarAviso(aviso)"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500 text-white"
+            >
+              Sí, eliminar
+            </button>
+          </div>
+        </div>
+
+        <ng-template #botonEliminarConStock>
+          <button
+            type="button"
+            [disabled]="procesandoReenvio()"
+            (click)="pedirConfirmacionEliminar(aviso)"
+            class="w-full py-2.5 rounded-xl text-sm font-semibold border border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Eliminar notificación
+          </button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

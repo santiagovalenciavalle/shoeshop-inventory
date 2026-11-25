@@ -1,0 +1,15 @@
+:host {
+    display: block;
+}
+
+.dark .bg-white {
+    background-color: #1f2937 !important;
+}
+
+.dark .text-gray-800 {
+    color: #e5e7eb !important;
+}
+
+.pi {
+    font-size: 1rem;
+}

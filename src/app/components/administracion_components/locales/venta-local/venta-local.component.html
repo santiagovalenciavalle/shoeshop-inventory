@@ -1,0 +1,1589 @@
+<style>
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .anim-fade-up {
+    animation: fadeUp 0.35s cubic-bezier(0.22, 0.68, 0, 1.2) both;
+  }
+  .delay-1 {
+    animation-delay: 0.06s;
+  }
+  .delay-2 {
+    animation-delay: 0.12s;
+  }
+  .delay-3 {
+    animation-delay: 0.18s;
+  }
+  .delay-4 {
+    animation-delay: 0.24s;
+  }
+
+  .kpi-card {
+    transition:
+      box-shadow 0.18s ease,
+      transform 0.18s ease;
+  }
+  .kpi-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+  .dark .kpi-card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .method-card {
+    transition:
+      box-shadow 0.18s ease,
+      transform 0.18s ease;
+  }
+  .method-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+    transform: translateY(-1px);
+  }
+  .dark .method-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.38);
+  }
+
+  .row-hover {
+    transition: background-color 0.15s ease;
+  }
+  .row-hover:hover {
+    background-color: rgba(184, 150, 46, 0.04);
+  }
+  .dark .row-hover:hover {
+    background-color: rgba(184, 150, 46, 0.06);
+  }
+
+  .apple-btn {
+    transition:
+      background-color 0.15s ease,
+      transform 0.12s ease;
+  }
+  .apple-btn:active {
+    transform: scale(0.96);
+  }
+
+  .apple-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(184, 150, 46, 0.18);
+  }
+
+  .period-tab {
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .bar-fill {
+    transition: height 0.45s cubic-bezier(0.22, 0.68, 0, 1.2);
+  }
+
+  .table-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+  .table-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .table-scroll::-webkit-scrollbar-thumb {
+    background: #d2d2d7;
+    border-radius: 99px;
+  }
+  .dark .table-scroll::-webkit-scrollbar-thumb {
+    background: #3a3a3c;
+  }
+</style>
+
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+></p-toast>
+
+<div class="flex flex-col gap-6 pb-8">
+  <section class="anim-fade-up">
+    <div
+      class="bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl p-4"
+    >
+      <p
+        class="text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b] mb-3 flex items-center gap-2"
+      >
+        <i class="pi pi-sliders-h text-[#b8962e]"></i>
+        Filtros
+      </p>
+      <div class="flex flex-wrap gap-2 items-center">
+        <button
+          *ngFor="let p of periodos"
+          (click)="periodoSeleccionado = p.value; actualizarVentas()"
+          class="period-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5"
+          [ngClass]="
+            periodoSeleccionado === p.value
+              ? 'bg-[#1d3557] dark:bg-[#1d3a60] text-white shadow-sm'
+              : 'bg-[#f5f5f7] dark:bg-[#1c1c1e] text-[#6e6e73] dark:text-[#86868b] hover:bg-[#e9e9ef] dark:hover:bg-[#2c2c2e]'
+          "
+        >
+          <i
+            *ngIf="periodoSeleccionado === p.value"
+            class="pi pi-check text-[9px]"
+          ></i>
+          {{ p.label }}
+        </button>
+
+        <div
+          *ngIf="periodoSeleccionado === 'Día específico'"
+          class="flex items-center gap-1.5"
+        >
+          <p-datepicker
+            [(ngModel)]="fechaSeleccionada"
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            class="w-40"
+            (onSelect)="actualizarVentas()"
+            [readonlyInput]="true"
+            appendTo="body"
+            placeholder="Selecciona día"
+          ></p-datepicker>
+        </div>
+
+        <div
+          *ngIf="periodoSeleccionado === 'mes'"
+          class="flex items-center gap-1.5"
+        >
+          <p-datepicker
+            [(ngModel)]="fechaMesSeleccionado"
+            view="month"
+            dateFormat="MM/yy"
+            [showIcon]="true"
+            class="w-36"
+            (onSelect)="actualizarVentas()"
+            [readonlyInput]="true"
+            appendTo="body"
+            placeholder="Mes"
+          ></p-datepicker>
+        </div>
+
+        <div
+          *ngIf="periodoSeleccionado === 'año'"
+          class="flex items-center gap-1.5"
+        >
+          <p-datepicker
+            [(ngModel)]="fechaAnioSeleccionado"
+            view="year"
+            dateFormat="yy"
+            [showIcon]="true"
+            class="w-28"
+            (onSelect)="actualizarVentas()"
+            [readonlyInput]="true"
+            appendTo="body"
+            placeholder="Año"
+          ></p-datepicker>
+        </div>
+
+        <button
+          *ngIf="soloPrecioBajo"
+          (click)="soloPrecioBajo = false; actualizarVentas()"
+          class="px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 bg-red-50 text-red-600 border border-red-200"
+          title="Quitar el filtro de precio bajo"
+        >
+          Solo bajo precio mínimo
+          <i class="pi pi-times text-[9px]"></i>
+        </button>
+
+        <button
+          (click)="limpiarFiltros()"
+          class="apple-btn ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#f5f5f7] dark:bg-[#1c1c1e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs font-medium text-[#6e6e73] dark:text-[#86868b]"
+        >
+          <i class="pi pi-times text-[9px]"></i>
+          Limpiar
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="anim-fade-up delay-1 grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div
+      class="kpi-card bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl p-5 flex flex-col gap-3 lg:col-span-2"
+    >
+      <p
+        class="text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+      >
+        Resumen de Ventas
+      </p>
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <p
+            class="text-2xl sm:text-3xl font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight leading-none"
+          >
+            Ventas Totales
+          </p>
+          <p
+            class="text-3xl sm:text-4xl font-bold text-[#b8962e] mt-2 tracking-tight"
+          >
+            {{ totalVentas | currency: "COP " : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+        <div
+          class="w-10 h-10 rounded-xl bg-[#b8962e]/10 dark:bg-[#b8962e]/20 flex items-center justify-center flex-shrink-0"
+        >
+          <i class="pi pi-wallet text-[#b8962e]"></i>
+        </div>
+      </div>
+
+      <div
+        class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3 border-t border-[#f2f2f7] dark:border-[#2c2c2e]"
+      >
+        <div>
+          <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">
+            Ganancias otros locales
+          </p>
+          <p class="text-base font-bold mt-0.5 text-purple-500">
+            {{ gananciaOtrosLocales | currency: "COP " : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+        <div>
+          <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">
+            Ganancias propias
+          </p>
+          <p class="text-base font-bold mt-0.5 text-emerald-500">
+            {{ gananciasPropias | currency: "COP " : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+        <div>
+          <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">
+            Unidades vendidas
+          </p>
+          <p class="text-base font-bold mt-0.5">{{ totalVendidos }} pares</p>
+        </div>
+        <div>
+          <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">Tickets</p>
+          <p class="text-base font-bold mt-0.5">{{ cantidadVentas }}</p>
+        </div>
+        <div>
+          <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">
+            Promedio ticket
+          </p>
+          <p class="text-base font-bold mt-0.5 text-[#b8962e]">
+            {{ promedioTicket | currency: "COP " : "symbol" : "1.0-0" }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div
+        class="kpi-card bg-white dark:bg-[#111111] border border-red-200 dark:border-red-900/50 rounded-2xl p-4 flex-1"
+      >
+        <div class="flex items-center gap-2 mb-2">
+          <i class="pi pi-exclamation-triangle text-red-500 text-sm"></i>
+          <p
+            class="text-[10px] font-semibold uppercase tracking-widest text-red-500"
+          >
+            Alerta de Precio
+          </p>
+        </div>
+        <p
+          class="text-base font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] leading-tight"
+        >
+          Por debajo del mínimo
+        </p>
+        <p class="text-xs text-[#6e6e73] dark:text-[#86868b] mt-1">
+          Se detectaron
+          <span class="font-bold text-red-500">{{ precioMinimo }}</span>
+          {{ precioMinimo === 1 ? "transacción" : "transacciones" }}
+          con precio por debajo del mínimo autorizado.
+        </p>
+      </div>
+
+      <div
+        class="kpi-card bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl p-4"
+      >
+        <div class="flex items-center justify-between mb-3">
+          <p
+            class="text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+          >
+            Métodos de pago
+          </p>
+        </div>
+        <div class="flex items-end gap-2 h-14">
+          <ng-container *ngFor="let bar of metodosChartData">
+            <div class="flex flex-col items-center gap-1 flex-1">
+              <div
+                class="w-full rounded-t-md bar-fill"
+                [style.height.px]="bar.height"
+                [style.background]="bar.color"
+              ></div>
+              <p
+                class="text-[8px] text-[#6e6e73] dark:text-[#86868b] font-medium truncate w-full text-center"
+              >
+                {{ bar.label }}
+              </p>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="anim-fade-up delay-2 grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div
+      class="method-card bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl p-4 flex flex-col gap-2"
+    >
+      <div class="flex items-center justify-between">
+        <div
+          class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center"
+        >
+          <i
+            class="pi pi-money-bill text-emerald-600 dark:text-emerald-400 text-sm"
+          ></i>
+        </div>
+        <span
+          class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide"
+          >Efectivo</span
+        >
+      </div>
+      <p
+        class="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight"
+      >
+        {{ totalEfectivo | currency: "COP " : "symbol" : "1.0-0" }}
+      </p>
+      <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">
+        {{ conteoEfectivo }} transacciones
+      </p>
+    </div>
+
+    <div
+      class="method-card bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl p-4 flex flex-col gap-2"
+    >
+      <div class="flex items-center justify-between">
+        <div
+          class="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center"
+        >
+          <i class="pi pi-send text-blue-600 dark:text-blue-400 text-sm"></i>
+        </div>
+        <span
+          class="text-[10px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide"
+          >Transferencia</span
+        >
+      </div>
+      <p
+        class="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight"
+      >
+        {{ totalTransferencia | currency: "COP " : "symbol" : "1.0-0" }}
+      </p>
+      <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">
+        COP 0 en mora
+      </p>
+    </div>
+
+    <div
+      class="method-card bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl p-4 flex flex-col gap-2"
+    >
+      <div class="flex items-center justify-between">
+        <div
+          class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center"
+        >
+          <i
+            class="pi pi-credit-card text-purple-600 dark:text-purple-400 text-sm"
+          ></i>
+        </div>
+        <span
+          class="text-[10px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide"
+          >Sistecrédito</span
+        >
+      </div>
+      <p
+        class="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight"
+      >
+        {{ totalSistecredito | currency: "COP " : "symbol" : "1.0-0" }}
+      </p>
+      <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">
+        $0 pendientes
+      </p>
+    </div>
+
+    <div
+      class="method-card bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl p-4 flex flex-col gap-2"
+    >
+      <div class="flex items-center justify-between">
+        <div
+          class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center"
+        >
+          <i class="pi pi-wallet text-sky-600 dark:text-sky-400 text-sm"></i>
+        </div>
+        <span
+          class="text-[10px] font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wide"
+          >Bold</span
+        >
+      </div>
+      <p
+        class="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight"
+      >
+        {{ totalBold | currency: "COP " : "symbol" : "1.0-0" }}
+      </p>
+      <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">
+        Pagos con datáfono
+      </p>
+    </div>
+
+    <div
+      class="method-card bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl p-4 flex flex-col gap-2"
+    >
+      <div class="flex items-center justify-between">
+        <div
+          class="w-8 h-8 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center"
+        >
+          <i
+            class="pi pi-shopping-bag text-orange-600 dark:text-orange-400 text-sm"
+          ></i>
+        </div>
+        <span
+          class="text-[10px] font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wide"
+          >Addi</span
+        >
+      </div>
+      <p
+        class="text-lg font-bold text-[#1d1d1f] dark:text-[#f5f5f7] tracking-tight"
+      >
+        {{ totalAddi | currency: "COP " : "symbol" : "1.0-0" }}
+      </p>
+      <p class="text-[10px] text-[#6e6e73] dark:text-[#86868b]">
+        $0 por liquidar
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="anim-fade-up delay-3 bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl p-4"
+  >
+    <p
+      class="text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b] mb-3"
+    >
+      Filtros de ventas
+    </p>
+    <div
+      class="flex flex-col sm:flex-row flex-wrap gap-3 items-start sm:items-end"
+    >
+      <div class="flex flex-col gap-1.5 w-full sm:w-auto">
+        <label
+          class="text-[10px] font-semibold text-[#6e6e73] dark:text-[#86868b] uppercase tracking-wide"
+          >Vendedor</label
+        >
+        <select
+          [(ngModel)]="vendedorSeleccionado"
+          (ngModelChange)="actualizarVentas()"
+          class="apple-input px-3 py-2 rounded-xl bg-[#f5f5f7] dark:bg-[#1c1c1e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs font-medium focus:outline-none w-full sm:w-44 appearance-none cursor-pointer"
+        >
+          <option *ngFor="let v of opcionesVendedores" [value]="v.value">
+            {{ v.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5 w-full sm:w-auto">
+        <label
+          class="text-[10px] font-semibold text-[#6e6e73] dark:text-[#86868b] uppercase tracking-wide"
+          >Método de pago</label
+        >
+        <select
+          [(ngModel)]="tipoVentaSeleccionado"
+          (ngModelChange)="actualizarVentas()"
+          class="apple-input px-3 py-2 rounded-xl bg-[#f5f5f7] dark:bg-[#1c1c1e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs font-medium focus:outline-none w-full sm:w-44 appearance-none cursor-pointer"
+        >
+          <option [ngValue]="null">Todos</option>
+          <option value="efectivo">Efectivo</option>
+          <option value="transferencia">Transferencia</option>
+          <option value="sistecredito">Sistecrédito</option>
+          <option value="addi">Addi</option>
+          <option value="bold">Bold</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5 w-full sm:w-auto">
+        <label
+          class="text-[10px] font-semibold text-[#6e6e73] dark:text-[#86868b] uppercase tracking-wide"
+          >Código zapato</label
+        >
+        <input
+          type="number"
+          [(ngModel)]="ventaIdFiltro"
+          (ngModelChange)="actualizarVentas()"
+          class="apple-input px-3 py-2 rounded-xl bg-[#f5f5f7] dark:bg-[#1c1c1e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs w-full sm:w-44"
+          placeholder="Buscar por código"
+        />
+      </div>
+
+      <button
+        (click)="limpiarFiltros()"
+        class="apple-btn flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#f5f5f7] dark:bg-[#1c1c1e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs font-medium text-[#6e6e73] dark:text-[#86868b] mt-auto"
+      >
+        <i class="pi pi-times text-[9px]"></i>
+        Limpiar
+      </button>
+    </div>
+  </section>
+
+  <section
+    class="anim-fade-up delay-4 bg-white dark:bg-[#111111] border border-[#e5e5ea] dark:border-[#2c2c2e] rounded-2xl overflow-hidden"
+  >
+    <div
+      class="flex items-center justify-between px-5 py-4 border-b border-[#f2f2f7] dark:border-[#2c2c2e]"
+    >
+      <p class="text-sm font-semibold tracking-tight">Últimas Transacciones</p>
+      <span class="text-[10px] text-[#6e6e73] dark:text-[#86868b]"
+        >{{ ventas.length }} registros</span
+      >
+    </div>
+
+    <div
+      *ngIf="ventas.length === 0"
+      class="flex flex-col items-center justify-center py-14 gap-3 text-center"
+    >
+      <div
+        class="w-12 h-12 rounded-2xl bg-[#f5f5f7] dark:bg-[#1c1c1e] flex items-center justify-center"
+      >
+        <i class="pi pi-inbox text-[#86868b] text-xl"></i>
+      </div>
+      <p class="text-sm text-[#6e6e73] dark:text-[#86868b]">
+        No hay ventas para este período
+      </p>
+    </div>
+
+    <div class="hidden sm:block table-scroll overflow-x-auto">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="border-b border-[#f2f2f7] dark:border-[#2c2c2e]">
+            <th
+              class="text-left px-5 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Local
+            </th>
+            <th
+              class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Referencia Calzado
+            </th>
+            <th
+              class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Método Pago
+            </th>
+            <th
+              class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Vendedor
+            </th>
+            <th
+              class="text-right px-5 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Monto
+            </th>
+            <th
+              class="text-right px-5 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let venta of ventas"
+            class="row-hover border-b border-[#f9f9f9] dark:border-[#1c1c1e] last:border-0"
+          >
+            <td class="px-5 py-3.5">
+              <span class="font-mono text-[#6e6e73] dark:text-[#86868b]">{{
+                venta.local
+              }}</span>
+            </td>
+
+            <td class="px-4 py-3.5">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-9 h-9 rounded-xl overflow-hidden bg-[#f5f5f7] dark:bg-[#2c2c2e] flex-shrink-0 cursor-pointer"
+                  (click)="abrirModal(venta)"
+                >
+                  <img
+                    [src]="venta.imagen || '/logo.svg'"
+                    alt="zapato"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div>
+                  <p
+                    class="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] cursor-pointer hover:text-[#b8962e] transition-colors leading-tight"
+                    (click)="abrirModal(venta)"
+                  >
+                    {{ venta.marca }} {{ venta.referencia }}
+                  </p>
+                  <span
+                    *ngIf="venta.tipoVenta"
+                    class="inline-block text-[9px] font-semibold px-2 py-0.5 rounded-full mt-0.5"
+                    [ngClass]="{
+                      'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400':
+                        venta.tipoVenta === 'Cambio',
+                      'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400':
+                        venta.tipoVenta === 'venta',
+                      'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400':
+                        venta.tipoVenta === 'venta exhibicion',
+                      'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400':
+                        venta.tipoVenta === 'prestamo Exhibicion',
+                      'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400':
+                        venta.tipoVenta === 'otro-local',
+                      'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400':
+                        venta.tipoVenta === 'prestamo',
+                    }"
+                  >
+                    {{ venta.tipoVenta }}
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full mt-0.5 ml-1"
+                    [ngClass]="
+                      venta.numCliente
+                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                        : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                    "
+                    [title]="
+                      venta.numCliente ? 'Factura enviada' : 'Factura no enviada'
+                    "
+                  >
+                    <span
+                      class="w-1.5 h-1.5 rounded-full"
+                      [ngClass]="venta.numCliente ? 'bg-emerald-500' : 'bg-red-500'"
+                    ></span>
+                    {{ venta.numCliente ? "Factura" : "Sin factura" }}
+                  </span>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-4 py-3.5">
+              <span
+                *ngIf="editandoVentaId !== venta.id"
+                class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-semibold capitalize"
+                [ngClass]="{
+                  'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400':
+                    venta.metodoPago === 'efectivo',
+                  'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400':
+                    venta.metodoPago === 'transferencia',
+                  'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400':
+                    venta.metodoPago === 'sistecredito',
+                  'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400':
+                    venta.metodoPago === 'addi',
+                  'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400':
+                    venta.metodoPago === 'bold',
+                }"
+              >
+                {{ venta.metodoPago || "—" }}
+              </span>
+
+              <div
+                *ngIf="editandoVentaId === venta.id"
+                class="flex flex-col gap-1.5"
+              >
+                <select
+                  class="apple-input px-2.5 py-1.5 rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs w-36"
+                  [(ngModel)]="metodoPagoEditado"
+                >
+                  <option value="">Seleccione…</option>
+                  <option value="efectivo">Efectivo</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="sistecredito">Sistecrédito</option>
+                  <option value="addi">Addi</option>
+                  <option value="bold">Bold</option>
+                </select>
+                <input
+                  type="number"
+                  class="apple-input px-2.5 py-1.5 rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs w-36"
+                  [(ngModel)]="precioEditado"
+                  placeholder="Precio 1"
+                  min="0"
+                />
+                <ng-container *ngIf="venta.segundoMetodo">
+                  <select
+                    class="apple-input px-2.5 py-1.5 rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs w-36"
+                    [(ngModel)]="metodoPagoEditado2"
+                  >
+                    <option value="">Método 2…</option>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="transferencia">Transferencia</option>
+                    <option value="sistecredito">Sistecrédito</option>
+                    <option value="addi">Addi</option>
+                    <option value="bold">Bold</option>
+                  </select>
+                  <input
+                    type="number"
+                    class="apple-input px-2.5 py-1.5 rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs w-36"
+                    [(ngModel)]="precioEditado2"
+                    placeholder="Precio 2"
+                    min="0"
+                  />
+                </ng-container>
+              </div>
+            </td>
+
+            <td class="px-4 py-3.5">
+              <span class="font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">{{
+                venta.vendedor || "—"
+              }}</span>
+            </td>
+
+            <td class="px-5 py-3.5 text-right">
+              <span
+                class="font-bold"
+                [ngClass]="{
+                  'text-emerald-600 dark:text-emerald-400':
+                    venta.tipoVenta === 'Cambio' || venta.tipoVenta === 'Bono',
+                  'text-blue-600 dark:text-blue-400':
+                    venta.esPL &&
+                    venta.tipoVenta !== 'Cambio' &&
+                    venta.tipoVenta !== 'Bono',
+                  'text-red-600 dark:text-red-400':
+                    venta.precioBajo &&
+                    !venta.esPL &&
+                    venta.tipoVenta !== 'Cambio' &&
+                    venta.tipoVenta !== 'Bono',
+                  'text-[#1d1d1f] dark:text-[#f5f5f7]':
+                    !venta.precioBajo &&
+                    !venta.esPL &&
+                    venta.tipoVenta !== 'Cambio' &&
+                    venta.tipoVenta !== 'Bono',
+                }"
+              >
+                {{
+                  (venta.tipoVenta === "Cambio" && venta.esMismoDia === true
+                    ? venta.precio
+                    : (venta.tipoVenta === "Cambio" &&
+                          venta.esMismoDia === false) ||
+                        venta.tipoVenta === "Bono"
+                      ? venta.excedente
+                      : venta.precio
+                  ) | currency: "COP" : "symbol" : "1.0-0"
+                }}
+              </span>
+            </td>
+
+            <td class="px-5 py-3.5">
+              <div class="flex items-center justify-end gap-1.5">
+                <ng-container *ngIf="editandoVentaId !== venta.id">
+                  <button
+                    class="apple-btn w-7 h-7 flex items-center justify-center rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] text-[#6e6e73] dark:text-[#86868b] hover:bg-[#e9e9ef] dark:hover:bg-[#3a3a3c]"
+                    (click)="abrirModal(venta)"
+                    aria-label="Ver detalles"
+                  >
+                    <i class="pi pi-eye text-[10px]"></i>
+                  </button>
+                  <button
+                    class="apple-btn w-7 h-7 flex items-center justify-center rounded-lg bg-[#b8962e]/10 dark:bg-[#b8962e]/15 text-[#b8962e]"
+                    (click)="abrirEdicion(venta)"
+                    aria-label="Editar venta"
+                  >
+                    <i class="pi pi-pencil text-[10px]"></i>
+                  </button>
+                  <button
+                    class="apple-btn w-7 h-7 flex items-center justify-center rounded-lg border border-red-200 dark:border-red-800/50 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    (click)="confirmarEliminar(venta)"
+                    aria-label="Eliminar venta"
+                  >
+                    <i class="pi pi-trash text-[10px]"></i>
+                  </button>
+                </ng-container>
+
+                <ng-container *ngIf="editandoVentaId === venta.id">
+                  <button
+                    class="apple-btn inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-500 text-white text-[10px] font-semibold"
+                    (click)="guardarEdicion(venta)"
+                    [disabled]="guardandoVenta"
+                  >
+                    <app-ia-spinner *ngIf="guardandoVenta" class="text-[9px]"></app-ia-spinner>
+                    {{ guardandoVenta ? "…" : "Guardar" }}
+                  </button>
+                  <button
+                    class="apple-btn inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-[10px] font-semibold"
+                    (click)="cancelarEdicion()"
+                    [disabled]="guardandoVenta"
+                  >
+                    Cancelar
+                  </button>
+                </ng-container>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div
+      class="sm:hidden flex flex-col divide-y divide-[#f2f2f7] dark:divide-[#2c2c2e]"
+    >
+      <div *ngFor="let venta of ventas" class="p-4 flex items-start gap-3">
+        <div
+          class="w-14 h-14 rounded-xl overflow-hidden bg-[#f5f5f7] dark:bg-[#2c2c2e] flex-shrink-0 cursor-pointer"
+          (click)="abrirModal(venta)"
+        >
+          <img
+            [src]="venta.imagen || '/logo.svg'"
+            alt="zapato"
+            class="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <ng-container *ngIf="editandoVentaId !== venta.id">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <p
+                  class="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] leading-tight truncate"
+                >
+                  {{ venta.marca }} {{ venta.referencia }}
+                </p>
+                <p
+                  class="text-[10px] text-[#6e6e73] dark:text-[#86868b] mt-0.5"
+                >
+                  Vend:
+                  <span
+                    class="font-medium text-[#1d1d1f] dark:text-[#f5f5f7]"
+                    >{{ venta.vendedor || "—" }}</span
+                  >
+                  · Cod:
+                  <span
+                    class="font-medium text-[#1d1d1f] dark:text-[#f5f5f7]"
+                    >{{ venta.zapatoId || "—" }}</span
+                  >
+                </p>
+                <div class="flex items-center gap-1.5 mt-1">
+                  <span
+                    *ngIf="venta.tipoVenta"
+                    class="text-[9px] font-semibold px-2 py-0.5 rounded-full"
+                    [ngClass]="{
+                      'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400':
+                        venta.tipoVenta === 'Cambio',
+                      'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400':
+                        venta.tipoVenta === 'venta',
+                      'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400':
+                        venta.tipoVenta === 'venta exhibicion',
+                    }"
+                    >{{ venta.tipoVenta }}</span
+                  >
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-semibold capitalize"
+                    [ngClass]="{
+                      'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400':
+                        venta.metodoPago === 'efectivo',
+                      'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400':
+                        venta.metodoPago === 'transferencia',
+                      'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400':
+                        venta.metodoPago === 'sistecredito',
+                      'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400':
+                        venta.metodoPago === 'addi',
+                    }"
+                    >{{ venta.metodoPago || "—" }}</span
+                  >
+                  <span
+                    class="inline-flex items-center gap-1 text-[9px] font-semibold px-2 py-0.5 rounded-full"
+                    [ngClass]="
+                      venta.numCliente
+                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                        : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                    "
+                  >
+                    <span
+                      class="w-1.5 h-1.5 rounded-full"
+                      [ngClass]="venta.numCliente ? 'bg-emerald-500' : 'bg-red-500'"
+                    ></span>
+                    {{ venta.numCliente ? "Factura" : "Sin factura" }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex flex-col items-end gap-2 flex-shrink-0">
+                <span
+                  class="text-sm font-bold"
+                  [ngClass]="{
+                    'text-emerald-600 dark:text-emerald-400':
+                      venta.tipoVenta === 'Cambio' ||
+                      venta.tipoVenta === 'Bono',
+                    'text-red-600 dark:text-red-400': venta.precioBajo,
+                    'text-[#1d1d1f] dark:text-[#f5f5f7]':
+                      !venta.precioBajo &&
+                      venta.tipoVenta !== 'Cambio' &&
+                      venta.tipoVenta !== 'Bono',
+                  }"
+                >
+                  {{
+                    (venta.tipoVenta === "Cambio" && venta.esMismoDia
+                      ? venta.precio
+                      : (venta.tipoVenta === "Cambio" && !venta.esMismoDia) ||
+                          venta.tipoVenta === "Bono"
+                        ? venta.excedente
+                        : venta.precio
+                    ) | currency: "COP" : "symbol" : "1.0-0"
+                  }}
+                </span>
+                <div class="flex items-center gap-1">
+                  <button
+                    class="apple-btn w-7 h-7 flex items-center justify-center rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] text-[#6e6e73]"
+                    (click)="abrirModal(venta)"
+                    aria-label="Ver"
+                  >
+                    <i class="pi pi-eye text-[10px]"></i>
+                  </button>
+                  <button
+                    class="apple-btn w-7 h-7 flex items-center justify-center rounded-lg bg-[#b8962e]/10 text-[#b8962e]"
+                    (click)="abrirEdicion(venta)"
+                    aria-label="Editar"
+                  >
+                    <i class="pi pi-pencil text-[10px]"></i>
+                  </button>
+                  <button
+                    class="apple-btn w-7 h-7 flex items-center justify-center rounded-lg border border-red-200 dark:border-red-800/50 text-red-500"
+                    (click)="confirmarEliminar(venta)"
+                    aria-label="Eliminar"
+                  >
+                    <i class="pi pi-trash text-[10px]"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="editandoVentaId === venta.id">
+            <p
+              class="text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] mb-3 leading-tight"
+            >
+              {{ venta.marca }} {{ venta.referencia }}
+            </p>
+
+            <div class="flex flex-col gap-2.5">
+              <div class="flex flex-col gap-1">
+                <label
+                  class="text-[10px] font-semibold text-[#6e6e73] dark:text-[#86868b] uppercase tracking-wide"
+                  >Método de pago</label
+                >
+                <select
+                  class="apple-input w-full px-3 py-2 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs appearance-none"
+                  [(ngModel)]="metodoPagoEditado"
+                >
+                  <option value="">Seleccione…</option>
+                  <option value="efectivo">Efectivo</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="sistecredito">Sistecrédito</option>
+                  <option value="addi">Addi</option>
+                  <option value="bold">Bold</option>
+                </select>
+              </div>
+
+              <div class="flex flex-col gap-1">
+                <label
+                  class="text-[10px] font-semibold text-[#6e6e73] dark:text-[#86868b] uppercase tracking-wide"
+                  >Precio</label
+                >
+                <input
+                  type="number"
+                  class="apple-input w-full px-3 py-2 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs"
+                  [(ngModel)]="precioEditado"
+                  placeholder="Precio principal"
+                  min="0"
+                />
+              </div>
+
+              <ng-container *ngIf="venta.segundoMetodo">
+                <div class="flex flex-col gap-1">
+                  <label
+                    class="text-[10px] font-semibold text-[#6e6e73] dark:text-[#86868b] uppercase tracking-wide"
+                    >Método 2</label
+                  >
+                  <select
+                    class="apple-input w-full px-3 py-2 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs appearance-none"
+                    [(ngModel)]="metodoPagoEditado2"
+                  >
+                    <option value="">Seleccione…</option>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="transferencia">Transferencia</option>
+                    <option value="sistecredito">Sistecrédito</option>
+                    <option value="addi">Addi</option>
+                    <option value="bold">Bold</option>
+                  </select>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label
+                    class="text-[10px] font-semibold text-[#6e6e73] dark:text-[#86868b] uppercase tracking-wide"
+                    >Precio 2</label
+                  >
+                  <input
+                    type="number"
+                    class="apple-input w-full px-3 py-2 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs"
+                    [(ngModel)]="precioEditado2"
+                    placeholder="Precio segundo método"
+                    min="0"
+                  />
+                </div>
+              </ng-container>
+
+              <div class="flex gap-2 pt-1">
+                <button
+                  class="apple-btn flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-emerald-500 text-white text-xs font-semibold disabled:opacity-50"
+                  (click)="guardarEdicion(venta)"
+                  [disabled]="guardandoVenta"
+                >
+                  <app-ia-spinner *ngIf="guardandoVenta" class="text-[10px]"></app-ia-spinner>
+                  {{ guardandoVenta ? "Guardando…" : "Guardar cambios" }}
+                </button>
+                <button
+                  class="apple-btn flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#e5e5ea] dark:border-[#3a3a3c] text-xs font-semibold disabled:opacity-50"
+                  (click)="cancelarEdicion()"
+                  [disabled]="guardandoVenta"
+                >
+                  <i class="pi pi-times text-[10px]"></i>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section
+    *ngIf="ventasOtroLocal.length > 0"
+    class="anim-fade-up bg-white dark:bg-[#111111] border border-purple-200 dark:border-purple-900/50 rounded-2xl overflow-hidden"
+  >
+    <div
+      class="flex items-center justify-between px-5 py-4 border-b border-purple-100 dark:border-purple-900/30 bg-purple-50/50 dark:bg-purple-900/10"
+    >
+      <div class="flex items-center gap-2.5">
+        <div
+          class="w-7 h-7 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center"
+        >
+          <i
+            class="pi pi-arrow-right-arrow-left text-purple-600 dark:text-purple-400 text-xs"
+          ></i>
+        </div>
+        <div>
+          <p
+            class="text-sm font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] leading-tight"
+          >
+            Ventas Otro Local
+          </p>
+          <p class="text-[10px] text-purple-600 dark:text-purple-400">
+            Todos los locales · solo filtro de fecha activo
+          </p>
+        </div>
+      </div>
+      <span
+        class="text-[10px] font-semibold px-2.5 py-1 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300"
+      >
+        {{ ventasOtroLocal.length }}
+        {{ ventasOtroLocal.length === 1 ? "registro" : "registros" }}
+      </span>
+    </div>
+
+    <div class="hidden sm:block table-scroll overflow-x-auto">
+      <table class="w-full text-xs">
+        <thead>
+          <tr class="border-b border-[#f2f2f7] dark:border-[#2c2c2e]">
+            <th
+              class="text-left px-5 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Local
+            </th>
+            <th
+              class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Referencia
+            </th>
+            <th
+              class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Vendedor
+            </th>
+            <th
+              class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Método
+            </th>
+            <th
+              class="text-left px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Fecha
+            </th>
+            <th
+              class="text-right px-5 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Monto
+            </th>
+            <th
+              class="text-center px-4 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Pagado
+            </th>
+            <th
+              class="text-right px-5 py-3 text-[10px] font-semibold uppercase tracking-widest text-[#6e6e73] dark:text-[#86868b]"
+            >
+              Detalle
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let v of ventasOtroLocal"
+            class="row-hover border-b border-[#f9f9f9] dark:border-[#1c1c1e] last:border-0"
+          >
+            <td class="px-5 py-3">
+              <span
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-semibold text-[10px]"
+              >
+                <i class="pi pi-store text-[9px]"></i>
+                {{ v.local || "—" }}
+              </span>
+            </td>
+
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2.5">
+                <div
+                  class="w-8 h-8 rounded-lg overflow-hidden bg-[#f5f5f7] dark:bg-[#2c2c2e] flex-shrink-0 cursor-pointer"
+                  (click)="abrirModal(v)"
+                >
+                  <img
+                    [src]="v.imagen || '/logo.svg'"
+                    alt="zapato"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+                <div>
+                  <p
+                    class="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] leading-tight cursor-pointer hover:text-[#b8962e] transition-colors"
+                    (click)="abrirModal(v)"
+                  >
+                    {{ v.marca }} {{ v.referencia }}
+                  </p>
+                  <p class="text-[#6e6e73] dark:text-[#86868b]">
+                    Cod: {{ v.zapatoId || "—" }}
+                  </p>
+                </div>
+              </div>
+            </td>
+
+            <td class="px-4 py-3">
+              <span class="font-medium text-[#1d1d1f] dark:text-[#f5f5f7]">{{
+                v.vendedor || "—"
+              }}</span>
+            </td>
+
+            <td class="px-4 py-3">
+              <span
+                class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-semibold capitalize"
+                [ngClass]="{
+                  'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400':
+                    v.metodoPago === 'efectivo',
+                  'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400':
+                    v.metodoPago === 'transferencia',
+                  'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400':
+                    v.metodoPago === 'sistecredito',
+                  'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400':
+                    v.metodoPago === 'addi',
+                }"
+              >
+                {{ v.metodoPago || "—" }}
+              </span>
+            </td>
+
+            <td class="px-4 py-3 text-[#6e6e73] dark:text-[#86868b]">
+              {{ v.fechaVenta | date: "dd/MM/yy HH:mm" }}
+            </td>
+
+            <td
+              class="px-5 py-3 text-right font-bold text-[#1d1d1f] dark:text-[#f5f5f7]"
+            >
+              {{ v.precio | currency: "COP" : "symbol" : "1.0-0" }}
+            </td>
+
+            <td class="px-4 py-3 text-center">
+              <button
+                type="button"
+                class="apple-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-colors disabled:opacity-50"
+                [ngClass]="
+                  v.pagado
+                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                    : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                "
+                [disabled]="actualizandoPagoId === v.id"
+                (click)="togglePagado(v)"
+              >
+                <i
+                  class="pi text-[10px]"
+                  [ngClass]="
+                    actualizandoPagoId === v.id
+                      ? 'pi-spin pi-spinner'
+                      : v.pagado
+                        ? 'pi-check-circle'
+                        : 'pi-exclamation-circle'
+                  "
+                ></i>
+                {{ v.pagado ? "Pagado" : "Pendiente" }}
+              </button>
+            </td>
+
+            <td class="px-5 py-3 text-right">
+              <button
+                class="apple-btn w-7 h-7 inline-flex items-center justify-center rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] text-[#6e6e73] dark:text-[#86868b] hover:bg-[#e9e9ef] dark:hover:bg-[#3a3a3c]"
+                (click)="abrirModal(v)"
+                aria-label="Ver detalles"
+              >
+                <i class="pi pi-eye text-[10px]"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div
+      class="sm:hidden flex flex-col divide-y divide-[#f2f2f7] dark:divide-[#2c2c2e]"
+    >
+      <div *ngFor="let v of ventasOtroLocal" class="p-4 flex items-start gap-3">
+        <div
+          class="w-12 h-12 rounded-xl overflow-hidden bg-[#f5f5f7] dark:bg-[#2c2c2e] flex-shrink-0 cursor-pointer"
+          (click)="abrirModal(v)"
+        >
+          <img
+            [src]="v.imagen || '/logo.svg'"
+            alt="zapato"
+            class="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p
+                class="text-xs font-semibold text-[#1d1d1f] dark:text-[#f5f5f7] leading-tight truncate"
+              >
+                {{ v.marca }} {{ v.referencia }}
+              </p>
+              <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                <span
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-[9px] font-semibold"
+                >
+                  <i class="pi pi-store text-[8px]"></i>
+                  {{ v.local || "—" }}
+                </span>
+                <span class="text-[9px] text-[#6e6e73] dark:text-[#86868b]">{{
+                  v.vendedor || "—"
+                }}</span>
+                <span
+                  class="inline-flex items-center px-2 py-0.5 rounded-lg text-[9px] font-semibold capitalize"
+                  [ngClass]="{
+                    'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400':
+                      v.metodoPago === 'efectivo',
+                    'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400':
+                      v.metodoPago === 'transferencia',
+                    'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400':
+                      v.metodoPago === 'sistecredito',
+                    'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400':
+                      v.metodoPago === 'addi',
+                  }"
+                  >{{ v.metodoPago || "—" }}</span
+                >
+              </div>
+              <p class="text-[9px] text-[#6e6e73] dark:text-[#86868b] mt-0.5">
+                {{ v.fechaVenta | date: "dd/MM/yy HH:mm" }}
+              </p>
+            </div>
+            <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
+              <span
+                class="text-sm font-bold text-[#1d1d1f] dark:text-[#f5f5f7]"
+              >
+                {{ v.precio | currency: "COP" : "symbol" : "1.0-0" }}
+              </span>
+              <button
+                type="button"
+                class="apple-btn inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] font-semibold disabled:opacity-50"
+                [ngClass]="
+                  v.pagado
+                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                    : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                "
+                [disabled]="actualizandoPagoId === v.id"
+                (click)="togglePagado(v)"
+              >
+                <i
+                  class="pi text-[9px]"
+                  [ngClass]="
+                    actualizandoPagoId === v.id
+                      ? 'pi-spin pi-spinner'
+                      : v.pagado
+                        ? 'pi-check-circle'
+                        : 'pi-exclamation-circle'
+                  "
+                ></i>
+                {{ v.pagado ? "Pagado" : "Pendiente" }}
+              </button>
+              <button
+                class="apple-btn w-7 h-7 flex items-center justify-center rounded-lg bg-[#f5f5f7] dark:bg-[#2c2c2e] text-[#6e6e73]"
+                (click)="abrirModal(v)"
+                aria-label="Ver"
+              >
+                <i class="pi pi-eye text-[10px]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div
+  *ngIf="modalVisible"
+  class="fixed inset-0 z-[9000] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+  (click)="cerrarModal()"
+>
+  <div
+    class="w-full sm:max-w-lg max-h-[92vh] bg-white dark:bg-[#1c1c1e] sm:border border-[#d2d2d7] dark:border-[#3a3a3c] rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex justify-center pt-3 pb-1 sm:hidden">
+      <div class="w-10 h-1 rounded-full bg-[#d2d2d7] dark:bg-[#3a3a3c]"></div>
+    </div>
+
+    <div
+      class="flex items-center justify-between px-5 py-4 border-b border-[#f2f2f7] dark:border-[#2c2c2e]"
+    >
+      <p class="text-sm font-semibold">Detalles de la Venta</p>
+      <button
+        (click)="cerrarModal()"
+        class="apple-btn w-8 h-8 flex items-center justify-center rounded-full bg-[#f5f5f7] dark:bg-[#2c2c2e] text-[#6e6e73] dark:text-[#86868b]"
+        aria-label="Cerrar"
+      >
+        <i class="pi pi-times text-xs"></i>
+      </button>
+    </div>
+
+    <div *ngIf="selectedVenta" class="overflow-y-auto p-5 flex flex-col gap-5">
+      <div class="flex gap-4 items-start">
+        <div
+          class="w-20 h-20 rounded-xl overflow-hidden bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#d2d2d7] dark:border-[#3a3a3c] flex-shrink-0"
+        >
+          <img
+            [src]="selectedVenta.imagen || '/logo.svg'"
+            alt=""
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="flex flex-col gap-1">
+          <h2 class="text-base font-semibold leading-tight">
+            {{ selectedVenta.marca }} {{ selectedVenta.referencia }}
+          </h2>
+          <p class="text-xs text-[#6e6e73] dark:text-[#86868b]">
+            Código: {{ selectedVenta.zapatoId || "No hay" }}
+          </p>
+          <p
+            class="text-lg font-bold mt-1"
+            [ngClass]="
+              selectedVenta.precioBajo
+                ? 'text-red-600 dark:text-red-400'
+                : 'text-emerald-600 dark:text-emerald-400'
+            "
+          >
+            {{
+              selectedVenta.precioMetodoPrincipal ?? selectedVenta.precio
+                | currency: "COP" : "symbol" : "1.0-0"
+            }}
+            <span
+              *ngIf="selectedVenta.esPL"
+              class="text-[10px] ml-2 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full px-2 py-0.5"
+            >
+              Precio local
+            </span>
+            <span
+              *ngIf="selectedVenta.precioBajo && !selectedVenta.esPL"
+              class="text-[10px] ml-2 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 rounded-full px-2 py-0.5"
+            >
+              Precio bajo
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="bg-[#f5f5f7] dark:bg-[#2c2c2e] rounded-2xl divide-y divide-white/60 dark:divide-black/30"
+      >
+        <div
+          *ngIf="selectedVenta.tipoVenta === 'otro-local'"
+          class="flex justify-between items-center px-4 py-3"
+        >
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]"
+            >Precio Compra</span
+          >
+          <span class="text-xs font-medium">{{
+            selectedVenta.precioCompra | currency: "COP" : "symbol" : "1.0-0"
+          }}</span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-3">
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]">Fecha</span>
+          <span class="text-xs font-medium">{{
+            selectedVenta.fechaVenta | date: "dd/MM/yyyy hh:mm a"
+          }}</span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-3">
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]">Talla</span>
+          <span class="text-xs font-medium">{{
+            selectedVenta.talla || "No registrada"
+          }}</span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-3">
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]"
+            >Vendedor</span
+          >
+          <span class="text-xs font-medium">{{ selectedVenta.vendedor }}</span>
+        </div>
+        <div
+          *ngIf="selectedVenta.nombrePresador"
+          class="flex justify-between items-center px-4 py-3"
+        >
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]"
+            >Prestado por</span
+          >
+          <span class="text-xs font-medium">{{
+            selectedVenta.nombrePresador
+          }}</span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-3">
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]">Pago</span>
+          <span class="text-xs font-medium capitalize">
+            {{ selectedVenta.metodoPago }}
+            <span *ngIf="selectedVenta.precioMetodoPrincipal"
+              >({{
+                selectedVenta.precioMetodoPrincipal
+                  | currency: "COP" : "symbol" : "1.0-0"
+              }})</span
+            >
+          </span>
+        </div>
+        <div
+          *ngIf="selectedVenta.segundoMetodo"
+          class="flex justify-between items-center px-4 py-3"
+        >
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]"
+            >Segundo pago</span
+          >
+          <span class="text-xs font-medium capitalize"
+            >{{ selectedVenta.segundoMetodo.metodo }} ({{
+              selectedVenta.segundoMetodo.precio
+                | currency: "COP" : "symbol" : "1.0-0"
+            }})</span
+          >
+        </div>
+        <div
+          *ngIf="selectedVenta.tipoVenta === 'Cambio'"
+          class="flex justify-between items-center px-4 py-3"
+        >
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]"
+            >Excedente</span
+          >
+          <span class="text-xs font-medium">{{
+            selectedVenta.excedente | currency: "COP" : "symbol" : "1.0-0"
+          }}</span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-3">
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]"
+            >Tipo venta</span
+          >
+          <span class="text-xs font-medium">{{ selectedVenta.tipoVenta }}</span>
+        </div>
+        <div class="flex justify-between items-center px-4 py-3">
+          <span class="text-xs text-[#6e6e73] dark:text-[#86868b]"
+            >Comentario</span
+          >
+          <span class="text-xs font-medium">{{
+            selectedVenta.comentario || "Sin comentario"
+          }}</span>
+        </div>
+      </div>
+
+      <div class="flex justify-between gap-3 pt-1">
+        <button
+          *ngIf="
+            selectedVenta.tipoVenta === 'Bono' ||
+            selectedVenta.tipoVenta === 'Cambio'
+          "
+          class="apple-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#b8962e]/10 text-[#b8962e] text-sm font-medium border border-[#b8962e]/20"
+          (click)="verDetalles(selectedVenta)"
+        >
+          <i class="pi pi-eye text-xs"></i>
+          Ver detalles
+        </button>
+        <button
+          class="apple-btn ml-auto inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#d2d2d7] dark:border-[#3a3a3c] bg-white dark:bg-[#2c2c2e] text-sm font-medium"
+          (click)="cerrarModal()"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="ventaAEliminar"
+  class="fixed inset-0 z-[10000] bg-black/50 backdrop-blur-sm flex items-center justify-center px-4"
+  (click)="cancelarEliminar()"
+>
+  <div
+    class="bg-white dark:bg-[#1c1c1e] border border-[#d2d2d7] dark:border-[#3a3a3c] rounded-2xl shadow-2xl w-full max-w-sm p-6"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex items-center gap-3 mb-3">
+      <div
+        class="w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0"
+      >
+        <i
+          class="pi pi-exclamation-triangle text-red-600 dark:text-red-400 text-sm"
+        ></i>
+      </div>
+      <h3 class="text-base font-semibold">Confirmar eliminación</h3>
+    </div>
+    <p class="text-sm text-[#6e6e73] dark:text-[#86868b] mb-6">
+      ¿Seguro que deseas eliminar esta venta?<br />
+      <span class="font-medium text-red-600 dark:text-red-400"
+        >Esta acción no se puede deshacer.</span
+      >
+    </p>
+    <div class="flex justify-end gap-2.5">
+      <button
+        class="apple-btn px-4 py-2.5 rounded-xl bg-[#f5f5f7] dark:bg-[#2c2c2e] border border-[#d2d2d7] dark:border-[#3a3a3c] text-sm font-medium disabled:opacity-50"
+        [disabled]="eliminandoVenta"
+        (click)="cancelarEliminar()"
+      >
+        Cancelar
+      </button>
+      <button
+        class="apple-btn inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="eliminandoVenta"
+        (click)="eliminarVentaConfirmada()"
+      >
+        <ng-container *ngIf="!eliminandoVenta">Eliminar</ng-container>
+        <ng-container *ngIf="eliminandoVenta">
+          <app-ia-spinner class="text-xs"></app-ia-spinner>
+          Eliminando…
+        </ng-container>
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-modal-detalles-devueltos
+  #modalDetalles
+  [venta]="ventaSeleccionada"
+></app-modal-detalles-devueltos>

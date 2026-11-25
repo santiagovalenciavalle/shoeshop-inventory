@@ -1,0 +1,132 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' }
+  }"
+/>
+
+<button
+  pButton
+  label="Volver"
+  icon="pi pi-arrow-left"
+  class="p-button-outlined m-6"
+  routerLink="/vendedor"
+></button>
+<div class="p-4 pt-5">
+  <h2 class="text-2xl font-bold mb-5 text-center">Tennis en Almacén</h2>
+  <div
+    class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"
+  >
+    <span class="p-input-icon-left w-full sm:w-1/2">
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="filtro"
+        placeholder="Buscar productos..."
+        class="w-full"
+      />
+    </span>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-plus"
+      label="Agregar Referencia"
+      class="w-full sm:w-auto"
+      (click)="abrirModal()"
+    ></button>
+  </div>
+
+  <div
+    class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+  >
+    <strong class="font-bold">¡Importante! </strong>
+    <span>Esta sesión está temporalmente deshabilitada.</span>
+  </div>
+
+  <p class="mb-2">{{ productosFiltrados.length }} productos encontrados</p>
+
+  <div
+    class="mt-5"
+    [ngClass]="
+      vistaCuadricula
+        ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
+        : 'flex flex-col gap-4'
+    "
+  >
+    <p-card
+      *ngFor="let producto of productosFiltrados"
+      class="shadow-lg"
+      styleClass="overflow-hidden"
+    >
+      <p class="text-sm">
+        <strong>Local: </strong>
+        <p-badge [value]="producto.local" severity="warn"></p-badge>
+      </p>
+
+      <ng-template pTemplate="header">
+        <div class="w-full aspect-[4/3] overflow-hidden">
+          <img
+            [src]="producto.imagen"
+            alt="Producto"
+            class="w-full h-full object-cover rounded-md"
+          />
+        </div>
+      </ng-template>
+
+      <div class="text-sm mt-2">
+        <p><strong>Marca:</strong> {{ producto.marca }}</p>
+        <p><strong>Ref:</strong> {{ producto.referencia }}</p>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="flex flex-col sm:flex-row gap-2 mt-2">
+          <button
+            (click)="abrirModalVenta(producto)"
+            pButton
+            label="Vender"
+            icon="pi pi-dollar"
+            class="w-full sm:w-32"
+            disabled
+          ></button>
+          <button
+            pButton
+            label="Prestar"
+            icon="pi pi-share-alt"
+            class="w-full sm:w-32"
+            disabled
+          ></button>
+        </div>
+        <div class="mt-3">
+          <button
+            pButton
+            label="agregar numeracion"
+            icon="pi pi-plus"
+            class="w-full"
+            disabled
+          ></button>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>
+
+<p-dialog
+  header="Agregar Nueva Referencia"
+  [(visible)]="showModal"
+  [modal]="true"
+  [closable]="false"
+  [style]="{ width: '500px' }"
+>
+  <app-add-new-ref-almacen
+    (referenciaGuardada)="agregarProducto($event)"
+    (close)="showModal = false"
+  ></app-add-new-ref-almacen>
+</p-dialog>
+
+<app-modal-venta
+  [visible]="mostrarModalVenta"
+  [pedido]="pedidoSeleccionado"
+  [ventaPorAlmacen]="true"
+  (cerrar)="cerrarModalVenta()"
+  (confirmar)="confirmarVenta($event)"
+></app-modal-venta>

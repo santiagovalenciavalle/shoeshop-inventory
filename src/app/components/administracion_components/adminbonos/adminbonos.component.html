@@ -1,0 +1,215 @@
+<div class="min-h-screen bg-white dark:bg-black">
+  <div *ngIf="cargando" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-md px-4 text-neutral-900 dark:text-white">
+  <app-ia-loader detalle="ShoeShop" [mensajes]="['Conectando con tus datos…', 'Cargando bonos…', 'Casi listo…']"></app-ia-loader>
+</div>
+
+  <header class="px-6 pt-6 pb-10">
+    <div class="max-w-5xl mx-auto">
+      <p
+        class="text-xs font-medium tracking-widest uppercase text-yellow-600 dark:text-yellow-400 mb-3"
+      >
+        Gestión
+      </p>
+      <div class="flex items-end justify-between flex-wrap gap-4">
+        <div>
+          <h1
+            class="text-3xl sm:text-4xl font-semibold tracking-tight text-neutral-900 dark:text-white leading-tight"
+          >
+            Bonos
+          </h1>
+          <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+            Registro de todos los bonos activos
+          </p>
+        </div>
+
+        <div
+          *ngIf="!cargando"
+          class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800"
+        >
+          <span
+            class="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-white"
+          >
+            {{ bonos.length }}
+          </span>
+          <span
+            class="text-xs text-neutral-400 dark:text-neutral-500 leading-tight"
+          >
+            {{ bonos.length === 1 ? "bono" : "bonos" }}<br />activos
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="px-6 pb-24">
+    <div class="max-w-5xl mx-auto">
+      <div
+        *ngIf="!cargando && bonos.length === 0"
+        class="flex flex-col items-center justify-center py-24 gap-4"
+      >
+        <div
+          class="w-14 h-14 rounded-2xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 flex items-center justify-center"
+        >
+          <svg
+            class="w-6 h-6 text-neutral-300 dark:text-neutral-600"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+          >
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+        </div>
+        <p class="text-sm text-neutral-400 dark:text-neutral-600">
+          No hay bonos registrados
+        </p>
+      </div>
+
+      <div *ngIf="!cargando && bonos.length > 0" class="space-y-3">
+        <div
+          class="flex items-center justify-between p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900"
+        >
+          <div>
+            <p class="text-xs text-neutral-400 dark:text-neutral-500">
+              Total en bonos
+            </p>
+            <p class="text-xl font-semibold text-neutral-900 dark:text-white">
+              {{ formatearPrecio(totalBonos) }}
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="hidden sm:grid grid-cols-6 text-xs text-neutral-400 dark:text-neutral-500 px-3 py-2"
+        >
+          <span>Producto</span>
+          <span>Vendedor</span>
+          <span>Talla</span>
+          <span>Precio bono</span>
+          <span>Fecha</span>
+          <span class="text-right">Acción</span>
+        </div>
+
+        <div
+          *ngFor="let bono of bonos"
+          class="group grid grid-cols-2 sm:grid-cols-6 items-center gap-3 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-950 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition"
+        >
+          <div class="flex items-center gap-3 col-span-2 sm:col-span-1">
+            <img
+              *ngIf="bono.producto?.imagen"
+              [src]="bono.producto.imagen"
+              class="w-10 h-10 rounded-lg object-cover"
+            />
+            <div class="flex flex-col">
+              <span
+                class="text-sm font-medium text-neutral-900 dark:text-white"
+              >
+                {{ bono.producto?.marca || "—" }}
+              </span>
+              <span class="text-xs text-neutral-400">
+                {{ bono.producto?.referencia || "—" }}
+              </span>
+            </div>
+          </div>
+
+          <div class="text-sm text-neutral-600 dark:text-neutral-300">
+            {{ bono.vendedor }}
+          </div>
+
+          <div class="text-sm text-neutral-600 dark:text-neutral-300">
+            {{ bono.producto?.talla || "—" }}
+          </div>
+
+          <div
+            class="text-sm font-semibold text-yellow-600 dark:text-yellow-400"
+          >
+            {{ formatearPrecio(bono.precioBono) }}
+          </div>
+
+          <div class="text-xs text-neutral-400">
+            {{ formatearFecha(bono.producto?.fechaVenta) }}
+          </div>
+
+          <div class="flex justify-end">
+            <button
+              (click)="confirmarEliminar(bono)"
+              class="transition text-red-500 hover:text-red-600"
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div
+  *ngIf="bonoAEliminar"
+  class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 sm:p-0 bg-black/40 backdrop-blur-[3px] modal-overlay"
+>
+  <div
+    class="w-full sm:max-w-sm bg-white dark:bg-neutral-950 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-2xl p-6 space-y-5 modal-sheet"
+  >
+    <div class="flex flex-col gap-3">
+      <div
+        class="w-11 h-11 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center"
+      >
+        <svg
+          class="w-5 h-5 text-red-500"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6l-1 14H6L5 6" />
+          <path d="M10 11v6M14 11v6" />
+          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-base font-semibold text-neutral-900 dark:text-white">
+          Eliminar bono
+        </h3>
+        <p
+          class="text-sm text-neutral-500 dark:text-neutral-400 mt-1 leading-relaxed"
+        >
+          ¿Confirmas que deseas eliminar el bono de
+          <span class="font-medium text-neutral-700 dark:text-neutral-300">
+            {{ bonoAEliminar.vendedor }}
+          </span>
+          por
+          <span class="font-medium text-neutral-700 dark:text-neutral-300">
+            {{ formatearPrecio(bonoAEliminar.precioBono) }} </span
+          >? Esta acción no se puede deshacer.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex gap-2.5">
+      <button
+        (click)="cancelarEliminar()"
+        [disabled]="eliminando"
+        class="flex-1 px-4 py-2.5 rounded-xl text-sm font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 disabled:opacity-50 transition-colors duration-150"
+      >
+        Cancelar
+      </button>
+
+      <button
+        (click)="eliminarConfirmado()"
+        [disabled]="eliminando"
+        class="flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-500 hover:bg-red-600 active:bg-red-700 text-white flex items-center justify-center gap-2 disabled:opacity-50 transition-colors duration-150"
+      >
+        <ng-container *ngIf="!eliminando; else loadingEliminar">
+          Eliminar
+        </ng-container>
+        <ng-template #loadingEliminar>
+          <app-ia-spinner class="inline-block w-4 h-4 text-white"></app-ia-spinner>
+          Eliminando
+        </ng-template>
+      </button>
+    </div>
+  </div>
+</div>

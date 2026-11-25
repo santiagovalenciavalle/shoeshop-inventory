@@ -1,0 +1,227 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '64px' },
+  }"
+></p-toast>
+
+<div *ngIf="loadingPantalla" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-md px-4 text-neutral-900 dark:text-white">
+  <app-ia-loader detalle="ShoeShop" [mensajes]="['Conectando con tus datos…', 'Cargando Préstamos…', 'Casi listo…']"></app-ia-loader>
+</div>
+<div
+  class="bg-white dark:bg-black border-b border-neutral-100 dark:border-neutral-900"
+>
+  <div class="max-w-3xl mx-auto px-5 py-4 flex items-center justify-center">
+    <span
+      class="text-sm font-semibold text-black dark:text-white tracking-tight"
+      >Préstamos</span
+    >
+    <div class="w-12"></div>
+  </div>
+</div>
+
+<div class="min-h-screen bg-neutral-50 dark:bg-black px-4 py-10">
+  <div class="max-w-3xl mx-auto flex flex-col gap-10">
+    <div
+      *ngFor="let fecha of fechasOrdenadas"
+      class="flex flex-col gap-4 prest-fade"
+    >
+      <div class="flex items-center gap-3">
+        <div class="flex-1 h-px bg-neutral-200 dark:bg-neutral-800"></div>
+        <span
+          class="text-[10px] uppercase tracking-[0.3em] font-semibold text-neutral-400 dark:text-neutral-500 px-1"
+        >
+          {{ formatearFecha(getPrestamosAgrupados()[fecha].fecha) }}
+        </span>
+        <div class="flex-1 h-px bg-neutral-200 dark:bg-neutral-800"></div>
+      </div>
+
+      <div class="flex flex-col gap-3">
+        <div
+          *ngFor="let prestamo of getPrestamosAgrupados()[fecha].prestamos"
+          class="prest-card bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-[20px] overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
+        >
+          <div class="flex gap-4 p-4">
+            <div class="relative w-20 h-20 shrink-0">
+              <img
+                [src]="prestamo.imagen"
+                [alt]="prestamo.marca"
+                class="w-full h-full object-cover rounded-[14px]"
+              />
+              <span
+                class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-semibold px-2 py-0.5 rounded-full bg-black dark:bg-white text-white dark:text-black shadow-sm"
+              >
+                {{ prestamo.estado }}
+              </span>
+            </div>
+
+            <div class="flex flex-col gap-1.5 flex-1 min-w-0">
+              <h3
+                class="text-sm font-semibold text-black dark:text-white leading-snug truncate"
+              >
+                {{ prestamo.marca }} {{ prestamo.referencia }}
+              </h3>
+
+              <div class="flex items-center gap-3">
+                <span class="text-[11px] font-medium text-yellow-500"
+                  >Talla {{ prestamo.talla }}</span
+                >
+                <span
+                  class="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700"
+                ></span>
+                <span class="text-[11px] text-neutral-400 dark:text-neutral-500"
+                  >Cód. {{ prestamo.zapatoId }}</span
+                >
+              </div>
+
+              <p
+                class="text-[11px] text-neutral-400 dark:text-neutral-500 truncate"
+              >
+                Local: {{ prestamo.localPrestado || prestamo.local }}
+              </p>
+
+              <div class="flex items-center justify-between mt-1">
+                <span
+                  class="text-base font-bold text-black dark:text-white font-display"
+                >
+                  {{ prestamo.precio | currency: " " }}
+                </span>
+                <span
+                  *ngIf="prestamo.estado === 'devuelto'"
+                  class="text-[10px] px-2.5 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 font-medium"
+                >
+                  Devuelto
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 px-4 pb-4">
+            <button
+              (click)="confirmarDevolucion(prestamo)"
+              [disabled]="botonesDeshabilitados.has(prestamo.id)"
+              class="h-10 rounded-[12px] border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-black dark:text-white text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-neutral-50 dark:hover:bg-neutral-700 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <i class="pi pi-refresh text-xs"></i>
+              Devolver a bodega
+            </button>
+            <button
+              (click)="registrarVenta(prestamo)"
+              [disabled]="botonesDeshabilitados.has(prestamo.id)"
+              class="h-10 rounded-[12px] bg-black dark:bg-white text-white dark:text-black text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-neutral-800 dark:hover:bg-neutral-100 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <i class="pi pi-dollar text-xs"></i>
+              Vender
+            </button>
+
+            <button
+              *ngIf="puedeDevolverALocal(prestamo)"
+              (click)="confirmarDevolucionLocal(prestamo)"
+              [disabled]="botonesDeshabilitados.has(prestamo.id)"
+              class="col-span-2 h-10 rounded-[12px] border border-amber-300 dark:border-amber-700/50 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-amber-100 dark:hover:bg-amber-900/30 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              <i class="pi pi-arrow-right-arrow-left text-xs"></i>
+              Devolver a local ({{ prestamo.localSalido }})
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    (click)="scrollToTop()"
+    class="fixed bottom-3 right-6 z-50 w-12 h-12 rounded-full bg-yellow-600 text-white dark:text-black flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
+  >
+    <svg
+      class="w-5 h-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+    >
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+</div>
+
+<div
+  *ngIf="mostrarModalVenta"
+  class="fixed inset-0 z-[100] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0 modal-overlay-in"
+  (click)="cerrarModalVenta()"
+>
+  <div
+    class="w-full sm:max-w-xl bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] max-h-[90vh] overflow-y-auto shadow-2xl modal-sheet-in"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-modal-venta
+      [visible]="mostrarModalVenta"
+      [pedido]="prestamoSeleccionado"
+      [precioMinimoVenta]="
+        validarRestriccionPrecio ? (prestamoSeleccionado?.precio ?? null) : null
+      "
+      (cerrar)="cerrarModalVenta()"
+      (confirmar)="confirmarVenta($event)"
+    ></app-modal-venta>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarConfirmacion"
+  class="fixed inset-0 z-50 flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0 modal-overlay-in"
+  (click)="cancelarDevolucion()"
+>
+  <div
+    class="w-full max-w-sm bg-white dark:bg-neutral-900 rounded-[28px] shadow-2xl overflow-hidden modal-sheet-in"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex justify-center pt-4">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+
+    <div class="px-8 py-6 flex flex-col gap-5">
+      <h2
+        class="text-lg font-bold text-black dark:text-white text-center font-display"
+      >
+        {{
+          tipoDevolucion === "local"
+            ? "Confirmar devolución a local"
+            : "Confirmar devolución"
+        }}
+      </h2>
+
+      <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center">
+        {{
+          tipoDevolucion === "local"
+            ? "¿Seguro que deseas devolver este zapato a " +
+              prestamoADevolver.localSalido +
+              "?"
+            : "¿Seguro que deseas devolver este zapato a bodega?"
+        }}
+      </p>
+
+      <!-- el bloque con imagen/marca/referencia/talla queda igual -->
+
+      <div class="flex flex-col gap-2 mt-1">
+        <button
+          (click)="aceptarDevolucion()"
+          class="w-full py-3 rounded-full bg-black dark:bg-white text-white dark:text-black text-sm font-semibold hover:bg-neutral-800 dark:hover:bg-neutral-100 active:scale-[0.98] transition-all duration-200"
+        >
+          Confirmar devolución
+        </button>
+        <button
+          (click)="cancelarDevolucion()"
+          class="w-full py-3 rounded-full border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 text-sm hover:border-neutral-400 active:scale-[0.98] transition-all duration-200"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

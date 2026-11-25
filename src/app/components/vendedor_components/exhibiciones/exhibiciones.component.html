@@ -1,0 +1,1410 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '64px' },
+  }"
+></p-toast>
+
+<div *ngIf="loading" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-md px-4 text-neutral-900 dark:text-white">
+  <app-ia-loader detalle="ShoeShop" [mensajes]="['Conectando con tus datos…', 'Cargando exhibiciones…', 'Casi listo…']"></app-ia-loader>
+</div>
+
+<div class="min-h-screen bg-neutral-50 dark:bg-black">
+  <div
+    *ngIf="visibilityService.reconectando$ | async"
+    class="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800/50 px-5 py-2.5 flex items-center justify-center gap-2.5"
+    role="status"
+  >
+    <app-ia-spinner class="text-amber-500 text-xs"></app-ia-spinner>
+    <span class="text-xs font-semibold text-amber-700 dark:text-amber-400">
+      Actualizando exhibiciones desde el servidor…
+    </span>
+  </div>
+
+  <!-- Encabezado de página -->
+  <div
+    class="bg-white dark:bg-neutral-950 border-b border-neutral-200 dark:border-neutral-900"
+  >
+    <div
+      class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-10 pt-8 pb-6 flex flex-col gap-6"
+    >
+      <div class="flex flex-col gap-1.5">
+        <h1
+          class="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900 dark:text-white"
+        >
+          Exhibiciones
+        </h1>
+        <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl">
+          Consulta qué referencias están exhibidas en cada local, solicítalas a
+          otro local y gestiona ventas, préstamos y cambios. Cada movimiento
+          queda registrado y auditado.
+        </p>
+      </div>
+
+      <dl class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div
+          class="rounded-xl p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+        >
+          <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+            Exhibiciones totales
+          </dt>
+          <dd
+            class="mt-1 text-2xl font-bold tabular-nums text-neutral-900 dark:text-white"
+          >
+            {{ allShoes?.length || 0 }}
+          </dd>
+        </div>
+        <div
+          class="rounded-xl p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+        >
+          <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+            Requieren atención
+          </dt>
+          <dd
+            class="mt-1 text-2xl font-bold tabular-nums"
+            [ngClass]="
+              exhibicionesPendientes.length > 0
+                ? 'text-red-600 dark:text-red-400'
+                : 'text-neutral-900 dark:text-white'
+            "
+          >
+            {{ exhibicionesPendientes.length }}
+          </dd>
+        </div>
+        <div
+          class="rounded-xl p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+        >
+          <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+            Por recibir
+          </dt>
+          <dd
+            class="mt-1 text-2xl font-bold tabular-nums"
+            [ngClass]="
+              exhibicionesPendientesRecibir.length > 0
+                ? 'text-amber-600 dark:text-amber-400'
+                : 'text-neutral-900 dark:text-white'
+            "
+          >
+            {{ exhibicionesPendientesRecibir.length }}
+          </dd>
+        </div>
+        <div
+          class="rounded-xl p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+        >
+          <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+            En esta búsqueda
+          </dt>
+          <dd
+            class="mt-1 text-2xl font-bold tabular-nums text-neutral-900 dark:text-white"
+          >
+            {{ filteredShoes?.length || 0 }}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <div
+    class="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-10 py-8 flex flex-col gap-10"
+  >
+    <!-- Requieren atención -->
+    <section
+      *ngIf="exhibicionesPendientes.length > 0"
+      class="flex flex-col gap-4"
+    >
+      <div class="flex items-center gap-3">
+        <span
+          class="w-2 h-2 rounded-full bg-red-500 shrink-0 animate-pulse"
+        ></span>
+        <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">
+          Requieren atención
+        </h2>
+        <span
+          class="text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 px-2.5 py-0.5 rounded-full"
+        >
+          {{ exhibicionesPendientes.length }}
+        </span>
+      </div>
+
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+      >
+        <ng-container *ngFor="let shoe of exhibicionesPendientes">
+          <ng-container
+            *ngIf="
+              shoe.estado !== 'prestamo aceptado' ||
+              isLocalMatch(shoe.localPedido)
+            "
+          >
+            <article
+              class="exh-card group flex flex-col bg-white dark:bg-neutral-950 rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 border-l-4"
+              [ngClass]="{
+                'border-l-red-500': shoe.estado === 'solicitado',
+                'border-l-emerald-500': shoe.estado === 'prestamo aceptado',
+                'border-l-blue-500': shoe.estado === 'pendiente devolucion',
+              }"
+            >
+              <div
+                class="relative aspect-[4/3] overflow-hidden bg-gradient-to-b from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-950 shrink-0"
+              >
+                <img
+                  [src]="shoe.imagen"
+                  alt="{{ shoe.marca }} {{ shoe.referencia }}"
+                  loading="lazy"
+                  class="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+                />
+                <span
+                  class="absolute top-3 left-3 text-[11px] font-semibold px-2.5 py-1 rounded-md capitalize"
+                  [ngClass]="{
+                    'bg-red-500 text-white': shoe.estado === 'solicitado',
+                    'bg-emerald-500 text-white':
+                      shoe.estado === 'prestamo aceptado',
+                    'bg-blue-500 text-white':
+                      shoe.estado === 'pendiente devolucion',
+                  }"
+                  >{{ shoe.estado }}</span
+                >
+                <span
+                  class="absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-md bg-white/95 dark:bg-black/80 text-neutral-900 dark:text-white shadow-sm"
+                >
+                  Talla {{ shoe.talla }}
+                </span>
+              </div>
+
+              <div class="p-4 flex flex-col gap-3 flex-1">
+                <div>
+                  <p
+                    class="text-sm font-bold text-neutral-900 dark:text-white leading-tight"
+                  >
+                    {{ shoe.marca }} {{ shoe.referencia }}
+                  </p>
+                  <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                    Código {{ shoe.zapatoId }}
+                  </p>
+                </div>
+
+                <div
+                  *ngIf="shoe.localOriginal?.length"
+                  class="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-300"
+                >
+                  <i class="pi pi-map-marker text-[11px] text-neutral-400"></i>
+                  {{ shoe.localOriginal.join(", ") }}
+                </div>
+
+                <p
+                  *ngIf="
+                    shoe.estado === 'solicitado' &&
+                    isLocalMatch(shoe.localPedido)
+                  "
+                  class="text-xs font-semibold text-orange-600 dark:text-orange-400"
+                >
+                  Zapato solicitado
+                  <span
+                    class="block text-neutral-400 dark:text-neutral-500 font-normal mt-0.5"
+                    >{{ shoe.fechaPedido }}</span
+                  >
+                </p>
+
+                <p
+                  *ngIf="
+                    shoe.estado === 'prestamo aceptado' &&
+                    isLocalMatch(shoe.localPedido)
+                  "
+                  class="text-xs font-semibold text-emerald-600 dark:text-emerald-400"
+                >
+                  Aceptado por {{ shoe.vendedorAceptado }}
+                  <span
+                    class="block text-neutral-400 dark:text-neutral-500 font-normal mt-0.5"
+                    >{{ shoe.fechaAceptado }}</span
+                  >
+                </p>
+
+                <p
+                  *ngIf="shoe.estado === 'pendiente devolucion'"
+                  class="text-xs font-semibold text-blue-600 dark:text-blue-400"
+                >
+                  Pendiente desde {{ shoe.localOriginal.join(", ") }}
+                  <span
+                    class="block text-neutral-400 dark:text-neutral-500 font-normal mt-0.5"
+                    >{{ shoe.fechaDevuelto }}</span
+                  >
+                </p>
+
+                <div
+                  *ngIf="visibilityService.reconectando$ | async"
+                  class="flex items-center gap-1.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400"
+                >
+                  <app-ia-spinner class="text-[10px]"></app-ia-spinner>
+                  Actualizando…
+                </div>
+
+                <div
+                  *ngIf="shoe.pendienteRecibir; else accionesPendienteAtencion"
+                  class="mt-auto flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200/70 dark:border-amber-500/20"
+                >
+                  <i class="pi pi-clock text-amber-500 text-sm shrink-0"></i>
+                  <p
+                    class="text-[11px] font-semibold text-amber-700 dark:text-amber-400 leading-snug"
+                  >
+                    Pendiente por recibir por el vendedor
+                  </p>
+                </div>
+
+                <ng-template #accionesPendienteAtencion>
+                  <div class="flex flex-wrap gap-2 mt-auto pt-1">
+                    <button
+                      *ngIf="
+                        shoe.estado === 'solicitado' &&
+                        isLocalMatch(shoe.localOriginal)
+                      "
+                      (click)="aceptarPrestamo(shoe)"
+                      [disabled]="
+                        (visibilityService.reconectando$ | async) ||
+                        procesandoAccion
+                      "
+                      class="exh-btn exh-btn-success flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <i class="pi pi-check text-[11px]"></i>
+                      {{
+                        (visibilityService.reconectando$ | async)
+                          ? "Espera..."
+                          : "Aceptar"
+                      }}
+                    </button>
+
+                    <button
+                      *ngIf="
+                        shoe.estado === 'pendiente devolucion' &&
+                        isLocalMatch(shoe.locales)
+                      "
+                      (click)="aceptarDevolucion(shoe)"
+                      [disabled]="
+                        (visibilityService.reconectando$ | async) ||
+                        procesandoAccion
+                      "
+                      class="exh-btn exh-btn-info flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <i class="pi pi-inbox text-[11px]"></i>
+                      {{
+                        (visibilityService.reconectando$ | async)
+                          ? "Espera..."
+                          : "Recibir"
+                      }}
+                    </button>
+
+                    <ng-container
+                      *ngIf="
+                        shoe.estado === 'prestamo aceptado' &&
+                        isLocalMatch(shoe.localPedido)
+                      "
+                    >
+                      <button
+                        (click)="abrirModalVenta(shoe)"
+                        [disabled]="
+                          (visibilityService.reconectando$ | async) ||
+                          procesandoAccion
+                        "
+                        class="exh-btn exh-btn-gold flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {{
+                          (visibilityService.reconectando$ | async)
+                            ? "Espera..."
+                            : "Vender"
+                        }}
+                      </button>
+
+                      <button
+                        (click)="abrirModalPrestamo(shoe)"
+                        [disabled]="
+                          (visibilityService.reconectando$ | async) ||
+                          procesandoAccion ||
+                          !user?.prestamosActivos?.value
+                        "
+                        class="exh-btn exh-btn-success flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {{
+                          (visibilityService.reconectando$ | async)
+                            ? "Espera..."
+                            : "Prestar"
+                        }}
+                      </button>
+
+                      <button
+                        #btn
+                        (click)="realizarCambioExhibicion(shoe, btn)"
+                        [disabled]="
+                          (visibilityService.reconectando$ | async) ||
+                          procesandoAccion
+                        "
+                        class="exh-btn exh-btn-neutral flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {{
+                          (visibilityService.reconectando$ | async)
+                            ? "Espera..."
+                            : "Cambio"
+                        }}
+                      </button>
+
+                      <button
+                        (click)="devolverAlLocal(shoe)"
+                        [disabled]="
+                          (visibilityService.reconectando$ | async) ||
+                          procesandoAccion
+                        "
+                        class="exh-btn exh-btn-danger flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {{
+                          (visibilityService.reconectando$ | async)
+                            ? "Espera..."
+                            : "Devolver"
+                        }}
+                      </button>
+                    </ng-container>
+                  </div>
+                </ng-template>
+              </div>
+            </article>
+          </ng-container>
+        </ng-container>
+      </div>
+    </section>
+
+    <!-- Catálogo -->
+    <section class="flex flex-col gap-5">
+      <h2 class="text-lg font-semibold text-neutral-900 dark:text-white">
+        Catálogo de exhibiciones
+      </h2>
+
+      <div
+        class="lg:sticky lg:top-16 z-20 rounded-2xl lg:rounded-none lg:-mx-10 px-4 sm:px-5 lg:px-10 py-4 bg-white dark:bg-neutral-950 lg:bg-neutral-50/95 lg:dark:bg-black/95 border border-neutral-200 dark:border-neutral-800 lg:border-x-0 lg:backdrop-blur-md"
+      >
+        <div class="exh-filtros">
+          <div class="exh-campo">
+            <label
+              for="exh-codigo"
+              class="text-xs font-semibold text-neutral-700 dark:text-neutral-300"
+              >Código</label
+            >
+            <div class="exh-codigo-row">
+              <input
+                id="exh-codigo"
+                type="text"
+                inputmode="numeric"
+                placeholder="Ej: 103"
+                [(ngModel)]="searchCode"
+                (input)="onSearchCodeChange()"
+                class="exh-input"
+              />
+              <button
+                type="button"
+                (click)="abrirEscaner()"
+                title="Escanear QR"
+                aria-label="Escanear QR"
+                class="exh-qr flex items-center gap-2 px-3.5 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-black text-sm font-semibold hover:bg-neutral-700 dark:hover:bg-neutral-200 active:scale-95 transition-all whitespace-nowrap"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <rect x="14" y="14" width="3" height="3" />
+                  <rect x="18" y="14" width="3" height="3" />
+                  <rect x="14" y="18" width="3" height="3" />
+                  <rect x="18" y="18" width="3" height="3" />
+                </svg>
+                <span class="hidden sm:inline">Escanear QR</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="exh-campo">
+            <label
+              for="exh-buscar"
+              class="text-xs font-semibold text-neutral-700 dark:text-neutral-300 whitespace-nowrap"
+              >Marca o referencia</label
+            >
+            <input
+              id="exh-buscar"
+              type="text"
+              placeholder="Buscar…"
+              [(ngModel)]="searchText"
+              (input)="onSearchChange()"
+              class="exh-input"
+            />
+          </div>
+
+          <div class="exh-campo">
+            <label
+              for="exh-local"
+              class="text-xs font-semibold text-neutral-700 dark:text-neutral-300"
+              >Local</label
+            >
+            <select
+              id="exh-local"
+              [(ngModel)]="selectedLocal"
+              (change)="aplicarFiltro()"
+              class="exh-input"
+            >
+              <option value="todos">Todos los locales</option>
+              <option *ngFor="let local of locales" [value]="local.nombre">
+                {{ local.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <button
+            type="button"
+            (click)="limpiarFiltros()"
+            class="exh-limpiar"
+          >
+            <i class="pi pi-times text-xs"></i>
+            Limpiar
+          </button>
+        </div>
+      </div>
+
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+      >
+        <ng-container *ngFor="let shoe of visibleShoes">
+          <article
+            class="exh-card group flex flex-col bg-white dark:bg-neutral-950 rounded-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 hover:shadow-lg hover:shadow-black/5"
+          >
+            <div
+              class="relative aspect-[4/3] overflow-hidden bg-gradient-to-b from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-950 shrink-0"
+            >
+              <img
+                [src]="shoe.imagen"
+                alt="{{ shoe.marca }} {{ shoe.referencia }}"
+                loading="lazy"
+                class="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+              />
+              <span
+                *ngIf="shoe.estado && shoe.estado !== 'disponible'"
+                class="absolute top-3 left-3 text-[11px] font-semibold px-2.5 py-1 rounded-md bg-neutral-900 dark:bg-white text-white dark:text-black capitalize"
+                >{{ shoe.estado }}</span
+              >
+              <span
+                class="absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-md bg-white/95 dark:bg-black/80 text-neutral-900 dark:text-white shadow-sm"
+              >
+                Talla {{ shoe.talla }}
+              </span>
+            </div>
+
+            <div class="p-4 flex flex-col gap-3 flex-1">
+              <div>
+                <p
+                  class="text-sm font-bold text-neutral-900 dark:text-white leading-tight"
+                >
+                  {{ shoe.marca }} {{ shoe.referencia }}
+                </p>
+                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                  Código {{ shoe.zapatoId }}
+                </p>
+              </div>
+
+              <div
+                *ngIf="shoe.locales?.length"
+                class="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-300"
+              >
+                <i class="pi pi-map-marker text-[11px] text-neutral-400"></i>
+                {{ shoe.locales.join(", ") }}
+              </div>
+
+              <p
+                *ngIf="shoe.estado === 'solicitado'"
+                class="text-xs font-semibold text-orange-600 dark:text-orange-400"
+              >
+                Solicitado por {{ shoe.vendedor }}
+                <span class="block text-neutral-400 font-normal">{{
+                  shoe.localPedido
+                }}</span>
+              </p>
+
+              <p
+                *ngIf="shoe.estado === 'prestamo aceptado'"
+                class="text-xs font-semibold text-emerald-600 dark:text-emerald-400"
+              >
+                Prestado a {{ shoe.vendedor }}
+                <span class="block text-neutral-400 font-normal">{{
+                  shoe.localPedido
+                }}</span>
+              </p>
+
+              <div
+                *ngIf="shoe.pendienteRecibir; else accionesCatalogo"
+                class="mt-auto flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200/70 dark:border-amber-500/20"
+              >
+                <i class="pi pi-clock text-amber-500 text-sm shrink-0"></i>
+                <p
+                  class="text-[11px] font-semibold text-amber-700 dark:text-amber-400 leading-snug"
+                >
+                  Pendiente por recibir por el vendedor
+                </p>
+              </div>
+
+              <ng-template #accionesCatalogo>
+                <div class="flex flex-wrap gap-2 mt-auto pt-1">
+                  <ng-container
+                    *ngIf="!shoe.estado || shoe.estado === 'disponible'"
+                  >
+                    <ng-container
+                      *ngIf="isLocalMatch(shoe.locales); else solicitar"
+                    >
+                      <button
+                        (click)="abrirConfirmacion(shoe, 'vender')"
+                        [disabled]="
+                          (visibilityService.reconectando$ | async) ||
+                          procesandoAccion
+                        "
+                        class="exh-btn exh-btn-gold flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {{
+                          (visibilityService.reconectando$ | async)
+                            ? "Espera..."
+                            : "Vender"
+                        }}
+                      </button>
+
+                      <button
+                        (click)="abrirConfirmacion(shoe, 'prestar')"
+                        [disabled]="
+                          (visibilityService.reconectando$ | async) ||
+                          procesandoAccion ||
+                          !user?.prestamosActivos?.value
+                        "
+                        class="exh-btn exh-btn-success flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {{
+                          (visibilityService.reconectando$ | async)
+                            ? "Espera..."
+                            : "Prestar"
+                        }}
+                      </button>
+
+                      <button
+                        #btnCambio
+                        (click)="abrirConfirmacion(shoe, 'cambio')"
+                        [disabled]="
+                          (visibilityService.reconectando$ | async) ||
+                          procesandoAccion
+                        "
+                        class="exh-btn exh-btn-neutral flex-1 disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {{
+                          (visibilityService.reconectando$ | async)
+                            ? "Espera..."
+                            : "Cambio"
+                        }}
+                      </button>
+                    </ng-container>
+
+                    <ng-template #solicitar>
+                      <button
+                        (click)="solicitarExhibicion(shoe)"
+                        [disabled]="
+                          (visibilityService.reconectando$ | async) ||
+                          procesandoAccion
+                        "
+                        class="exh-btn exh-btn-outline w-full disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        {{
+                          (visibilityService.reconectando$ | async)
+                            ? "Espera..."
+                            : "Solicitar exhibición"
+                        }}
+                      </button>
+                    </ng-template>
+                  </ng-container>
+                </div>
+              </ng-template>
+            </div>
+          </article>
+        </ng-container>
+
+        <div
+          *ngIf="filteredShoes?.length === 0"
+          class="col-span-full flex flex-col items-center justify-center py-20 gap-4 text-center rounded-2xl border border-dashed border-neutral-300 dark:border-neutral-800"
+        >
+          <div
+            class="w-14 h-14 rounded-2xl bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center"
+          >
+            <i class="pi pi-box text-2xl text-neutral-400 dark:text-neutral-600"></i>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-neutral-900 dark:text-white">
+              No hay exhibiciones con estos filtros
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              Cambia el local, la marca o el código, o quita los filtros.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center gap-3 pt-4" *ngIf="hayMas()">
+        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+          Mostrando {{ visibleShoes.length }} de {{ filteredShoes.length }}
+        </p>
+        <button
+          (click)="verMas()"
+          class="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-black text-sm font-semibold hover:bg-neutral-700 dark:hover:bg-neutral-200 active:scale-[0.97] transition-all"
+        >
+          Cargar más exhibiciones
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <button
+    (click)="scrollToTop()"
+    class="fixed bottom-6 right-5 z-30 w-11 h-11 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all"
+    aria-label="Ir arriba"
+  >
+    <svg
+      class="w-4 h-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+    >
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+
+  <button
+    *ngIf="exhibicionesPendientesRecibir.length > 0"
+    (click)="abrirModalRecepcion()"
+    class="recepcion-fab fixed right-0 top-1/2 -translate-y-1/2 z-40 flex items-center gap-2 pl-3 pr-2.5 py-3 rounded-l-2xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 shadow-xl shadow-black/20 hover:pr-3.5 active:scale-95 transition-all duration-200"
+    aria-label="Ver exhibiciones pendientes por recibir"
+  >
+    <i class="pi pi-inbox text-base"></i>
+    <span
+      class="flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-amber-500 text-white text-[11px] font-bold"
+    >
+      {{ exhibicionesPendientesRecibir.length }}
+    </span>
+  </button>
+</div>
+
+<div
+  *ngIf="mostrarModalVenta"
+  class="fixed inset-0 z-[50] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
+  (click)="cerrarModalVenta()"
+>
+  <div
+    class="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
+  ></div>
+  <div
+    class="relative z-10 w-full sm:max-w-xl bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] max-h-[90vh] overflow-y-auto shadow-2xl border border-neutral-100 dark:border-neutral-900"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-modal-venta
+      [visible]="mostrarModalVenta"
+      [pedido]="pedidoSeleccionado"
+      [exhibicion]="true"
+      [validarPrecioMinimoProducto]="validarRestriccionPrecio"
+      (cerrar)="cerrarModalVenta()"
+      (confirmar)="confirmarVenta($event)"
+    ></app-modal-venta>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalPrestamo"
+  class="fixed inset-0 z-[50] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
+  (click)="cerrarModalPrestamo()"
+>
+  <div
+    class="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
+  ></div>
+  <div
+    class="relative z-10 w-full sm:max-w-xl bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] max-h-[90vh] overflow-y-auto shadow-2xl border border-neutral-100 dark:border-neutral-900"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-modal-prestamo
+      [visible]="mostrarModalPrestamo"
+      [pedido]="pedidoSeleccionado"
+      [exhibicion]="true"
+      [plMinimo]="plSeleccionado"
+      (cerrar)="cerrarModalPrestamo()"
+      (confirmar)="confirmarPrestamo($event)"
+    ></app-modal-prestamo>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalCambio"
+  class="fixed inset-0 z-[50] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
+  (click)="cerrarModalCambio()"
+>
+  <div
+    class="absolute inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
+  ></div>
+  <div
+    class="relative z-10 w-full sm:max-w-3xl bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] max-h-[90vh] overflow-y-auto shadow-2xl border border-neutral-100 dark:border-neutral-900"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+    <app-cambios
+      [pedido]="exhibicionSeleccionada"
+      (procesarCambio)="manejarCambioExhibicion($event)"
+      (cancelar)="cerrarModalCambio()"
+    ></app-cambios>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalConfirmacion"
+  class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
+  (click)="cancelarConfirmacion()"
+>
+  <div
+    class="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm"
+  ></div>
+  <div
+    class="relative z-10 w-full sm:max-w-md bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] shadow-2xl p-6 flex flex-col gap-6 border border-neutral-100 dark:border-neutral-900"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center -mt-2">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+
+    <div
+      class="relative w-full h-48 rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 shrink-0"
+    >
+      <img
+        [src]="shoePendiente?.imagen"
+        alt="{{ shoePendiente?.marca }}"
+        class="w-full h-full object-cover"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"
+      ></div>
+      <div
+        class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-white dark:bg-neutral-900 shadow-lg flex items-center justify-center text-sm font-black text-yellow-600 dark:text-yellow-500"
+      >
+        {{ shoePendiente?.talla }}
+      </div>
+      <span
+        class="absolute top-3 left-3 text-[10px] uppercase tracking-[0.15em] font-bold px-2.5 py-1 rounded-full"
+        [ngClass]="{
+          'bg-yellow-500 text-neutral-900': accionPendiente === 'vender',
+          'bg-emerald-500 text-white': accionPendiente === 'prestar',
+          'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900':
+            accionPendiente === 'cambio',
+        }"
+        >{{ accionPendiente | titlecase }}</span
+      >
+    </div>
+
+    <div class="flex flex-col items-center gap-2 text-center">
+      <p
+        class="text-base font-bold text-neutral-900 dark:text-white leading-tight"
+      >
+        {{ shoePendiente?.marca }}
+        <span class="font-normal text-neutral-400 dark:text-neutral-600"
+          >·</span
+        >
+        {{ shoePendiente?.referencia }}
+      </p>
+
+      <p class="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+        ¿Seguro que deseas
+        <span
+          class="font-bold"
+          [ngClass]="{
+            'text-yellow-600 dark:text-yellow-400':
+              accionPendiente === 'vender',
+            'text-emerald-600 dark:text-emerald-400':
+              accionPendiente === 'prestar',
+            'text-neutral-900 dark:text-neutral-200':
+              accionPendiente === 'cambio',
+          }"
+          >{{ accionPendiente | titlecase }}</span
+        >
+        con la exhibición del local?
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-2 mt-1">
+        <span
+          *ngFor="let local of shoePendiente?.locales"
+          class="text-base font-black text-neutral-900 dark:text-white bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 rounded-xl tracking-tight"
+          >{{ local }}</span
+        >
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <button
+        (click)="cancelarConfirmacion()"
+        class="flex-1 py-3.5 rounded-2xl border border-neutral-200 dark:border-neutral-800 text-sm font-bold text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors duration-150"
+      >
+        Cancelar
+      </button>
+      <button
+        (click)="confirmarAccion()"
+        class="flex-1 py-3.5 rounded-2xl text-sm font-bold transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
+        [ngClass]="{
+          'bg-yellow-500 text-neutral-900': accionPendiente === 'vender',
+          'bg-emerald-500 text-white': accionPendiente === 'prestar',
+          'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900':
+            accionPendiente === 'cambio',
+        }"
+      >
+        Confirmar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarEscaner"
+  class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-sm"
+  (click)="cerrarEscaner()"
+>
+  <div
+    class="relative w-full max-w-sm mx-5 rounded-[28px] overflow-hidden bg-neutral-950 border border-yellow-500/20 shadow-2xl shadow-yellow-500/10"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center"
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#EAB308"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="3" height="3" />
+            <rect x="18" y="14" width="3" height="3" />
+            <rect x="14" y="18" width="3" height="3" />
+            <rect x="18" y="18" width="3" height="3" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-white leading-none">Escanear QR</p>
+          <p class="text-[10px] text-neutral-500 mt-0.5 font-medium">
+            Apunta al código del producto
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="cerrarEscaner()"
+        class="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-400 transition-colors"
+        aria-label="Cerrar escáner"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="relative aspect-square w-full bg-neutral-950">
+      <video
+        #videoEl
+        class="w-full h-full object-cover"
+        autoplay
+        playsinline
+        muted
+      ></video>
+      <canvas #canvasEl class="hidden"></canvas>
+
+      <div
+        class="absolute inset-0 flex items-center justify-center pointer-events-none"
+      >
+        <div class="relative w-56 h-56">
+          <span
+            class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-yellow-500 rounded-tl-lg"
+          ></span>
+          <span
+            class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-yellow-500 rounded-tr-lg"
+          ></span>
+          <span
+            class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-yellow-500 rounded-bl-lg"
+          ></span>
+          <span
+            class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-yellow-500 rounded-br-lg"
+          ></span>
+          <span
+            class="qr-scan-beam absolute inset-x-2 h-0.5 bg-yellow-500/70 rounded-full shadow-sm shadow-yellow-500/50"
+          ></span>
+        </div>
+      </div>
+
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="
+          background: radial-gradient(
+            ellipse 230px 230px at center,
+            transparent 48%,
+            rgba(0, 0, 0, 0.6) 100%
+          );
+        "
+      ></div>
+    </div>
+
+    <div class="px-5 py-4">
+      <div
+        *ngIf="qrError"
+        class="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs mb-3"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        {{ qrError }}
+      </div>
+      <div
+        *ngIf="!qrError"
+        class="flex items-center justify-center gap-2 text-neutral-500 text-xs font-medium"
+      >
+        <span
+          class="w-1.5 h-1.5 rounded-full bg-yellow-500 ai-blink-dot"
+        ></span>
+        Detectando código QR en tiempo real…
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarModalRecepcion"
+  class="fixed inset-0 z-[70] flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0"
+  (click)="cerrarModalRecepcion()"
+>
+  <div
+    class="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm"
+  ></div>
+
+  <div
+    class="relative z-10 w-full sm:max-w-lg bg-white dark:bg-neutral-950 rounded-t-[28px] sm:rounded-[28px] max-h-[88vh] overflow-y-auto shadow-2xl border border-neutral-100 dark:border-neutral-900 flex flex-col"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="sm:hidden flex justify-center pt-3 pb-1 shrink-0">
+      <div
+        class="w-9 h-1 rounded-full bg-neutral-200 dark:bg-neutral-700"
+      ></div>
+    </div>
+
+    <div
+      class="flex items-center justify-between gap-3 px-5 sm:px-6 py-4 border-b border-neutral-100 dark:border-neutral-900 shrink-0"
+    >
+      <div class="flex items-center gap-3 min-w-0">
+        <div
+          class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0"
+        >
+          <i class="pi pi-inbox text-amber-500 text-sm"></i>
+        </div>
+        <div class="min-w-0">
+          <p
+            class="text-sm font-bold text-neutral-900 dark:text-white leading-none"
+          >
+            {{
+              exhibicionRecibiendo
+                ? "Recibir exhibición"
+                : "Pendientes por recibir"
+            }}
+          </p>
+          <p
+            class="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5 font-medium"
+          >
+            {{
+              exhibicionRecibiendo
+                ? "Escanea o ingresa el código"
+                : "En tu local"
+            }}
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="cerrarModalRecepcion()"
+        class="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 flex items-center justify-center text-neutral-500 dark:text-neutral-400 transition-colors shrink-0"
+        aria-label="Cerrar"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div
+      *ngIf="!exhibicionRecibiendo"
+      class="flex flex-col gap-3 p-5 sm:p-6 overflow-y-auto"
+    >
+      <div
+        *ngIf="exhibicionesPendientesRecibir.length === 0"
+        class="flex flex-col items-center justify-center py-12 gap-3 text-center"
+      >
+        <div
+          class="w-14 h-14 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center"
+        >
+          <i
+            class="pi pi-check-circle text-xl text-neutral-300 dark:text-neutral-700"
+          ></i>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-neutral-900 dark:text-white">
+            Todo recibido
+          </p>
+          <p class="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
+            No hay exhibiciones pendientes por recibir en tu local
+          </p>
+        </div>
+      </div>
+
+      <div
+        *ngFor="let shoe of exhibicionesPendientesRecibir"
+        class="flex items-center gap-3 p-3 rounded-2xl border border-neutral-200/70 dark:border-neutral-800/70 bg-neutral-50 dark:bg-neutral-900/60"
+      >
+        <div
+          class="relative w-14 h-14 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 shrink-0"
+        >
+          <img
+            [src]="shoe.imagen"
+            alt="{{ shoe.marca }}"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <p
+            class="text-sm font-bold text-neutral-900 dark:text-white leading-tight truncate"
+          >
+            {{ shoe.marca }}
+            <span class="font-normal text-neutral-400 dark:text-neutral-600"
+              >·</span
+            >
+            {{ shoe.referencia }}
+          </p>
+          <p
+            class="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5 font-medium"
+          >
+            Talla {{ shoe.talla }} · Código {{ shoe.zapatoId }}
+          </p>
+        </div>
+
+        <button
+          (click)="abrirDetalleRecepcion(shoe)"
+          class="exh-btn exh-btn-info shrink-0"
+        >
+          Recibir
+        </button>
+      </div>
+    </div>
+
+    <div
+      *ngIf="exhibicionRecibiendo"
+      class="flex flex-col gap-5 p-5 sm:p-6 overflow-y-auto"
+    >
+      <button
+        (click)="cerrarDetalleRecepcion()"
+        class="flex items-center gap-1.5 text-xs font-bold text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors self-start"
+      >
+        <i class="pi pi-arrow-left text-[10px]"></i>
+        Volver a la lista
+      </button>
+
+      <div
+        class="flex items-center gap-3 p-3 rounded-2xl border border-neutral-200/70 dark:border-neutral-800/70"
+      >
+        <div
+          class="relative w-16 h-16 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 shrink-0"
+        >
+          <img
+            [src]="exhibicionRecibiendo.imagen"
+            alt="{{ exhibicionRecibiendo.marca }}"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="min-w-0">
+          <p
+            class="text-sm font-bold text-neutral-900 dark:text-white leading-tight"
+          >
+            {{ exhibicionRecibiendo.marca }}
+            <span class="font-normal text-neutral-400 dark:text-neutral-600"
+              >·</span
+            >
+            {{ exhibicionRecibiendo.referencia }}
+          </p>
+          <p
+            class="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5 font-medium"
+          >
+            Talla {{ exhibicionRecibiendo.talla }} · Código
+            {{ exhibicionRecibiendo.zapatoId }}
+          </p>
+        </div>
+      </div>
+
+      <button
+        (click)="abrirEscanerRecepcion()"
+        [disabled]="procesandoRecepcion"
+        class="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-yellow-500 text-neutral-900 text-sm font-bold hover:bg-yellow-400 active:scale-[0.98] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="3" height="3" />
+          <rect x="18" y="14" width="3" height="3" />
+          <rect x="14" y="18" width="3" height="3" />
+          <rect x="18" y="18" width="3" height="3" />
+        </svg>
+        Escanear código QR
+      </button>
+
+      <div class="flex items-center gap-3">
+        <div class="flex-1 h-px bg-neutral-200 dark:bg-neutral-800"></div>
+        <span
+          class="text-[10px] uppercase tracking-[0.25em] font-bold text-neutral-400 dark:text-neutral-600"
+          >o</span
+        >
+        <div class="flex-1 h-px bg-neutral-200 dark:bg-neutral-800"></div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <label
+          class="text-[10px] uppercase tracking-[0.25em] font-bold text-neutral-400 dark:text-neutral-500"
+        >
+          Código del producto
+        </label>
+        <div class="flex gap-2">
+          <input
+            type="number"
+            inputmode="numeric"
+            placeholder="Ej: 6"
+            [(ngModel)]="codigoIngresado"
+            (keyup.enter)="confirmarCodigoManualRecepcion()"
+            [disabled]="procesandoRecepcion"
+            class="exh-input flex-1"
+          />
+          <button
+            (click)="confirmarCodigoManualRecepcion()"
+            [disabled]="procesandoRecepcion || !codigoIngresado"
+            class="exh-btn exh-btn-success px-5 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {{ procesandoRecepcion ? "Validando..." : "Confirmar" }}
+          </button>
+        </div>
+      </div>
+
+      <div
+        *ngIf="errorRecepcion"
+        class="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 text-xs font-medium"
+      >
+        <i class="pi pi-exclamation-circle text-sm shrink-0"></i>
+        {{ errorRecepcion }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="mostrarEscanerRecepcion"
+  class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/85 backdrop-blur-sm"
+  (click)="cerrarEscanerRecepcion()"
+>
+  <div
+    class="relative w-full max-w-sm mx-5 rounded-[28px] overflow-hidden bg-neutral-950 border border-yellow-500/20 shadow-2xl shadow-yellow-500/10"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center"
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#EAB308"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="3" height="3" />
+            <rect x="18" y="14" width="3" height="3" />
+            <rect x="14" y="18" width="3" height="3" />
+            <rect x="18" y="18" width="3" height="3" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-white leading-none">Escanear QR</p>
+          <p class="text-[10px] text-neutral-500 mt-0.5 font-medium">
+            Apunta al código del producto
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="cerrarEscanerRecepcion()"
+        class="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-400 transition-colors"
+        aria-label="Cerrar escáner"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="relative aspect-square w-full bg-neutral-950">
+      <video
+        #videoElRecepcion
+        class="w-full h-full object-cover"
+        autoplay
+        playsinline
+        muted
+      ></video>
+      <canvas #canvasElRecepcion class="hidden"></canvas>
+
+      <div
+        class="absolute inset-0 flex items-center justify-center pointer-events-none"
+      >
+        <div class="relative w-56 h-56">
+          <span
+            class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-yellow-500 rounded-tl-lg"
+          ></span>
+          <span
+            class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-yellow-500 rounded-tr-lg"
+          ></span>
+          <span
+            class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-yellow-500 rounded-bl-lg"
+          ></span>
+          <span
+            class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-yellow-500 rounded-br-lg"
+          ></span>
+          <span
+            class="qr-scan-beam absolute inset-x-2 h-0.5 bg-yellow-500/70 rounded-full shadow-sm shadow-yellow-500/50"
+          ></span>
+        </div>
+      </div>
+
+      <div
+        class="absolute inset-0 pointer-events-none"
+        style="
+          background: radial-gradient(
+            ellipse 230px 230px at center,
+            transparent 48%,
+            rgba(0, 0, 0, 0.6) 100%
+          );
+        "
+      ></div>
+    </div>
+
+    <div class="px-5 py-4">
+      <div
+        *ngIf="qrErrorRecepcion"
+        class="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs mb-3"
+      >
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        {{ qrErrorRecepcion }}
+      </div>
+      <div
+        *ngIf="!qrErrorRecepcion"
+        class="flex items-center justify-center gap-2 text-neutral-500 text-xs font-medium"
+      >
+        <span
+          class="w-1.5 h-1.5 rounded-full bg-yellow-500 ai-blink-dot"
+        ></span>
+        Detectando código QR en tiempo real…
+      </div>
+    </div>
+  </div>
+</div>

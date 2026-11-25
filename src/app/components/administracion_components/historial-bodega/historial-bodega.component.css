@@ -1,0 +1,136 @@
+.ios-spinner {
+    position: relative;
+    width: 36px;
+    height: 36px;
+}
+
+.ios-spinner span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2.5px;
+    height: 9px;
+    margin-left: -1.25px;
+    border-radius: 2px;
+    background: #9ca3af;
+    transform-origin: 50% 18px;
+    animation: ios-fade 1.2s linear infinite;
+}
+
+@keyframes ios-fade {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.1;
+    }
+}
+
+@keyframes loaderEnter {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.loader-enter {
+    animation: loaderEnter 0.2s ease forwards;
+}
+
+@keyframes itemEnter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.item-enter {
+    animation: itemEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+:host ::ng-deep .p-datepicker-panel {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12) !important;
+    overflow: hidden !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    :host ::ng-deep .p-datepicker-panel {
+        background: #111111 !important;
+        border-color: #1f2937 !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-header {
+        background: #111111 !important;
+        border-bottom-color: #1f2937 !important;
+        color: #ffffff !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-calendar td span {
+        color: #e5e7eb !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-calendar td span:hover {
+        background: #1f2937 !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-today span {
+        background: #1f2937 !important;
+        color: #ffffff !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-calendar td.p-datepicker-other-month span {
+        color: #4b5563 !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-select,
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-select-month,
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-select-year {
+        background: #1f2937 !important;
+        color: #ffffff !important;
+        border-color: #374151 !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-prev-button,
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-next-button {
+        color: #9ca3af !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-prev-button:hover,
+    :host ::ng-deep .p-datepicker-panel .p-datepicker-next-button:hover {
+        background: #1f2937 !important;
+        color: #ffffff !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-monthpicker-month {
+        color: #e5e7eb !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-monthpicker-month:hover {
+        background: #1f2937 !important;
+    }
+
+    :host ::ng-deep .p-datepicker-panel .p-monthpicker-month.p-datepicker-month-selected {
+        background: #ca8a04 !important;
+        color: #ffffff !important;
+    }
+}
+
+:host ::ng-deep .p-datepicker-panel .p-datepicker-day-selected span,
+:host ::ng-deep .p-datepicker-panel .p-highlight {
+    background: #ca8a04 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+}

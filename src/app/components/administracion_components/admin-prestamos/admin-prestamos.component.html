@@ -1,0 +1,94 @@
+<div style="min-height: 90vh">
+  <button
+    pButton
+    label="Volver"
+    icon="pi pi-arrow-left"
+    class="p-button-outlined m-6 my-3"
+    routerLink="/admin"
+  ></button>
+  <div class="p-4 pt-2">
+    <div class="flex justify-between items-center flex-wrap gap-4 mb-4">
+      <h2 class="text-xl font-semibold">Presstamos de Tennis</h2>
+      <p-select
+        [options]="locales"
+        [(ngModel)]="selectedLocal"
+        optionLabel="label"
+        placeholder="Filtrar por local"
+        class="w-64 md:w-72"
+      ></p-select>
+    </div>
+
+    <p-table
+      [value]="prestamosFiltrados"
+      [responsiveLayout]="'scroll'"
+      class="shadow rounded-xl"
+      [paginator]="true"
+      [rows]="5"
+      showGridlines
+      stripedRows
+      [resizableColumns]="true"
+      [rowsPerPageOptions]="[5, 10, 20]"
+    >
+      <ng-template pTemplate="header">
+        <tr class="text-sm text-left">
+          <th>Codigo</th>
+          <th>Imagen</th>
+          <th>Marca</th>
+          <th>Referencia</th>
+          <th>Talla</th>
+          <th>Local Inicio</th>
+          <th>Local Prestado</th>
+          <th>Precio</th>
+          <th>Fecha</th>
+          <th>Vendedor</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-prestamo>
+        <tr class="text-sm">
+          <td class="font-medium">{{ prestamo.zapatoId }}</td>
+          <td>
+            <img
+              [src]="prestamo.imagen"
+              alt=""
+              class="w-12 h-12 object-cover rounded-md"
+            />
+          </td>
+
+          <td>
+            <p-tag [value]="prestamo.marca" class="text-xs"></p-tag>
+          </td>
+          <td>{{ prestamo.referencia }}</td>
+          <td>{{ prestamo.talla }}</td>
+          <td>{{ prestamo.localInicio }}</td>
+          <td>{{ prestamo.localPrestado }}</td>
+          <td>
+            {{ prestamo.precio | currency: "COP " : "symbol" : "1.0-0" }}
+          </td>
+          <td>{{ prestamo.fechaPrestamo | date: "short" }}</td>
+          <td>{{ prestamo.vendedor }}</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <tr>
+          <td colspan="10" class="text-sm text-gray-500 p-2">
+            Total de préstamos: {{ prestamosFiltrados.length }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <button
+    (click)="scrollToTop()"
+    class="fixed bottom-3 right-6 z-50 w-12 h-12 rounded-full bg-yellow-600 text-white dark:text-black flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all duration-300"
+  >
+    <svg
+      class="w-5 h-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+    >
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  </button>
+</div>

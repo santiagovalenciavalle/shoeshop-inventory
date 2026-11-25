@@ -1,0 +1,169 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '95%', maxWidth: '600px' }"
+  [draggable]="false"
+  [closable]="true"
+  [dismissableMask]="true"
+>
+  <ng-template pTemplate="header">
+    <span class="text-lg font-semibold">Detalles de la Venta</span>
+  </ng-template>
+
+  <div
+    class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    *ngIf="productoDevuelto; else loadingSkeleton"
+  >
+    <div class="flex justify-center items-center">
+      <div
+        class="w-full aspect-square bg-gray-200 rounded-xl flex items-center justify-center overflow-hidden"
+      >
+        <img
+          *ngIf="productoDevuelto?.imagen"
+          [src]="productoDevuelto.imagen"
+          alt="Zapato"
+          class="object-cover w-full h-full"
+        />
+        <i
+          *ngIf="!productoDevuelto?.imagen"
+          class="pi pi-image text-4xl text-gray-400"
+        ></i>
+      </div>
+    </div>
+
+    <div class="space-y-4 text-sm">
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Referencia</span>
+        <span>
+          <i class="pi pi-tag mr-2"></i>
+          {{ productoDevuelto?.referencia || "—" }}
+        </span>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Fecha</span>
+        <span>
+          <i class="pi pi-calendar mr-2"></i>
+          {{
+            productoDevuelto?.fechaVenta
+              ? (productoDevuelto.fechaVenta | date: "dd/MM/yyyy")
+              : "—"
+          }}
+        </span>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <span>
+          <i class="pi pi-box mr-2"></i>
+          {{ productoDevuelto?.talla || "—" }}
+        </span>
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Talla</span>
+        <span>
+          <i class="pi pi-box mr-2"></i>
+          {{ productoDevuelto?.talla || "—" }}
+        </span>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Precios</span>
+        <span>
+          <i class="pi pi-dollar mr-2"></i>
+          {{
+            venta?.precioBono != null
+              ? (venta.precioBono | currency: "COP " : "symbol" : "1.0-0")
+              : "—"
+          }}
+        </span>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Vendedor</span>
+        <span>
+          <i class="pi pi-user mr-2"></i>
+          {{ productoDevuelto?.vendedor || "—" }}
+        </span>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Método de pago</span>
+        <span>
+          <i class="pi pi-credit-card mr-2"></i>
+          {{ productoDevuelto?.metodoPago || "—" }}
+        </span>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <span class="font-semibold">Estado</span>
+        <p-tag
+          [severity]="productoDevuelto ? 'success' : 'warning'"
+          [value]="productoDevuelto ? 'Completada' : 'Pendiente'"
+          class="text-xs"
+        ></p-tag>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingSkeleton>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex justify-center items-center">
+        <div class="w-full aspect-square rounded-xl overflow-hidden">
+          <p-skeleton
+            width="100%"
+            height="100%"
+            styleClass="p-wave w-full h-full"
+          ></p-skeleton>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-sm">
+        <p-skeleton
+          width="80%"
+          height="1.5rem"
+          styleClass="p-wave mb-5"
+        ></p-skeleton>
+        <p-skeleton
+          width="70%"
+          height="1.5rem"
+          styleClass="p-wave mb-5"
+        ></p-skeleton>
+        <p-skeleton
+          width="60%"
+          height="1.5rem"
+          styleClass="p-wave mb-5"
+        ></p-skeleton>
+        <p-skeleton
+          width="50%"
+          height="1.5rem"
+          styleClass="p-wave mb-5"
+        ></p-skeleton>
+        <p-skeleton
+          width="80%"
+          height="1.5rem"
+          styleClass="p-wave mb-5"
+        ></p-skeleton>
+        <p-skeleton
+          width="65%"
+          height="1.5rem"
+          styleClass="p-wave mb-5"
+        ></p-skeleton>
+        <p-skeleton
+          width="40%"
+          height="1.5rem"
+          styleClass="p-wave"
+        ></p-skeleton>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="button"
+      label="Cerrar"
+      (click)="cerrar()"
+      class="p-button-secondary"
+    ></button>
+  </ng-template>
+</p-dialog>

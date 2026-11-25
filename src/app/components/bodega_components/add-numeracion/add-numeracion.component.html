@@ -1,0 +1,163 @@
+<div
+  class="w-full font-sans bg-white dark:bg-[#1C1C1E] text-[#1D1D1F] dark:text-[#F5F5F7]"
+>
+  <p
+    class="text-[11px] font-medium tracking-[0.6px] uppercase text-[#AEAEB2] dark:text-[#6E6E73] mb-4"
+  >
+    Cantidad por talla
+  </p>
+
+  <div class="grid grid-cols-2 gap-2.5 mb-5">
+    <div
+      *ngFor="let talla of numbers"
+      class="size-item bg-[#F5F5F7] dark:bg-[#2C2C2E] border border-[#D2D2D7] dark:border-[#3A3A3C] rounded-xl p-3 transition-all duration-200 focus-within:border-[#B8986A] focus-within:ring-2 focus-within:ring-[#B8986A]/10"
+    >
+      <label
+        for="talla-{{ talla }}"
+        class="block text-[11px] font-medium tracking-[0.3px] text-[#6E6E73] dark:text-[#AEAEB2] mb-2 cursor-default select-none"
+      >
+        Talla {{ talla }}
+      </label>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          [disabled]="soloLectura"
+          (click)="values[talla] = values[talla] > 0 ? values[talla] - 1 : 0"
+          class="stepper-btn w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-base font-light leading-none bg-white dark:bg-[#1C1C1E] border border-[#D2D2D7] dark:border-[#3A3A3C] text-[#1D1D1F] dark:text-[#F5F5F7] transition-all duration-150 hover:border-[#B8986A] hover:bg-[#F5F5F7] dark:hover:bg-[#3A3A3C] active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer select-none"
+        >
+          −
+        </button>
+
+        <input
+          type="number"
+          id="talla-{{ talla }}"
+          [(ngModel)]="values[talla]"
+          [disabled]="soloLectura"
+          [min]="0"
+          class="flex-1 min-w-0 w-0 bg-transparent border-none outline-none text-center text-[15px] font-medium text-[#1D1D1F] dark:text-[#F5F5F7] disabled:text-[#6E6E73] dark:disabled:text-[#AEAEB2] [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        />
+
+        <button
+          type="button"
+          [disabled]="soloLectura"
+          (click)="values[talla] = values[talla] + 1"
+          class="stepper-btn w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-base font-light leading-none bg-white dark:bg-[#1C1C1E] border border-[#D2D2D7] dark:border-[#3A3A3C] text-[#1D1D1F] dark:text-[#F5F5F7] transition-all duration-150 hover:border-[#B8986A] hover:bg-[#F5F5F7] dark:hover:bg-[#3A3A3C] active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer select-none"
+        >
+          +
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="h-px bg-[#D2D2D7] dark:bg-[#3A3A3C] mb-4"></div>
+
+  <div class="flex items-center justify-between mb-5">
+    <span class="text-sm font-normal text-[#6E6E73] dark:text-[#AEAEB2]">
+      Cantidad total
+    </span>
+    <div class="flex items-baseline gap-1">
+      <span
+        class="text-[20px] font-semibold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]"
+      >
+        {{ total }}
+      </span>
+      <span class="text-xs font-normal text-[#AEAEB2] dark:text-[#6E6E73]">
+        uds.
+      </span>
+    </div>
+  </div>
+
+  <div class="h-px bg-[#D2D2D7] dark:bg-[#3A3A3C] mb-4"></div>
+
+  <div *ngIf="!soloLectura" class="flex items-center justify-end gap-2.5 pt-1">
+    <button
+      type="button"
+      (click)="cerrar.emit()"
+      class="apple-btn px-5 py-2.5 rounded-lg text-sm font-medium tracking-[-0.1px] border border-[#D2D2D7] dark:border-[#3A3A3C] bg-[#F5F5F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-[#F5F5F7] transition-all duration-150 hover:opacity-70 active:scale-[0.97] cursor-pointer"
+    >
+      Cancelar
+    </button>
+    <button
+      type="button"
+      (click)="guardar()"
+      [disabled]="guardando"
+      class="apple-btn px-5 py-2.5 rounded-lg text-sm font-medium tracking-[-0.1px] border-0 bg-[#B8986A] text-white transition-all duration-150 hover:bg-[#D4B483] active:scale-[0.97] disabled:opacity-60 disabled:cursor-not-allowed disabled:active:scale-100 cursor-pointer inline-flex items-center gap-2"
+    >
+      <svg
+        *ngIf="guardando"
+        class="w-4 h-4 animate-spin"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="3"
+        />
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        />
+      </svg>
+      {{ guardando ? "Guardando..." : "Guardar" }}
+    </button>
+  </div>
+
+  <div *ngIf="soloLectura" class="flex items-center justify-end pt-1">
+    <button
+      type="button"
+      (click)="cerrar.emit()"
+      class="apple-btn px-5 py-2.5 rounded-lg text-sm font-medium tracking-[-0.1px] border border-[#D2D2D7] dark:border-[#3A3A3C] bg-[#F5F5F7] dark:bg-[#2C2C2E] text-[#1D1D1F] dark:text-[#F5F5F7] transition-all duration-150 hover:opacity-70 active:scale-[0.97] cursor-pointer"
+    >
+      Cerrar
+    </button>
+  </div>
+</div>
+@if (modalImprimir()) {
+  <div class="modal-overlay">
+    <div class="modal-imprimir">
+      <h3>🖨️ Imprimir stickers</h3>
+
+      <p class="modal-sub">
+        Se imprimirá <strong>1 sticker por unidad</strong> con código QR
+      </p>
+
+      <div class="tallas-resumen">
+        @for (t of tallasGuardadas; track t.talla) {
+          <div class="talla-chip">
+            <span class="talla-num">T{{ t.talla }}</span>
+            <span class="talla-cant">× {{ t.cantidad }}</span>
+          </div>
+        }
+      </div>
+
+      Total stickers: <strong>{{ totalStickers }}</strong>
+
+      <div class="modal-actions">
+        <button
+          class="btn-omitir"
+          (click)="omitirImpresion()"
+          [disabled]="imprimiendo()"
+        >
+          Omitir
+        </button>
+        <button
+          class="btn-imprimir"
+          (click)="confirmarImpresion()"
+          [disabled]="imprimiendo()"
+        >
+          {{ imprimiendo() ? "⏳ Imprimiendo…" : "🖨️ Imprimir" }}
+        </button>
+      </div>
+
+      @if (imprimiendo()) {
+        <p class="imprimiendo-hint">No cierres esta ventana…</p>
+      }
+    </div>
+  </div>
+}

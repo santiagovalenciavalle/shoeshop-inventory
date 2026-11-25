@@ -1,0 +1,169 @@
+<div class="w-full flex flex-col gap-8 px-4 py-8">
+  <div class="flex flex-col gap-2 uv-fade" style="--d: 0s">
+    <div class="flex items-center gap-3">
+      <span class="w-5 h-px bg-yellow-500"></span>
+      <span
+        class="text-[10px] uppercase tracking-[0.3em] font-semibold text-neutral-400 dark:text-neutral-500"
+      >
+        Actividad
+      </span>
+    </div>
+    <h2
+      class="text-2xl font-bold text-black dark:text-white leading-tight tracking-tight"
+    >
+      Últimas ventas
+    </h2>
+    <p class="text-sm text-neutral-400 dark:text-neutral-500">
+      Resumen de tus 3 ventas más recientes
+    </p>
+  </div>
+
+  <div class="flex flex-col gap-3">
+    <ng-template #loadingSkeleton>
+      <div
+        *ngFor="let n of [1, 2, 3]; let i = index"
+        class="uv-fade flex items-center gap-4 p-4 rounded-[20px] bg-neutral-100 dark:bg-neutral-900/60 animate-pulse"
+        [style]="'--d:' + i * 0.08 + 's'"
+      >
+        <div
+          class="w-10 h-10 rounded-[10px] bg-neutral-200 dark:bg-neutral-800 shrink-0"
+        ></div>
+        <div class="flex-1 flex flex-col gap-2">
+          <div
+            class="h-3.5 w-2/3 bg-neutral-200 dark:bg-neutral-800 rounded-full"
+          ></div>
+          <div
+            class="h-3 w-1/2 bg-neutral-200/70 dark:bg-neutral-800/70 rounded-full"
+          ></div>
+        </div>
+        <div class="flex flex-col items-end gap-2 shrink-0">
+          <div
+            class="h-4 w-20 bg-neutral-200 dark:bg-neutral-800 rounded-full"
+          ></div>
+          <div
+            class="h-3 w-14 bg-neutral-200/70 dark:bg-neutral-800/70 rounded-full"
+          ></div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-container *ngIf="ventasRecientes?.length; else loadingSkeleton">
+      <div
+        *ngFor="let venta of ventasRecientes | slice: 0 : 3; let i = index"
+        class="uv-fade uv-row group flex flex-col sm:flex-row sm:items-center gap-3 bg-white dark:bg-neutral-900 rounded-[20px] p-4 border border-neutral-100/80 dark:border-neutral-800/60 hover:border-neutral-200 dark:hover:border-neutral-700 transition-all duration-200 cursor-default"
+        [style]="'--d:' + (i * 0.07 + 0.05) + 's'"
+      >
+        <div
+          class="shrink-0 w-10 h-10 rounded-[12px] flex items-center justify-center"
+          [ngClass]="{
+            'bg-emerald-50 dark:bg-emerald-500/10':
+              venta.tipoVenta.toLowerCase() === 'venta',
+            'bg-yellow-50 dark:bg-yellow-500/10':
+              venta.tipoVenta.toLowerCase() === 'préstamo' ||
+              venta.tipoVenta.toLowerCase() === 'prestamo',
+            'bg-neutral-100 dark:bg-neutral-800': !(
+              venta.tipoVenta.toLowerCase() === 'venta' ||
+              venta.tipoVenta.toLowerCase() === 'préstamo' ||
+              venta.tipoVenta.toLowerCase() === 'prestamo'
+            ),
+          }"
+        >
+          <i
+            class="text-sm"
+            [ngClass]="{
+              'pi pi-check text-emerald-500':
+                venta.tipoVenta.toLowerCase() === 'venta',
+              'pi pi-arrow-right-arrow-left text-yellow-500':
+                venta.tipoVenta.toLowerCase() === 'préstamo' ||
+                venta.tipoVenta.toLowerCase() === 'prestamo',
+              'pi pi-box text-neutral-400': !(
+                venta.tipoVenta.toLowerCase() === 'venta' ||
+                venta.tipoVenta.toLowerCase() === 'préstamo' ||
+                venta.tipoVenta.toLowerCase() === 'prestamo'
+              ),
+            }"
+          ></i>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <p
+            class="text-sm font-semibold text-black dark:text-white truncate leading-tight"
+          >
+            {{ venta.marca }} {{ venta.referencia }}
+          </p>
+          <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+            <span
+              class="text-xs text-neutral-500 dark:text-neutral-400 truncate"
+            >
+              {{ venta.vendedor || "N/A" }}
+            </span>
+            <span
+              class="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-600 shrink-0"
+            ></span>
+            <span class="text-xs text-neutral-500 dark:text-neutral-400">
+              {{ venta.metodoPago }}
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0"
+        >
+          <p class="text-sm font-bold text-black dark:text-white">
+            {{ venta.precio | currency: "COP" : "symbol" : "1.0-0" }}
+          </p>
+          <div class="flex items-center gap-2">
+            <span
+              class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+              [ngClass]="{
+                'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400':
+                  venta.tipoVenta.toLowerCase() === 'venta',
+                'bg-yellow-50 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400':
+                  venta.tipoVenta.toLowerCase() === 'préstamo' ||
+                  venta.tipoVenta.toLowerCase() === 'prestamo',
+                'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400':
+                  !(
+                    venta.tipoVenta.toLowerCase() === 'venta' ||
+                    venta.tipoVenta.toLowerCase() === 'préstamo' ||
+                    venta.tipoVenta.toLowerCase() === 'prestamo'
+                  ),
+              }"
+              >{{ venta.tipoVenta }}</span
+            >
+            <time
+              class="text-[11px] font-mono text-neutral-400 dark:text-neutral-500"
+            >
+              {{ venta.fechaVenta | date: "dd/MM/yy" }}
+            </time>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<style>
+  @keyframes uvFadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .uv-fade {
+    animation: uvFadeUp 0.28s cubic-bezier(0.4, 0, 0.2, 1) var(--d, 0s) both;
+  }
+
+  .uv-row {
+    transition:
+      transform 0.2s ease,
+      border-color 0.15s ease;
+  }
+  .uv-row:hover {
+    transform: translateY(-1px);
+  }
+</style>

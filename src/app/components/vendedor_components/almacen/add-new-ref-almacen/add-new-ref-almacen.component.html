@@ -1,0 +1,113 @@
+<div class="p-4 md:p-8 w-full max-w-2xl mx-auto rounded-2xl">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium">Referencia</label>
+      <input
+        pInputText
+        type="text"
+        placeholder="Ej: Tn negro"
+        class="w-full"
+        [(ngModel)]="referencia"
+        name="referencia"
+        required
+        #refReferencia="ngModel"
+      />
+      <small class="text-red-500" *ngIf="formInvalido && !referencia">
+        La referencia es obligatoria
+      </small>
+    </div>
+    <div>
+      <label class="block text-sm font-medium">Local</label>
+      <input
+        pInputText
+        type="text"
+        placeholder="Ej: 180"
+        class="w-full"
+        [(ngModel)]="local"
+        name="local"
+        required
+        #refReferencia="ngModel"
+      />
+      <small class="text-red-500" *ngIf="formInvalido && !referencia">
+        el local es obligatoria
+      </small>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">Marca</label>
+      <input
+        pInputText
+        type="text"
+        placeholder="Ej: Nike"
+        class="w-full"
+        [(ngModel)]="marca"
+        name="marca"
+        required
+        #refMarca="ngModel"
+      />
+      <small class="text-red-500" *ngIf="formInvalido && !marca">
+        La marca es obligatoria
+      </small>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <label class="block text-sm font-medium mb-4">Imagen</label>
+    <p-fileUpload
+      mode="basic"
+      name="imagen"
+      [auto]="true"
+      [multiple]="false"
+      [showUploadButton]="false"
+      customUpload
+      (uploadHandler)="onUpload($event)"
+      chooseLabel="Haz clic o arrastra una imagen aquí"
+      class="w-full rounded-xl py-10 text-center"
+    />
+
+    <div class="mt-4" *ngIf="imagenPreview">
+      <img
+        [src]="imagenPreview"
+        alt="Vista previa"
+        class="w-full max-h-60 object-contain rounded-xl"
+      />
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <label class="block text-sm font-medium mb-2">Tallas Disponibles</label>
+    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+      <ng-container *ngFor="let talla of tallas">
+        <div>
+          <label class="text-sm">Talla {{ talla.numero }}</label>
+          <input
+            pInputText
+            type="number"
+            [(ngModel)]="talla.cantidad"
+            class="w-full"
+          />
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div class="mt-6 flex justify-between items-center">
+    <p class="text-sm font-medium">Total de Unidades:</p>
+    <p class="text-lg font-bold">{{ totalUnidades }}</p>
+  </div>
+
+  <div class="mt-10 flex justify-end space-x-3">
+    <button
+      pButton
+      label="Cancelar"
+      class="p-button-outlined p-button-danger"
+      (click)="onCancel()"
+    ></button>
+    <button
+      pButton
+      label="Guardar Referencia"
+      class="p-button"
+      (click)="guardarReferencia()"
+    ></button>
+  </div>
+</div>

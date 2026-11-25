@@ -1,0 +1,27 @@
+.iphone-loader {
+    position: relative;
+    width: 34px;
+    height: 34px;
+}
+
+.iphone-loader span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3px;
+    height: 9px;
+    background: #b8922a;
+    border-radius: 2px;
+    transform-origin: center -12px;
+    animation: iphoneFade 1.2s linear infinite;
+}
+
+@keyframes iphoneFade {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.1;
+    }
+}

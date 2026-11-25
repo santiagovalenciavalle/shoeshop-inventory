@@ -1,0 +1,540 @@
+<div *ngIf="loadingPantalla" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-md px-4 text-neutral-900 dark:text-white">
+  <app-ia-loader detalle="ShoeShop" [mensajes]="['Conectando con tus datos…', 'Cargando catálogo…', 'Casi listo…']"></app-ia-loader>
+</div>
+
+<ng-container>
+  <div class="relative min-h-screen bg-white dark:bg-black">
+    <header class="border-b border-neutral-200 dark:border-neutral-900">
+      <div
+        class="max-w-[1500px] mx-auto px-5 sm:px-8 lg:px-12 pt-9 pb-6 flex flex-col gap-6"
+      >
+        <div
+          class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4"
+        >
+          <div class="min-w-0">
+            <p
+              class="text-xs font-semibold text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5"
+            >
+              ShoeShop
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <polyline points="9 6 15 12 9 18" />
+              </svg>
+              <span class="text-black dark:text-white">{{
+                marcasSeleccionadas.length === 1 ? "Marca" : "Todas las marcas"
+              }}</span>
+            </p>
+            <h1
+              class="font-black tracking-[-0.04em] text-black dark:text-white leading-[0.95] mt-2 truncate"
+              style="font-size: clamp(36px, 7vw, 72px)"
+            >
+              {{ tituloColeccion }}<span class="text-yellow-500">.</span>
+            </h1>
+            <p
+              class="text-sm text-neutral-500 dark:text-neutral-400 mt-2 max-w-xl"
+            >
+              <ng-container *ngIf="logueado; else invitado"
+                >Consulta disponibilidad por talla y haz tu pedido desde el
+                detalle de cada referencia.</ng-container
+              >
+              <ng-template #invitado
+                >Explora las referencias disponibles. Inicia sesión para ver
+                precios y hacer pedidos.</ng-template
+              >
+            </p>
+          </div>
+
+          <div
+            *ngIf="esVendedor && bodeguerosNombres.length"
+            class="flex items-center gap-3 px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 self-start sm:self-auto shrink-0"
+          >
+            <span class="w-2 h-2 rounded-full bg-emerald-500 status-blink"></span>
+            <div class="flex flex-col leading-tight">
+              <span class="text-[11px] text-neutral-400 dark:text-neutral-500"
+                >Encargado de bodega</span
+              >
+              <span
+                class="text-sm font-semibold text-black dark:text-white truncate max-w-[200px]"
+                >{{ bodeguerosNombres[0] }}</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="marcasInfo.length">
+          <h2 class="text-sm font-bold text-black dark:text-white mb-3">
+            Compra por marca
+          </h2>
+          <div
+            class="cat-chips flex gap-2.5 overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0 pb-1"
+            role="group"
+            aria-label="Marcas"
+          >
+            <button
+              type="button"
+              (click)="marcasSeleccionadas = []; searchTermChanged()"
+              [attr.aria-pressed]="marcasSeleccionadas.length === 0"
+              class="brand-tile shrink-0"
+              [class.brand-tile-active]="marcasSeleccionadas.length === 0"
+            >
+              <span class="brand-name">Todas</span>
+              <span class="brand-count">{{ productosBaseTotal }} refs.</span>
+            </button>
+            <button
+              type="button"
+              *ngFor="let m of marcasDestacadas"
+              (click)="toggleMarca(m.key)"
+              [attr.aria-pressed]="marcaActiva(m.key)"
+              class="brand-tile shrink-0"
+              [class.brand-tile-active]="marcaActiva(m.key)"
+            >
+              <span class="brand-name">{{ m.nombre }}</span>
+              <span class="brand-count">{{ m.count }} refs.</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div
+      class="sticky top-0 z-30 bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-900"
+    >
+      <div
+        class="max-w-[1500px] mx-auto px-5 sm:px-8 lg:px-12 py-3 flex items-center gap-2"
+      >
+        <button
+          type="button"
+          (click)="filtrosAbiertos = true"
+          class="lg:hidden flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-sm font-semibold text-black dark:text-white shrink-0"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="4" y1="6" x2="20" y2="6" /><line x1="7" y1="12" x2="17" y2="12" /><line x1="10" y1="18" x2="14" y2="18" />
+          </svg>
+          Filtros
+          <span
+            *ngIf="filtrosActivos"
+            class="min-w-[18px] h-[18px] px-1 rounded-full bg-yellow-500 text-black text-[10px] font-bold flex items-center justify-center"
+            >{{ filtrosActivos }}</span
+          >
+        </button>
+
+        <div class="relative flex-1 min-w-0">
+          <svg
+            class="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none"
+            width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="searchTermChanged()"
+            placeholder="Buscar marca, referencia o código"
+            aria-label="Buscar productos"
+            class="w-full pl-10 pr-10 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-transparent text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm outline-none focus:bg-white dark:focus:bg-neutral-900 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+          />
+          <button
+            *ngIf="searchTerm"
+            type="button"
+            (click)="searchTerm = ''; searchTermChanged()"
+            aria-label="Borrar búsqueda"
+            class="absolute right-2.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <input
+          type="number"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          min="0"
+          step="1"
+          (keydown)="soloDigitos($event)"
+          [(ngModel)]="codigoBusqueda"
+          (ngModelChange)="buscarPorCodigo()"
+          placeholder="Código"
+          aria-label="Buscar por código"
+          class="cat-input-num w-[76px] sm:w-[100px] shrink-0 px-3 py-2.5 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-transparent text-black dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 text-sm outline-none focus:bg-white dark:focus:bg-neutral-900 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all"
+        />
+
+        <button
+          type="button"
+          (click)="abrirEscaner()"
+          title="Escanear QR"
+          aria-label="Escanear QR"
+          class="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-yellow-500 text-black text-xs font-bold hover:bg-yellow-400 active:scale-95 transition-all shrink-0"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="3" height="3" rx="0.5" />
+            <rect x="18" y="14" width="3" height="3" rx="0.5" />
+            <rect x="14" y="18" width="3" height="3" rx="0.5" />
+            <rect x="18" y="18" width="3" height="3" rx="0.5" />
+          </svg>
+          <span class="hidden md:inline">Escanear</span>
+        </button>
+
+        <label class="hidden md:flex items-center gap-2 shrink-0">
+          <span class="sr-only">Ordenar por</span>
+          <select
+            [(ngModel)]="orden"
+            (change)="cambiarOrden()"
+            class="px-3 py-2.5 rounded-xl text-sm font-semibold border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-black dark:text-white outline-none focus:border-yellow-500 cursor-pointer"
+          >
+            <option value="recientes">Más recientes</option>
+            <option *ngIf="logueado" value="precioAsc">Precio: menor a mayor</option>
+            <option *ngIf="logueado" value="precioDesc">Precio: mayor a menor</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div
+      *ngIf="filtrosAbiertos"
+      class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+      (click)="filtrosAbiertos = false"
+    ></div>
+
+    <div
+      class="max-w-[1500px] mx-auto px-5 sm:px-8 lg:px-12 pt-6 pb-28 lg:flex lg:gap-10"
+    >
+      <aside
+        class="cat-aside fixed inset-y-0 left-0 z-50 w-[88%] max-w-sm bg-white dark:bg-neutral-950 flex flex-col transition-transform duration-300 lg:static lg:z-auto lg:translate-x-0 lg:w-60 lg:max-w-none lg:shrink-0 lg:bg-transparent lg:dark:bg-transparent lg:block lg:sticky lg:top-[84px] lg:self-start lg:max-h-[calc(100vh-100px)] lg:overflow-y-auto"
+        [class.-translate-x-full]="!filtrosAbiertos"
+        aria-label="Filtros"
+      >
+        <div
+          class="lg:hidden flex items-center justify-between px-5 py-4 border-b border-neutral-200 dark:border-neutral-800"
+        >
+          <h2 class="text-base font-bold text-black dark:text-white">Filtros</h2>
+          <button
+            type="button"
+            (click)="filtrosAbiertos = false"
+            aria-label="Cerrar filtros"
+            class="w-9 h-9 rounded-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center text-neutral-500"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto lg:overflow-visible px-5 lg:px-0 py-5 lg:py-0 flex flex-col gap-7">
+          <section class="md:hidden">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-3">Ordenar por</h3>
+            <select
+              [(ngModel)]="orden"
+              (change)="cambiarOrden()"
+              class="w-full px-3 py-2.5 rounded-xl text-sm font-semibold border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 text-black dark:text-white outline-none focus:border-yellow-500"
+            >
+              <option value="recientes">Más recientes</option>
+              <option *ngIf="logueado" value="precioAsc">Precio: menor a mayor</option>
+              <option *ngIf="logueado" value="precioDesc">Precio: mayor a menor</option>
+            </select>
+          </section>
+
+          <section *ngIf="marcasInfo.length">
+            <h3 class="text-sm font-bold text-black dark:text-white mb-3">Marca</h3>
+            <ul class="flex flex-col gap-0.5 max-h-72 overflow-y-auto cat-chips">
+              <li *ngFor="let m of marcasInfo">
+                <label
+                  class="flex items-center justify-between gap-3 px-2 py-2 -mx-2 rounded-lg cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-colors"
+                >
+                  <span class="flex items-center gap-2.5 min-w-0">
+                    <input
+                      type="checkbox"
+                      class="cat-check"
+                      [checked]="marcaActiva(m.key)"
+                      (change)="toggleMarca(m.key)"
+                    />
+                    <span class="text-sm text-black dark:text-white truncate">{{ m.nombre }}</span>
+                  </span>
+                  <span class="text-xs text-neutral-400 shrink-0">{{ m.count }}</span>
+                </label>
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 class="text-sm font-bold text-black dark:text-white mb-3">Talla</h3>
+            <div class="grid grid-cols-4 gap-1.5" role="group" aria-label="Talla">
+              <button
+                type="button"
+                *ngFor="let t of todasLasTallas"
+                (click)="seleccionarTalla(t)"
+                [attr.aria-pressed]="selectedTalla === t"
+                class="py-2 rounded-lg text-xs font-semibold border transition-all active:scale-95"
+                [ngClass]="
+                  selectedTalla === t
+                    ? 'bg-black text-white border-black dark:bg-yellow-500 dark:text-black dark:border-yellow-500'
+                    : 'bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-yellow-500'
+                "
+              >
+                {{ t }}
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <div
+          class="lg:hidden flex gap-2 p-4 border-t border-neutral-200 dark:border-neutral-800"
+        >
+          <button
+            type="button"
+            (click)="limpiarFiltros()"
+            class="flex-1 py-3 rounded-xl border border-neutral-200 dark:border-neutral-800 text-sm font-semibold text-black dark:text-white"
+          >
+            Quitar filtros
+          </button>
+          <button
+            type="button"
+            (click)="filtrosAbiertos = false"
+            class="flex-[1.4] py-3 rounded-xl bg-yellow-500 text-black text-sm font-bold"
+          >
+            Ver {{ totalResultados }} resultados
+          </button>
+        </div>
+      </aside>
+
+      <main class="flex-1 min-w-0">
+        <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+          <p class="text-sm text-neutral-600 dark:text-neutral-400">
+            <span class="font-bold text-black dark:text-white">{{ totalResultados }}</span>
+            {{ totalResultados === 1 ? "referencia" : "referencias" }}
+          </p>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              *ngFor="let k of marcasSeleccionadas"
+              (click)="toggleMarca(k)"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-black dark:bg-white text-white dark:text-black hover:bg-yellow-500 hover:text-black transition-colors"
+            >
+              {{ nombreMarca(k) }}
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              *ngIf="selectedTalla != null"
+              (click)="seleccionarTalla(selectedTalla)"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-black dark:bg-white text-white dark:text-black hover:bg-yellow-500 hover:text-black transition-colors"
+            >
+              Talla {{ selectedTalla }}
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <button
+              *ngIf="hayFiltros"
+              type="button"
+              (click)="limpiarFiltros()"
+              class="text-xs font-semibold text-neutral-500 dark:text-neutral-400 underline underline-offset-2 hover:text-black dark:hover:text-white"
+            >
+              Quitar todo
+            </button>
+          </div>
+        </div>
+
+        <div
+          *ngIf="cargandoMas"
+          class="flex items-center justify-center gap-2 py-6"
+        >
+          <span class="cat-dot w-2 h-2 rounded-full bg-yellow-500"></span>
+          <span class="cat-dot w-2 h-2 rounded-full bg-yellow-500" style="animation-delay: 0.18s"></span>
+          <span class="cat-dot w-2 h-2 rounded-full bg-yellow-500" style="animation-delay: 0.36s"></span>
+        </div>
+
+        <app-cuadriculas
+          [productosFiltrados]="productosParaMostrar"
+          [trackById]="trackById"
+          [loading]="loading"
+          (productoSeleccionado)="verDetalles($event)"
+        ></app-cuadriculas>
+
+        <div
+          *ngIf="!loading && totalResultados > cantidadVisible"
+          class="flex flex-col items-center gap-3 pt-12"
+        >
+          <p class="text-xs text-neutral-500 dark:text-neutral-400">
+            Mostrando {{ productosParaMostrar.length }} de {{ totalResultados }}
+          </p>
+          <div class="w-48 h-1 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
+            <div
+              class="h-full bg-yellow-500 transition-all duration-500"
+              [style.width.%]="(productosParaMostrar.length / totalResultados) * 100"
+            ></div>
+          </div>
+          <button
+            type="button"
+            (click)="verMas()"
+            class="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-black dark:bg-white text-white dark:text-black text-sm font-bold hover:bg-yellow-500 hover:text-black dark:hover:bg-yellow-500 active:scale-[0.97] transition-all"
+          >
+            Cargar más productos
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <button
+      type="button"
+      (click)="scrollToTop()"
+      class="fixed bottom-6 right-5 z-30 w-11 h-11 rounded-full bg-yellow-500 text-black flex items-center justify-center shadow-lg shadow-yellow-500/30 hover:bg-yellow-400 active:scale-95 transition-all"
+      aria-label="Volver arriba"
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <polyline points="18 15 12 9 6 15" />
+      </svg>
+    </button>
+  </div>
+
+  <div
+    *ngIf="mostrarEscaner"
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+    (click)="cerrarEscaner()"
+  >
+    <div
+      class="relative w-full max-w-sm mx-5 rounded-[28px] overflow-hidden bg-black border border-yellow-500/20 shadow-2xl shadow-yellow-500/10"
+      (click)="$event.stopPropagation()"
+    >
+      <div
+        class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#d4a843"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="3" height="3" rx="0.5" />
+              <rect x="18" y="14" width="3" height="3" rx="0.5" />
+              <rect x="14" y="18" width="3" height="3" rx="0.5" />
+              <rect x="18" y="18" width="3" height="3" rx="0.5" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-white leading-none">Escanear QR</p>
+            <p class="text-[10px] text-neutral-500 mt-0.5">
+              Apunta al código del producto
+            </p>
+          </div>
+        </div>
+        <button
+          (click)="cerrarEscaner()"
+          class="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-400 transition-colors"
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="relative aspect-square w-full bg-neutral-950">
+        <video
+          #videoEl
+          class="w-full h-full object-cover"
+          autoplay
+          playsinline
+          muted
+        ></video>
+        <canvas #canvasEl class="hidden"></canvas>
+
+        <div
+          class="absolute inset-0 flex items-center justify-center pointer-events-none"
+        >
+          <div class="relative w-56 h-56">
+            <span
+              class="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-yellow-500 rounded-tl-lg"
+            ></span>
+            <span
+              class="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-yellow-500 rounded-tr-lg"
+            ></span>
+            <span
+              class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-yellow-500 rounded-bl-lg"
+            ></span>
+            <span
+              class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-yellow-500 rounded-br-lg"
+            ></span>
+            <span
+              class="qr-scan-beam absolute inset-x-2 h-0.5 bg-yellow-500/70 rounded-full shadow-sm shadow-yellow-500/50"
+            ></span>
+          </div>
+        </div>
+
+        <div
+          class="absolute inset-0 pointer-events-none"
+          style="
+            background: radial-gradient(
+              ellipse 230px 230px at center,
+              transparent 48%,
+              rgba(0, 0, 0, 0.6) 100%
+            );
+          "
+        ></div>
+      </div>
+
+      <div class="px-5 py-4">
+        <div
+          *ngIf="qrError"
+          class="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs mb-3"
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          {{ qrError }}
+        </div>
+        <div
+          *ngIf="!qrError"
+          class="flex items-center justify-center gap-2 text-neutral-500 text-xs"
+        >
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-yellow-500 ai-blink-dot"
+          ></span>
+          Detectando código QR en tiempo real…
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-producto-detalle
+    [producto]="productoSeleccionado"
+    [esVendedor]="esVendedor"
+    [(visible)]="mostrarDialogo"
+  ></app-producto-detalle>
+</ng-container>

@@ -1,0 +1,689 @@
+<div
+  *ngIf="visible"
+  class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/60 backdrop-blur-md"
+  style="animation: overlayFade 0.25s ease forwards"
+  (click)="cerrar()"
+>
+  <div
+    class="relative w-full sm:max-w-3xl lg:max-w-4xl max-h-[95dvh] sm:max-h-[88vh] overflow-y-auto overflow-x-hidden bg-white dark:bg-[#0d0d0d] rounded-t-[32px] sm:rounded-[28px] shadow-[0_32px_80px_rgba(0,0,0,0.22)] dark:shadow-[0_32px_80px_rgba(0,0,0,0.7)]"
+    style="animation: panelRise 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="sm:hidden absolute top-3 left-1/2 -translate-x-1/2 w-9 h-[3.5px] rounded-full bg-neutral-200 dark:bg-neutral-700 z-20"
+    ></div>
+
+    <div
+      class="sticky top-0 z-10 flex items-center justify-between px-7 sm:px-10 py-4 sm:py-5 bg-white/95 dark:bg-[#0d0d0d]/95 backdrop-blur-xl border-b border-neutral-100 dark:border-white/[0.06]"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-1.5 h-5 rounded-full bg-gradient-to-b from-amber-400 to-amber-600"
+        ></div>
+        <span
+          class="text-[0.62rem] font-semibold tracking-[0.18em] uppercase text-neutral-400 dark:text-neutral-500"
+          >Ficha de Producto</span
+        >
+      </div>
+      <button
+        (click)="cerrar()"
+        aria-label="Cerrar"
+        class="w-8 h-8 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-white/[0.06] text-neutral-400 dark:text-neutral-500 hover:bg-neutral-200 dark:hover:bg-white/10 hover:text-neutral-700 dark:hover:text-neutral-300 transition-all duration-150 cursor-pointer border-0 outline-none"
+      >
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+          <path
+            d="M1 1L10 10M10 1L1 10"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-0 px-7 sm:px-10 py-8 sm:py-10 border-b border-neutral-100 dark:border-white/[0.06]"
+    >
+      <div class="flex justify-center sm:justify-start mb-7 sm:mb-0">
+        <div
+          class="relative w-[168px] h-[168px] rounded-2xl overflow-hidden bg-neutral-50 dark:bg-white/[0.03] border border-neutral-100 dark:border-white/[0.07] shadow-inner"
+        >
+          <ng-container *ngIf="!loading; else skImg">
+            <img
+              [src]="producto?.imagen || '/logo.svg'"
+              alt="Imagen del producto"
+              class="w-full h-full object-contain p-4 transition-transform duration-500 hover:scale-[1.07]"
+            />
+          </ng-container>
+          <ng-template #skImg>
+            <div class="w-full h-full lux-shimmer"></div>
+          </ng-template>
+          <div
+            class="absolute inset-0 rounded-2xl ring-1 ring-inset ring-black/[0.04] dark:ring-white/[0.06] pointer-events-none"
+          ></div>
+        </div>
+      </div>
+
+      <div class="sm:pl-8">
+        <ng-container *ngIf="!loading; else skHeader">
+          <p
+            class="text-[0.62rem] font-bold tracking-[0.16em] uppercase text-amber-500 dark:text-amber-400 mb-1.5"
+          >
+            {{ producto?.marca }}
+          </p>
+          <h2
+            class="text-[1.7rem] sm:text-[2rem] font-light tracking-tight text-neutral-900 dark:text-white leading-none mb-7"
+          >
+            {{ producto?.referencia }}
+          </h2>
+        </ng-container>
+        <ng-template #skHeader>
+          <div class="lux-shimmer h-3 w-24 rounded-full mb-3"></div>
+          <div class="lux-shimmer h-8 w-56 rounded-xl mb-7"></div>
+        </ng-template>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-5">
+          <div class="lux-stat-cell">
+            <p class="lux-label">Código</p>
+            <p class="lux-value">{{ producto?.id }}</p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">Stock Inicial</p>
+            <p class="lux-value">
+              {{ producto?.stockInicial }} <span class="lux-unit">uds.</span>
+            </p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">Stock Actual</p>
+            <p class="lux-value-accent">
+              {{ producto?.stock }} <span class="lux-unit">uds.</span>
+            </p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">Prestados</p>
+            <p class="lux-value">
+              {{ producto?.prestamos?.length }}
+              <span class="lux-unit">uds.</span>
+            </p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">Pedidos</p>
+            <p class="lux-value">
+              {{ cantidadPedidos }} <span class="lux-unit">uds.</span>
+            </p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">Exhibidos</p>
+            <p class="lux-value">
+              {{ cantidadExhibidos }} <span class="lux-unit">uds.</span>
+            </p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">Locales</p>
+            <p class="lux-value">
+              {{ cantidadEnLocales }} <span class="lux-unit">uds.</span>
+            </p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">Ventas</p>
+            <p class="lux-value">
+              {{ cantidadVentas }} <span class="lux-unit">uds.</span>
+            </p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">P. Adquisición</p>
+            <p
+              class="text-sm font-semibold text-amber-500 dark:text-amber-400 tracking-tight"
+            >
+              {{
+                producto?.precioAdquisicion
+                  | currency: "COP" : "symbol" : "1.0-0"
+              }}
+            </p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">P. Mín. Venta</p>
+            <p
+              class="text-sm font-semibold text-amber-500 dark:text-amber-400 tracking-tight"
+            >
+              {{ producto?.precioMin | currency: "COP" : "symbol" : "1.0-0" }}
+            </p>
+          </div>
+          <div class="lux-stat-cell">
+            <p class="lux-label">Total en Sistema</p>
+            <p class="lux-value-accent">
+              {{ totalEnSistema }} <span class="lux-unit">uds.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lux-divider-gradient"></div>
+
+    <div class="px-7 sm:px-10 py-8">
+      <p class="lux-section-label">Inventario por Tallas</p>
+      <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 mt-5">
+        <ng-container *ngFor="let talla of tallasArray">
+          <div
+            *ngIf="talla.cantidad > 0"
+            class="group flex flex-col items-center gap-2 py-4 px-3 rounded-2xl bg-neutral-50 dark:bg-white/[0.03] border border-neutral-100 dark:border-white/[0.06] hover:border-amber-300 dark:hover:border-amber-600/50 hover:bg-amber-50/40 dark:hover:bg-amber-900/10 transition-all duration-200 cursor-default"
+          >
+            <span
+              class="text-[1rem] font-semibold text-neutral-800 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors duration-200"
+              >{{ talla.numero }}</span
+            >
+            <span
+              class="text-[0.65rem] font-bold text-neutral-400 dark:text-neutral-500 group-hover:text-amber-500 dark:group-hover:text-amber-500 transition-colors duration-200"
+              >{{ talla.cantidad }} uds.</span
+            >
+          </div>
+        </ng-container>
+        <div
+          *ngIf="tallasArray.length === 0"
+          class="col-span-full py-8 text-center text-xs text-neutral-400 dark:text-neutral-600"
+        >
+          Sin tallas disponibles en bodega.
+        </div>
+      </div>
+    </div>
+
+    <div class="lux-divider-gradient"></div>
+
+    <div
+      class="px-7 sm:px-10 py-8 border-t border-neutral-100 dark:border-white/[0.06]"
+    >
+      <p class="lux-section-label">Zapatos Exhibidos</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+        <article
+          *ngFor="let exhibicion of producto?.exhibiciones"
+          class="group flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 dark:bg-white/[0.03] border border-neutral-100 dark:border-white/[0.06] hover:border-amber-200 dark:hover:border-amber-700/40 hover:shadow-sm transition-all duration-200 cursor-default"
+        >
+          <div
+            class="flex-shrink-0 w-11 h-11 rounded-full border-[1.5px] border-amber-400 dark:border-amber-500 flex items-center justify-center text-sm font-semibold text-amber-600 dark:text-amber-400"
+          >
+            {{ exhibicion.talla }}
+          </div>
+          <div class="flex flex-wrap gap-1.5 min-w-0">
+            <span
+              *ngFor="let local of exhibicion?.locales"
+              class="flex items-center gap-1 text-[0.67rem] font-medium px-2.5 py-1 rounded-full bg-white dark:bg-white/[0.05] border border-neutral-200 dark:border-white/[0.08] text-neutral-500 dark:text-neutral-400 hover:bg-amber-50 dark:hover:bg-amber-900/20 hover:text-amber-700 dark:hover:text-amber-300 hover:border-amber-200 dark:hover:border-amber-700/50 transition-all duration-150"
+            >
+              <svg
+                width="8"
+                height="9"
+                viewBox="0 0 8 9"
+                fill="none"
+                class="text-amber-400 flex-shrink-0"
+              >
+                <path
+                  d="M4 0.5C2.343 0.5 1 1.843 1 3.5c0 2.625 3 5 3 5s3-2.375 3-5c0-1.657-1.343-3-3-3Z"
+                  fill="currentColor"
+                />
+                <circle cx="4" cy="3.5" r="1" fill="white" />
+              </svg>
+              {{ local }}
+            </span>
+          </div>
+        </article>
+        <div
+          *ngIf="!producto?.exhibiciones?.length"
+          class="col-span-full py-8 text-center text-xs text-neutral-400 dark:text-neutral-600"
+        >
+          Sin exhibiciones registradas.
+        </div>
+      </div>
+    </div>
+
+    <div class="lux-divider-gradient"></div>
+
+    <div
+      class="px-7 sm:px-10 py-8 border-t border-neutral-100 dark:border-white/[0.06]"
+    >
+      <div class="flex items-center justify-between mb-5">
+        <p class="lux-section-label">Inventario en Locales</p>
+        <span
+          class="text-[0.65rem] text-neutral-400 dark:text-neutral-600 font-medium"
+        >
+          {{ cantidadEnLocales }} uds. en {{ localesInventario.length }} local{{
+            localesInventario.length === 1 ? "" : "es"
+          }}
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <article
+          *ngFor="let local of localesInventario"
+          class="group flex flex-col gap-3 p-5 rounded-2xl bg-neutral-50 dark:bg-white/[0.03] border border-neutral-100 dark:border-white/[0.06] hover:border-amber-200 dark:hover:border-amber-700/40 hover:shadow-sm transition-all duration-200 cursor-default"
+        >
+          <div class="flex items-center justify-between">
+            <div
+              class="flex items-center gap-1.5 text-sm font-medium text-neutral-800 dark:text-neutral-100"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                class="text-amber-400 flex-shrink-0"
+              >
+                <path
+                  d="M6 0.5C3.515 0.5 1.5 2.515 1.5 5c0 3.75 4.5 6.5 4.5 6.5S10.5 8.75 10.5 5c0-2.485-2.015-4.5-4.5-4.5Z"
+                  fill="currentColor"
+                />
+                <circle cx="6" cy="5" r="1.4" fill="white" />
+              </svg>
+              {{ local.localNombre }}
+            </div>
+            <span
+              class="text-[0.67rem] font-semibold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/30"
+            >
+              {{ local.stock }} uds.
+            </span>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5">
+            <span
+              *ngFor="
+                let talla of local.tallasDisponibles | keyvalue: compararTallas
+              "
+              class="flex items-center gap-1 text-[0.67rem] font-medium px-2.5 py-1 rounded-full bg-white dark:bg-white/[0.05] border border-neutral-200 dark:border-white/[0.08] text-neutral-500 dark:text-neutral-400"
+            >
+              T. {{ talla.key }}
+              <span class="text-neutral-400 dark:text-neutral-500"
+                >({{ talla.value }})</span
+              >
+            </span>
+          </div>
+        </article>
+
+        <div
+          *ngIf="localesInventario.length === 0"
+          class="col-span-full py-8 text-center text-xs text-neutral-400 dark:text-neutral-600"
+        >
+          Sin stock de este producto en locales.
+        </div>
+      </div>
+    </div>
+
+    <div class="lux-divider-gradient"></div>
+
+    <div
+      class="px-7 sm:px-10 py-8 border-t border-neutral-100 dark:border-white/[0.06]"
+    >
+      <p class="lux-section-label">Préstamos Realizados</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
+        <article
+          *ngFor="let prestamo of producto?.prestamos"
+          class="group flex flex-col gap-3.5 p-5 rounded-2xl bg-neutral-50 dark:bg-white/[0.03] border border-neutral-100 dark:border-white/[0.06] hover:border-neutral-200 dark:hover:border-white/[0.10] hover:shadow-sm transition-all duration-200 cursor-default"
+        >
+          <div class="flex items-center justify-between">
+            <div
+              class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400"
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <rect
+                  x="1"
+                  y="2.5"
+                  width="10"
+                  height="8.5"
+                  rx="1.5"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M4 1v3M8 1v3M1 5.5h10"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              {{ prestamo?.fechaPrestamo | date: "dd MMM yyyy, h:mm a" }}
+            </div>
+            <span
+              class="text-[0.67rem] font-semibold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/30"
+            >
+              T. {{ prestamo?.talla }}
+            </span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div
+              class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400"
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path
+                  d="M6 1C3.239 1 1 3.239 1 6s2.239 5 5 5 5-2.239 5-5-2.239-5-5-5Z"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M6 3.5v2.25L7.5 7"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              {{ prestamo?.localPrestado }}
+            </div>
+            <span
+              class="text-xs font-semibold text-neutral-700 dark:text-neutral-300"
+            >
+              {{ prestamo?.precio | currency: "COP" : "symbol" : "1.0-0" }}
+            </span>
+          </div>
+          <div
+            class="pt-1 border-t border-neutral-100 dark:border-white/[0.05]"
+          >
+            <div
+              class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400"
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <circle
+                  cx="6"
+                  cy="4"
+                  r="2.2"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                />
+                <path
+                  d="M1.5 10.5c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              {{ prestamo?.vendedor }}
+            </div>
+          </div>
+        </article>
+        <div
+          *ngIf="!producto?.prestamos?.length"
+          class="col-span-full py-8 text-center text-xs text-neutral-400 dark:text-neutral-600"
+        >
+          Sin préstamos registrados.
+        </div>
+      </div>
+    </div>
+
+    <div class="lux-divider-gradient"></div>
+
+    <div
+      class="px-7 sm:px-10 py-8 border-t border-neutral-100 dark:border-white/[0.06]"
+    >
+      <div class="flex items-center justify-between mb-5">
+        <p class="lux-section-label">Registro de Ingresos</p>
+        <span
+          class="text-[0.65rem] text-neutral-400 dark:text-neutral-600 font-medium"
+        >
+          {{ ingresosFiltrados.length }} de {{ ingresos?.length }} registros
+          <ng-container *ngIf="selectedFecha"> · filtrado</ng-container>
+        </span>
+      </div>
+
+      <div class="mb-5">
+        <p-datepicker
+          [(ngModel)]="selectedFecha"
+          (onSelect)="filtrarPorFecha()"
+          (onClear)="limpiarFiltro()"
+          dateFormat="dd/mm/yy"
+          placeholder="Filtrar por fecha"
+          [showClear]="true"
+          [readonlyInput]="true"
+          appendTo="body"
+        ></p-datepicker>
+      </div>
+
+      <ul class="flex flex-col gap-2">
+        <ng-container *ngFor="let row of ingresosFiltrados; let i = index">
+          <li
+            class="group flex flex-col rounded-2xl bg-neutral-50 dark:bg-white/[0.03] border transition-all duration-200 overflow-hidden"
+            [class.border-amber-300]="ingresoEnEdicion?.id === row.id"
+            [class.dark:border-amber-600]="ingresoEnEdicion?.id === row.id"
+            [class.border-neutral-100]="ingresoEnEdicion?.id !== row.id"
+          >
+            <div class="flex flex-wrap items-center gap-3 px-4 py-3.5">
+              <span
+                class="flex-shrink-0 text-[0.58rem] font-bold tracking-[0.1em] uppercase px-2 py-0.5 rounded-md bg-neutral-800 dark:bg-white/10 text-white dark:text-neutral-200"
+                >{{ row.marca }}</span
+              >
+              <span
+                class="flex-1 min-w-[100px] text-sm font-medium text-neutral-800 dark:text-neutral-100 truncate"
+                >{{ row.referencia }}</span
+              >
+
+              <div
+                class="flex flex-wrap items-center gap-4 text-xs text-neutral-500 dark:text-neutral-400"
+              >
+                <span class="flex items-center gap-1.5">
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <rect
+                      x="0.75"
+                      y="0.75"
+                      width="9.5"
+                      height="9.5"
+                      rx="1.25"
+                      stroke="currentColor"
+                      stroke-width="1.1"
+                    />
+                    <path
+                      d="M3.5 3v2M7.5 3v2M0.75 5h9.5"
+                      stroke="currentColor"
+                      stroke-width="1.1"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  {{ row?.fecha | date: "dd MMM yyyy, h:mm a" }}
+                </span>
+                <span class="flex items-center gap-1.5">
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <circle
+                      cx="5.5"
+                      cy="3.5"
+                      r="2"
+                      stroke="currentColor"
+                      stroke-width="1.1"
+                    />
+                    <path
+                      d="M1.5 10c0-2.21 1.79-4 4-4s4 1.79 4 4"
+                      stroke="currentColor"
+                      stroke-width="1.1"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  {{ row.nombre }}
+                </span>
+                <span
+                  class="flex items-center gap-1.5 font-semibold text-neutral-700 dark:text-neutral-200"
+                >
+                  <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+                    <rect
+                      x="0.75"
+                      y="2.25"
+                      width="9.5"
+                      height="6.5"
+                      rx="1.25"
+                      stroke="currentColor"
+                      stroke-width="1.1"
+                    />
+                    <path
+                      d="M0.75 4.75h9.5"
+                      stroke="currentColor"
+                      stroke-width="1.1"
+                    />
+                  </svg>
+                  <ng-container
+                    *ngIf="ingresoEnEdicion?.id !== row.id; else editQty"
+                  >
+                    {{ row.cantIngresada }} uds.
+                  </ng-container>
+                  <ng-template #editQty>
+                    <input
+                      type="number"
+                      min="1"
+                      [(ngModel)]="cantidadEditando"
+                      (keydown.enter)="guardarEdicion(row)"
+                      (keydown.escape)="cancelarEdicion()"
+                      class="w-16 text-xs px-2 py-0.5 rounded-lg border border-amber-300 dark:border-amber-600 bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 outline-none focus:ring-1 focus:ring-amber-400"
+                    />
+                    <span class="text-neutral-400">uds.</span>
+                  </ng-template>
+                </span>
+              </div>
+
+              <div class="flex items-center gap-1.5 ml-auto flex-shrink-0">
+                <ng-container
+                  *ngIf="ingresoEnEdicion?.id !== row.id; else editActions"
+                >
+                  <button
+                    (click)="iniciarEdicion(row)"
+                    title="Editar"
+                    class="w-7 h-7 rounded-full flex items-center justify-center bg-amber-50 dark:bg-amber-900/20 text-amber-500 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors duration-150 cursor-pointer border-0 outline-none"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path
+                        d="M1.5 8.5h1.5L7.5 4 6 2.5 1.5 7v1.5ZM8.5 1.5l-1-1a.707.707 0 0 0-1 0L5.5 1.5 8 4l1-1a.707.707 0 0 0 0-1Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    (click)="pedirConfirmacionEliminar(row)"
+                    title="Eliminar"
+                    class="w-7 h-7 rounded-full flex items-center justify-center bg-red-50 dark:bg-red-900/20 text-red-400 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors duration-150 cursor-pointer border-0 outline-none"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path
+                        d="M1.5 2.5h7M4 1h2M3 2.5V8.5a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5V2.5"
+                        stroke="currentColor"
+                        stroke-width="1.1"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </button>
+                </ng-container>
+                <ng-template #editActions>
+                  <button
+                    (click)="guardarEdicion(row)"
+                    [disabled]="guardandoEdicion"
+                    title="Guardar"
+                    class="w-7 h-7 rounded-full flex items-center justify-center bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors duration-150 cursor-pointer border-0 outline-none disabled:opacity-50"
+                  >
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                      <path
+                        d="M1.5 5.5L4 8l4.5-6"
+                        stroke="currentColor"
+                        stroke-width="1.4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    (click)="cancelarEdicion()"
+                    title="Cancelar"
+                    class="w-7 h-7 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-white/[0.06] text-neutral-400 dark:text-neutral-500 hover:bg-neutral-200 dark:hover:bg-white/10 transition-colors duration-150 cursor-pointer border-0 outline-none"
+                  >
+                    <svg width="9" height="9" viewBox="0 0 9 9" fill="none">
+                      <path
+                        d="M1 1L8 8M8 1L1 8"
+                        stroke="currentColor"
+                        stroke-width="1.4"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </button>
+                </ng-template>
+              </div>
+            </div>
+
+            <div
+              *ngIf="ingresoAEliminar?.id === row.id"
+              class="flex items-center justify-between gap-3 px-4 py-3 mx-3 mb-3 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30"
+              style="animation: fadeUp 0.18s ease forwards"
+            >
+              <p class="text-xs text-red-600 dark:text-red-400 font-medium">
+                ¿Eliminar este ingreso de
+                <strong>{{ row.cantIngresada }} uds.</strong>?
+              </p>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button
+                  (click)="confirmarEliminar(row)"
+                  [disabled]="eliminando"
+                  class="text-[0.68rem] font-semibold px-3.5 py-1.5 rounded-full bg-red-500 hover:bg-red-600 active:bg-red-700 text-white border-0 cursor-pointer transition-colors duration-150 disabled:opacity-60"
+                >
+                  {{ eliminando ? "Eliminando…" : "Eliminar" }}
+                </button>
+                <button
+                  (click)="cancelarEliminar()"
+                  class="text-[0.68rem] font-semibold px-3.5 py-1.5 rounded-full bg-neutral-100 dark:bg-white/[0.07] hover:bg-neutral-200 dark:hover:bg-white/10 text-neutral-600 dark:text-neutral-300 border-0 cursor-pointer transition-colors duration-150"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </li>
+        </ng-container>
+
+        <li
+          *ngIf="ingresosFiltrados.length === 0"
+          class="flex flex-col items-center gap-2 py-10 text-center"
+        >
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            fill="none"
+            class="text-neutral-200 dark:text-neutral-700"
+          >
+            <rect
+              x="4"
+              y="6"
+              width="24"
+              height="22"
+              rx="3"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M10 12h12M10 17h8M10 22h5"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <path
+              d="M20 2v8M24 6l-4 4-4-4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <p class="text-xs text-neutral-400 dark:text-neutral-600">
+            No hay registros{{
+              selectedFecha ? " para la fecha seleccionada" : ""
+            }}.
+          </p>
+        </li>
+      </ul>
+    </div>
+
+    <div
+      class="flex justify-end px-7 sm:px-10 py-5 border-t border-neutral-100 dark:border-white/[0.06]"
+    >
+      <button
+        (click)="cerrar()"
+        class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-sm font-medium hover:bg-neutral-700 dark:hover:bg-neutral-100 active:scale-[0.98] transition-all duration-150 border-0 outline-none cursor-pointer"
+      >
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <path
+            d="M1 1L9 9M9 1L1 9"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+          />
+        </svg>
+        Cerrar
+      </button>
+    </div>
+  </div>
+</div>

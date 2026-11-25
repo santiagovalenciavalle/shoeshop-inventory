@@ -1,0 +1,340 @@
+@keyframes exhFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.exh-fade {
+  animation: exhFadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) var(--d, 0s) both;
+}
+
+.exh-card {
+  transition:
+    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.exh-card:hover {
+  transform: translateY(-3px);
+}
+
+.exh-input {
+  width: 100%;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: box-shadow 0.15s ease;
+}
+
+.exh-input:focus {
+  box-shadow: 0 0 0 2px rgba(115, 115, 115, 0.45);
+}
+
+.exh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 13px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    opacity 0.15s ease,
+    transform 0.1s ease;
+}
+
+.exh-btn:active {
+  transform: scale(0.96);
+}
+
+.exh-btn:hover {
+  opacity: 0.85;
+}
+
+.exh-btn-gold {
+  background: #000;
+  color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .exh-btn-gold {
+    background: #fff;
+    color: #000;
+  }
+}
+
+.dark .exh-btn-gold {
+  background: #fff;
+  color: #000;
+}
+
+.exh-btn-success {
+  background: #10b981;
+  color: #fff;
+}
+
+.exh-btn-info {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.exh-btn-danger {
+  background: #ef4444;
+  color: #fff;
+}
+
+.exh-btn-neutral {
+  background: #f5f5f5;
+  color: #404040;
+}
+
+.dark .exh-btn-neutral {
+  background: rgba(255, 255, 255, 0.08);
+  color: #d4d4d4;
+}
+
+.exh-btn-outline {
+  background: transparent;
+  border: 1.5px solid #e5e5e5;
+  color: #525252;
+}
+
+.dark .exh-btn-outline {
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #a3a3a3;
+}
+
+.exh-btn-outline:hover {
+  opacity: 1;
+  border-color: #a3a3a3;
+}
+
+.exh-input {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  color: #000;
+}
+
+.exh-input::placeholder {
+  color: #a3a3a3;
+}
+
+.dark .exh-input {
+  border-color: #262626;
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+}
+
+.dark .exh-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+:host {
+  scrollbar-width: none;
+}
+
+:host::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes iphoneFade {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.1;
+  }
+}
+
+.iphone-loader {
+  position: relative;
+  width: 36px;
+  height: 36px;
+}
+
+.iphone-loader span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 9px;
+  background: #b8922a;
+  border-radius: 2px;
+  transform-origin: center -12px;
+  animation: iphoneFade 1.2s linear infinite;
+}
+
+@keyframes qrScan {
+  0% {
+    top: 8px;
+  }
+
+  50% {
+    top: calc(100% - 8px);
+  }
+
+  100% {
+    top: 8px;
+  }
+}
+
+.qr-scan-beam {
+  animation: qrScan 2s ease-in-out infinite;
+}
+
+@keyframes blinkDot {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.ai-blink-dot {
+  animation: blinkDot 1.5s ease-in-out infinite;
+}
+
+.recepcion-fab {
+  transition:
+    padding-right 0.2s ease,
+    transform 0.15s ease;
+}
+
+.recepcion-fab:active {
+  transform: translateY(-50%) scale(0.95);
+}
+/* iOS Safari hace zoom al enfocar campos con fuente menor a 16px */
+@media (max-width: 1023px) {
+  .exh-input {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exh-fade,
+  .exh-card {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ───────── Barra de filtros del catálogo ───────── */
+.exh-filtros {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+@media (min-width: 640px) {
+  .exh-filtros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .exh-filtros {
+    grid-template-columns: minmax(15rem, 1.1fr) minmax(12rem, 1.6fr) minmax(11rem, 0.9fr) auto;
+    align-items: end;
+  }
+}
+.exh-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+.exh-codigo-row {
+  display: flex;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.exh-codigo-row .exh-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.exh-qr {
+  flex-shrink: 0;
+}
+.exh-limpiar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.6rem;
+  padding: 0 1.1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  color: #525252;
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.exh-limpiar:hover {
+  color: #171717;
+  border-color: #a3a3a3;
+}
+.dark .exh-limpiar {
+  color: #d4d4d4;
+  background: rgba(255, 255, 255, 0.04);
+  border-color: #262626;
+}
+.dark .exh-limpiar:hover {
+  color: #fff;
+  border-color: #525252;
+}
+@media (max-width: 1023px) {
+  .exh-limpiar {
+    font-size: 16px;
+  }
+}
+@media (min-width: 640px) and (max-width: 1023px) {
+  .exh-limpiar {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .exh-limpiar {
+    color: #d4d4d4;
+    background: rgba(255, 255, 255, 0.04);
+    border-color: #262626;
+  }
+}
+
+/* El modo oscuro de la app sigue al sistema: se replican los estilos de .dark */
+@media (prefers-color-scheme: dark) {
+  .exh-input {
+    border-color: #262626;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+  }
+  .exh-input::placeholder {
+    color: rgba(255, 255, 255, 0.32);
+  }
+  .exh-input option {
+    color: #fff;
+    background: #171717;
+  }
+}

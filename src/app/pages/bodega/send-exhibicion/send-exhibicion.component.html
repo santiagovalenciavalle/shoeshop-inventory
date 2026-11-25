@@ -1,0 +1,444 @@
+<style>
+  .exh-detail-root {
+    font-family:
+      "DM Sans",
+      -apple-system,
+      BlinkMacSystemFont,
+      sans-serif;
+  }
+
+  .exh-select {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    font-weight: 400;
+    border-radius: 12px;
+    border: 1.5px solid #e8e8e8;
+    background: #f7f7f7;
+    color: #0a0a0a;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 24 24' stroke='%23999' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .exh-select:focus {
+    background-color: #ffffff;
+    border-color: #c9961a;
+    box-shadow: 0 0 0 3px #fdf3d7;
+  }
+  .dark .exh-select {
+    background-color: #141414;
+    border-color: #242424;
+    color: #f5f5f7;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 24 24' stroke='%23555' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  }
+  .dark .exh-select:focus {
+    background-color: #1c1c1c;
+    border-color: #c9a84c;
+    box-shadow: 0 0 0 3px #1e1a0e;
+  }
+  .exh-select option {
+    background: #ffffff;
+    color: #0a0a0a;
+  }
+  .dark .exh-select option {
+    background: #141414;
+    color: #f5f5f7;
+  }
+
+  .exh-btn-confirm {
+    width: 100%;
+    padding: 13px 20px;
+    border-radius: 14px;
+    background: #c9961a;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    letter-spacing: 0.01em;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 12px rgba(201, 150, 26, 0.25);
+  }
+  .exh-btn-confirm:hover {
+    background: #b8891a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(201, 150, 26, 0.3);
+  }
+  .exh-btn-confirm:active {
+    transform: scale(0.97);
+  }
+  .exh-btn-confirm:disabled {
+    background: #e8e0cc;
+    color: #bbb;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .exh-btn-delete {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 14px;
+    background: #dc2626;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 12px rgba(220, 38, 38, 0.2);
+  }
+  .exh-btn-delete:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(220, 38, 38, 0.25);
+  }
+  .exh-btn-delete:active {
+    transform: scale(0.97);
+  }
+  .exh-btn-delete:disabled {
+    background: #fecaca;
+    color: #f87171;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  .dark .exh-btn-delete:disabled {
+    background: #1c0707;
+    color: #5a1010;
+  }
+
+  .exh-btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 980px;
+    background: #ffffff;
+    color: #0a0a0a;
+    font-size: 0.8rem;
+    font-weight: 500;
+    font-family: inherit;
+    border: 1.5px solid #e8e8e8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+  }
+  .exh-btn-back:hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+    transform: translateX(-1px);
+  }
+  .dark .exh-btn-back {
+    background: #0f0f0f;
+    color: #f5f5f7;
+    border-color: #222;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  }
+  .dark .exh-btn-back:hover {
+    background: #1a1a1a;
+    border-color: #333;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .exh-spinner {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .exh-card-anim {
+    animation: slideUp 0.38s cubic-bezier(0.22, 0.61, 0.36, 1) both 0.06s;
+  }
+  .exh-back-anim {
+    animation: slideUp 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both 0s;
+  }
+
+  .exh-info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .exh-info-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .exh-info-value {
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+</style>
+
+<div
+  class="exh-detail-root min-h-screen flex flex-col items-center justify-center bg-white dark:bg-black px-4 py-12 relative"
+>
+  <div class="exh-back-anim absolute top-6 left-5 sm:top-8 sm:left-8">
+    <button routerLink="/bodega" class="exh-btn-back">
+      <svg
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="15 18 9 12 15 6" />
+      </svg>
+      Volver
+    </button>
+  </div>
+
+  <div
+    class="exh-card-anim w-full max-w-sm bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-900 rounded-[28px] overflow-hidden shadow-xl dark:shadow-black"
+  >
+    <div
+      class="relative h-60 overflow-hidden bg-neutral-100 dark:bg-neutral-900"
+    >
+      <img
+        class="w-full h-full object-cover"
+        [src]="notificacion?.image"
+        alt="Producto"
+      />
+      <div
+        class="absolute inset-0"
+        style="
+          background: linear-gradient(to top, #000000bb 0%, transparent 55%);
+        "
+      ></div>
+
+      <div
+        class="absolute bottom-4 right-4 w-11 h-11 rounded-full bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 flex items-center justify-center shadow-lg"
+      >
+        <span class="text-sm font-bold text-[#c9961a] dark:text-[#d4a843]">
+          {{ notificacion?.producto?.talla }}
+        </span>
+      </div>
+
+      <div class="absolute bottom-4 left-4 right-16">
+        <h2 class="text-lg font-bold text-white leading-tight truncate">
+          {{ notificacion?.producto?.nombre }}
+        </h2>
+      </div>
+    </div>
+
+    <div class="px-6 py-5 flex flex-col gap-5">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="exh-info-row">
+          <span class="exh-info-label text-neutral-400 dark:text-neutral-600"
+            >Referencia</span
+          >
+          <span class="exh-info-value text-black dark:text-white font-mono">{{
+            notificacion?.producto?.referencia
+          }}</span>
+        </div>
+
+        <div class="exh-info-row">
+          <span class="exh-info-label text-neutral-400 dark:text-neutral-600"
+            >Código</span
+          >
+          <span class="exh-info-value text-black dark:text-white font-mono"
+            >#{{ notificacion?.producto?.zapatoId }}</span
+          >
+        </div>
+
+        <div class="exh-info-row">
+          <span class="exh-info-label text-neutral-400 dark:text-neutral-600"
+            >Fila</span
+          >
+          <span class="exh-info-value text-black dark:text-white">{{
+            notificacion?.fila
+          }}</span>
+        </div>
+
+        <div class="exh-info-row col-span-2">
+          <span class="exh-info-label text-neutral-400 dark:text-neutral-600"
+            >Locales</span
+          >
+          <span class="exh-info-value text-black dark:text-white">{{
+            notificacion?.locales
+          }}</span>
+        </div>
+      </div>
+
+      <div class="h-px bg-neutral-100 dark:bg-neutral-900"></div>
+
+      <div>
+        <ng-container
+          *ngIf="tallasDisponibles.length > 0; else agotadoTemplate"
+        >
+          <div [formGroup]="form" class="flex flex-col gap-4">
+            <div>
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-[0.1em] text-neutral-400 dark:text-neutral-600 block mb-2"
+              >
+                Talla para envío
+              </span>
+
+              <div
+                *ngIf="cargandoTallas"
+                class="flex items-center gap-2.5 py-3"
+              >
+                <div
+                  class="exh-spinner"
+                  style="border-color: #e8e0cc; border-top-color: #c9961a"
+                ></div>
+                <span class="text-xs text-neutral-400 dark:text-neutral-600"
+                  >Cargando tallas…</span
+                >
+              </div>
+
+              <select
+                *ngIf="!cargandoTallas"
+                formControlName="tallaSeleccionada"
+                class="exh-select"
+              >
+                <option value="" disabled>Seleccionar talla</option>
+                <option *ngFor="let t of tallasDisponibles" [value]="t.talla">
+                  {{ t.talla }} — {{ t.cantidad }} disponibles
+                </option>
+              </select>
+            </div>
+
+            <button
+              *ngIf="!enviando"
+              class="exh-btn-confirm"
+              (click)="enviarExhibicion()"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+              Confirmar envío
+            </button>
+
+            <div
+              *ngIf="enviando"
+              class="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-[14px] bg-[#c9961a]"
+            >
+              <div class="exh-spinner"></div>
+              <span class="text-sm font-semibold text-white">Enviando…</span>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-template #agotadoTemplate>
+          <div class="flex flex-col gap-3">
+            <div
+              class="flex items-start gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900"
+            >
+              <div
+                class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center flex-shrink-0 mt-0.5"
+              >
+                <svg
+                  class="w-4 h-4 text-red-600 dark:text-red-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+                  />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-red-700 dark:text-red-400">
+                  Referencia agotada en bodega
+                </p>
+                <p class="text-xs text-red-500 dark:text-red-600 mt-0.5">
+                  No hay tallas disponibles para este producto
+                </p>
+              </div>
+            </div>
+
+            <ng-container *ngIf="!eliminando; else eliminandoLoader">
+              <button
+                class="exh-btn-delete"
+                [disabled]="eliminando"
+                (click)="eliminarNotificacion()"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                </svg>
+                Eliminar notificación
+              </button>
+            </ng-container>
+
+            <ng-template #eliminandoLoader>
+              <div
+                class="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-[14px] bg-red-600"
+              >
+                <div class="exh-spinner"></div>
+                <span class="text-sm font-semibold text-white"
+                  >Eliminando…</span
+                >
+              </div>
+            </ng-template>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,6 @@
+# Un .js/.css que no existe (chunk de una versión vieja) debe dar 404 real,
+# no el index.html: si no, el navegador intenta ejecutar HTML como JS y la app se queda pegada.
+/*.js   /index.html   404
+/*.css  /index.html   404
+# SPA: cualquier otra ruta la resuelve Angular.
+/*      /index.html   200

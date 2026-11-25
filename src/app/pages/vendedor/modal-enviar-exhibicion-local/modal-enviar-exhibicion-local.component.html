@@ -1,0 +1,354 @@
+<p-toast
+  position="top-right"
+  [breakpoints]="{
+    '920px': { width: '100%', right: '0', left: '0', top: '70px' },
+  }"
+/>
+
+<div
+  class="bg-neutral-50 dark:bg-black text-neutral-900 dark:text-neutral-100 min-h-0 flex flex-col"
+>
+  <header
+    class="relative top-0 z-10 bg-neutral-50/90 dark:bg-black/90 backdrop-blur-xl border-b border-neutral-200 dark:border-neutral-900 px-4 sm:px-6 pt-5 pb-4"
+  >
+    <p
+      class="text-[10px] uppercase tracking-[0.3em] font-bold text-yellow-600 dark:text-yellow-500 mb-1"
+    >
+      Bodega · Exhibiciones
+    </p>
+    <h1
+      class="text-xl sm:text-2xl font-black tracking-tight text-neutral-900 dark:text-white"
+    >
+      Enviar exhibición
+    </h1>
+    <p
+      class="text-xs sm:text-sm text-neutral-400 dark:text-neutral-500 mt-1 mb-4"
+    >
+      Elige talla y hasta 2 locales por referencia.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-2.5">
+      <div class="relative flex-1">
+        <svg
+          class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input
+          type="search"
+          [ngModel]="searchTerm"
+          (ngModelChange)="searchChanged.next($event)"
+          placeholder="Buscar marca o referencia…"
+          aria-label="Buscar por marca o referencia"
+          class="w-full pl-10 pr-4 py-3 sm:py-2.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl outline-none transition-colors focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 placeholder:text-neutral-400 dark:placeholder:text-neutral-600"
+        />
+      </div>
+
+      <div class="relative sm:w-56">
+        <svg
+          class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="4" y1="9" x2="20" y2="9" />
+          <line x1="4" y1="15" x2="20" y2="15" />
+          <line x1="10" y1="3" x2="8" y2="21" />
+          <line x1="16" y1="3" x2="14" y2="21" />
+        </svg>
+        <input
+          type="search"
+          inputmode="numeric"
+          [ngModel]="codigoBusqueda"
+          (ngModelChange)="onCodigoChange($event)"
+          placeholder="Código exacto…"
+          aria-label="Buscar por código de producto"
+          class="w-full pl-10 pr-4 py-3 sm:py-2.5 text-sm bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl outline-none transition-colors focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 placeholder:text-neutral-400 dark:placeholder:text-neutral-600"
+        />
+      </div>
+    </div>
+  </header>
+
+  <ng-container *ngIf="codigoBusqueda.trim(); else vistaGeneral">
+    <section class="px-4 sm:px-6 py-5">
+      <ng-container *ngIf="productoPorCodigo; else sinCodigo">
+        <div class="max-w-md">
+          <ng-container
+            *ngTemplateOutlet="
+              tarjetaProducto;
+              context: { producto: productoPorCodigo }
+            "
+          ></ng-container>
+        </div>
+      </ng-container>
+
+      <ng-template #sinCodigo>
+        <div
+          class="flex flex-col items-center justify-center text-center py-16 px-8 text-neutral-400 dark:text-neutral-600"
+        >
+          <svg
+            class="w-9 h-9 mb-3 opacity-60"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          >
+            <line x1="4" y1="9" x2="20" y2="9" />
+            <line x1="4" y1="15" x2="20" y2="15" />
+            <line x1="10" y1="3" x2="8" y2="21" />
+            <line x1="16" y1="3" x2="14" y2="21" />
+          </svg>
+          <p class="text-sm font-bold text-neutral-700 dark:text-neutral-300">
+            Ningún producto con ese código
+          </p>
+          <p class="text-xs mt-1">Verifica el código e intenta de nuevo.</p>
+        </div>
+      </ng-template>
+    </section>
+  </ng-container>
+
+  <ng-template #vistaGeneral>
+    <div
+      *ngIf="cargando"
+      class="px-4 sm:px-6 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+      aria-hidden="true"
+    >
+      <div
+        *ngFor="let n of [1, 2, 3, 4]"
+        class="rounded-3xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-4 flex flex-col gap-4"
+      >
+        <div class="flex gap-3">
+          <div
+            class="w-16 h-16 rounded-2xl bg-neutral-200 dark:bg-neutral-800 animate-pulse shrink-0"
+          ></div>
+          <div class="flex-1 flex flex-col justify-center gap-2">
+            <div
+              class="h-3.5 w-2/3 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse"
+            ></div>
+            <div
+              class="h-3 w-1/2 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse"
+            ></div>
+            <div
+              class="h-2.5 w-1/4 rounded-full bg-neutral-200 dark:bg-neutral-800 animate-pulse"
+            ></div>
+          </div>
+        </div>
+        <div
+          class="h-9 w-full rounded-xl bg-neutral-200 dark:bg-neutral-800 animate-pulse"
+        ></div>
+        <div
+          class="h-11 w-full rounded-2xl bg-neutral-200 dark:bg-neutral-800 animate-pulse"
+        ></div>
+      </div>
+    </div>
+
+    <section
+      *ngIf="!cargando && productosFiltrados.length"
+      class="px-4 sm:px-6 py-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+    >
+      <ng-container
+        *ngFor="let producto of productosFiltrados.slice(0, limite)"
+      >
+        <ng-container
+          *ngTemplateOutlet="tarjetaProducto; context: { producto: producto }"
+        ></ng-container>
+      </ng-container>
+    </section>
+
+    <div
+      *ngIf="!cargando && !productosFiltrados.length"
+      class="flex flex-col items-center justify-center text-center py-20 px-8 text-neutral-400 dark:text-neutral-600"
+    >
+      <svg
+        class="w-9 h-9 mb-3 opacity-60"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <p class="text-sm font-bold text-neutral-700 dark:text-neutral-300">
+        No encontramos productos
+      </p>
+      <p class="text-xs mt-1">Prueba con otra marca o referencia.</p>
+    </div>
+
+    <div
+      *ngIf="!cargando && productosFiltrados.length > limite"
+      class="flex justify-center px-6 pt-1 pb-8"
+    >
+      <button
+        type="button"
+        (click)="verMas()"
+        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border-[1.5px] border-neutral-200 dark:border-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-300 transition-colors hover:border-yellow-500 dark:hover:border-yellow-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
+      >
+        Ver más
+        <span
+          class="tabular-nums text-neutral-400 dark:text-neutral-500 font-medium"
+        >
+          {{ limite }} / {{ productosFiltrados.length }}
+        </span>
+      </button>
+    </div>
+  </ng-template>
+
+  <ng-template #tarjetaProducto let-producto="producto">
+    <article
+      class="rounded-3xl bg-white dark:bg-neutral-900 border border-neutral-200/70 dark:border-neutral-800/70 p-4 flex flex-col gap-3.5 shadow-sm"
+      [attr.aria-label]="
+        'Producto ' + producto.marca + ', referencia ' + producto.referencia
+      "
+    >
+      <div class="flex gap-3">
+        <div
+          class="w-16 h-16 shrink-0 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center overflow-hidden"
+        >
+          <img
+            [src]="producto.imagen || '/logo.svg'"
+            [alt]="producto.marca"
+            loading="lazy"
+            class="w-11 h-11 object-contain"
+          />
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <h2
+            class="text-sm font-bold text-neutral-900 dark:text-white truncate"
+          >
+            {{ producto.marca }}
+          </h2>
+          <p
+            class="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5 truncate"
+          >
+            {{ producto.referencia }}
+          </p>
+          <p
+            class="text-[10px] text-neutral-400/80 dark:text-neutral-600 mt-0.5 tabular-nums"
+          >
+            Cód. {{ producto.productoId }}
+          </p>
+        </div>
+      </div>
+
+      <div class="h-px bg-neutral-100 dark:bg-neutral-800"></div>
+
+      <div class="flex flex-col gap-2">
+        <span
+          class="text-[10px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500"
+        >
+          Talla
+        </span>
+        <div class="flex gap-2 overflow-x-auto pb-1">
+          <button
+            type="button"
+            *ngFor="let talla of obtenerTallasDisponibles(producto)"
+            (click)="tallasSeleccionadas[producto.productoId] = talla"
+            [ngClass]="
+              tallasSeleccionadas[producto.productoId] === talla
+                ? 'bg-yellow-500 border-yellow-500 text-neutral-900'
+                : 'bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300'
+            "
+            class="relative shrink-0 min-w-[42px] h-10 px-1 rounded-xl border-[1.5px] text-sm font-bold tabular-nums transition-all active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
+          >
+            <span
+              [ngClass]="
+                tallasSeleccionadas[producto.productoId] === talla
+                  ? 'bg-neutral-900/30'
+                  : 'bg-neutral-300 dark:bg-neutral-600'
+              "
+              class="absolute -top-px left-1/2 -translate-x-1/2 w-2.5 h-[3px] rounded-b-[3px]"
+            ></span>
+            {{ talla }}
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <span
+          class="text-[10px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500"
+        >
+          Locales
+          <span class="font-normal normal-case tracking-normal opacity-80"
+            >(máx. 2)</span
+          >
+        </span>
+        <div class="flex flex-wrap gap-2">
+          <button
+            type="button"
+            *ngFor="let local of locales"
+            (click)="toggleLocal(producto, local.value)"
+            [ngClass]="
+              (
+                localesSeleccionadosPorProducto[producto.productoId] ?? []
+              ).includes(local.value)
+                ? 'bg-yellow-50 dark:bg-yellow-500/10 border-yellow-500/60 dark:border-yellow-500/40 text-yellow-700 dark:text-yellow-500'
+                : 'bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300'
+            "
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border-[1.5px] text-xs font-semibold transition-colors active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
+          >
+            <span
+              [ngClass]="
+                (
+                  localesSeleccionadosPorProducto[producto.productoId] ?? []
+                ).includes(local.value)
+                  ? 'bg-yellow-500'
+                  : 'bg-neutral-400 dark:bg-neutral-600'
+              "
+              class="w-1.5 h-1.5 rounded-full"
+            ></span>
+            {{ local.label }}
+          </button>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        *ngIf="!enviandoProducto[producto.productoId]"
+        (click)="
+          pedirProducto(producto, tallasSeleccionadas[producto.productoId])
+        "
+        [disabled]="
+          !tallasSeleccionadas[producto.productoId] ||
+          !(localesSeleccionadosPorProducto[producto.productoId] ?? []).length
+        "
+        class="flex items-center justify-center gap-2 w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold bg-yellow-500 text-neutral-900 shadow-lg shadow-yellow-500/20 transition-all active:scale-[0.98] hover:bg-yellow-400 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-yellow-500 disabled:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500"
+      >
+        <span>Enviar exhibición</span>
+        <svg
+          class="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </button>
+
+      <div
+        *ngIf="enviandoProducto[producto.productoId]"
+        class="flex items-center justify-center gap-2 w-full min-h-[44px] px-4 py-3 rounded-2xl text-sm font-bold bg-yellow-500/70 text-neutral-900"
+      >
+        <app-ia-spinner class="w-4 h-4 text-neutral-900"></app-ia-spinner>
+        <span>Enviando…</span>
+      </div>
+    </article>
+  </ng-template>
+</div>

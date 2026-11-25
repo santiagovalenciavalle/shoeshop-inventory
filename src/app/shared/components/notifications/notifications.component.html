@@ -1,0 +1,619 @@
+<style>
+  .noti-scroll {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .noti-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .noti-card {
+    border-radius: 20px;
+    border-width: 1.5px;
+    border-style: solid;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: all 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
+    position: relative;
+  }
+  .noti-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
+  }
+
+  .noti-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .noti-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.18s ease;
+  }
+
+  .noti-btn-send {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 980px;
+    border: none;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #c9961a;
+    color: #ffffff;
+  }
+  .noti-btn-send:hover {
+    background: #b8891a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(201, 150, 26, 0.3);
+  }
+  .noti-btn-send:active {
+    transform: scale(0.97);
+  }
+
+  .noti-img {
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+    border-radius: 14px;
+    object-fit: cover;
+    transition: box-shadow 0.2s ease;
+  }
+  .noti-img:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .noti-card {
+    animation: slideUp 0.3s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+<div
+  class="noti-root p-5 rounded-2xl bg-white dark:bg-black border border-neutral-100 dark:border-neutral-900 max-w-full"
+>
+  <header class="flex flex-wrap items-center gap-3 mb-6">
+    <div
+      class="w-9 h-9 rounded-xl bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center flex-shrink-0"
+    >
+      <svg
+        class="w-4 h-4 text-[#c9961a] dark:text-[#d4a843]"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      </svg>
+    </div>
+
+    <h2
+      class="text-[1rem] font-semibold tracking-tight text-black dark:text-white flex-1"
+    >
+      Notificaciones
+    </h2>
+
+    <span
+      *ngIf="totalNotificaciones > 0"
+      class="text-[0.65rem] font-bold tracking-wide uppercase px-3 py-1 rounded-full bg-[#c9961a] text-white"
+      aria-live="polite"
+    >
+      {{ totalNotificaciones }} nuevas
+    </span>
+  </header>
+
+  <ul class="noti-scroll space-y-3 max-h-[520px] overflow-y-auto" role="list">
+    <li
+      *ngFor="let noti of notifications"
+      class="noti-card bg-white dark:bg-neutral-950 border-neutral-100 dark:border-neutral-900"
+      [attr.aria-label]="'Notificación tipo ' + noti.tipo"
+      tabindex="0"
+      role="listitem"
+    >
+      <button
+        (click)="removeNotification(noti.id)"
+        aria-label="Cerrar notificación"
+        class="noti-close bg-neutral-100 dark:bg-neutral-900 text-neutral-400 dark:text-neutral-600 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-500 dark:hover:text-red-400"
+      >
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
+      <div class="flex items-start gap-3 pr-8">
+        <div
+          class="noti-icon"
+          [class]="
+            noti.tipo === 'venta-minimo'
+              ? 'bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400'
+              : noti.tipo === 'venta-exhibicion'
+                ? 'bg-green-100 dark:bg-green-950 text-green-600 dark:text-green-400'
+                : noti.tipo === 'prestamo-exhibicion'
+                  ? 'bg-yellow-100 dark:bg-yellow-950 text-yellow-600 dark:text-yellow-400'
+                  : noti.tipo === 'agregar-precio'
+                    ? 'bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400'
+                    : noti.tipo === 'bono-redimido'
+                      ? 'bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400'
+                      : noti.tipo === 'cambio-realizado'
+                        ? 'bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400'
+                        : noti.tipo === 'cambio-exhibicion'
+                          ? 'bg-pink-100 dark:bg-pink-950 text-pink-600 dark:text-pink-400'
+                          : ''
+          "
+        >
+          <ng-container [ngSwitch]="noti.tipo">
+            <svg
+              *ngSwitchCase="'venta-minimo'"
+              width="16"
+              height="16"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+              />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <svg
+              *ngSwitchCase="'venta-exhibicion'"
+              width="16"
+              height="16"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+            <svg
+              *ngSwitchCase="'prestamo-exhibicion'"
+              width="16"
+              height="16"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+            <svg
+              *ngSwitchCase="'agregar-precio'"
+              width="16"
+              height="16"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <svg
+              *ngSwitchCase="'bono-redimido'"
+              width="16"
+              height="16"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+              <line x1="1" y1="10" x2="23" y2="10" />
+            </svg>
+            <svg
+              *ngSwitchCase="'cambio-realizado'"
+              width="16"
+              height="16"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 .49-3.51" />
+            </svg>
+            <svg
+              *ngSwitchCase="'cambio-exhibicion'"
+              width="16"
+              height="16"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <polyline points="17 1 21 5 17 9" />
+              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+              <polyline points="7 23 3 19 7 15" />
+              <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+            </svg>
+          </ng-container>
+        </div>
+
+        <div class="flex flex-col gap-1 flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3
+              class="text-[0.88rem] font-semibold text-black dark:text-white leading-tight"
+            >
+              {{
+                noti.tipo === "venta-minimo"
+                  ? "Venta por debajo del mínimo"
+                  : noti.tipo === "venta-exhibicion"
+                    ? "Venta de exhibición"
+                    : noti.tipo === "prestamo-exhibicion"
+                      ? "Préstamo de exhibición"
+                      : noti.tipo === "agregar-precio"
+                        ? "Producto sin precio definido"
+                        : noti.tipo === "bono-redimido"
+                          ? "Bono redimido"
+                          : noti.tipo === "cambio-realizado"
+                            ? "Cambio realizado"
+                            : noti.tipo === "cambio-exhibicion"
+                              ? "Cambio de exhibición"
+                              : ""
+              }}
+            </h3>
+            <span
+              *ngIf="noti.nueva"
+              class="text-[0.58rem] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#c9961a] text-white flex-shrink-0"
+            >
+              Nueva
+            </span>
+          </div>
+
+          <p
+            class="text-[0.78rem] text-neutral-500 dark:text-neutral-500 leading-relaxed"
+          >
+            {{
+              noti.tipo === "venta-minimo"
+                ? "Se ha registrado una venta por debajo del precio mínimo"
+                : noti.mensaje
+            }}
+          </p>
+        </div>
+      </div>
+
+      <div
+        class="rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-4 flex flex-col md:flex-row gap-4"
+      >
+        <div class="flex-1 flex flex-col gap-1.5">
+          <div class="flex items-center gap-2">
+            <span
+              class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+              >Producto</span
+            >
+            <span
+              class="text-[0.78rem] font-medium text-black dark:text-white"
+              >{{ noti.producto.nombre }}</span
+            >
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+              >Referencia</span
+            >
+            <span
+              class="text-[0.78rem] font-medium text-black dark:text-white font-mono"
+              >{{ noti.producto.referencia }}</span
+            >
+          </div>
+          <div *ngIf="noti.producto.talla" class="flex items-center gap-2">
+            <span
+              class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+              >Talla</span
+            >
+            <span
+              class="text-[0.78rem] font-semibold text-[#c9961a] dark:text-[#d4a843]"
+              >{{ noti.producto.talla }}</span
+            >
+          </div>
+
+          <ng-container
+            *ngIf="
+              noti.tipo === 'venta-exhibicion' ||
+              noti.tipo === 'prestamo-exhibicion' ||
+              noti.tipo === 'cambio-exhibicion'
+            "
+          >
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Código</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white font-mono"
+                >{{ noti.producto.zapatoId }}</span
+              >
+            </div>
+            <div *ngIf="noti.locales?.length" class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Locales</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white"
+                >{{ noti.locales.join(", ") }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Fila</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white"
+                >{{ noti?.fila }}</span
+              >
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="noti.tipo === 'venta-minimo'">
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >P. Venta</span
+              >
+              <span
+                class="text-[0.78rem] font-semibold text-red-600 dark:text-red-400"
+                >{{ noti.precioVenta | currency: "COP" }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >P. Mínimo</span
+              >
+              <span
+                class="text-[0.78rem] font-semibold text-green-600 dark:text-green-400"
+                >{{ noti.precioMinimo | currency: "COP" }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Vendedor</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white"
+                >{{ noti.vendedor }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Local</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white"
+                >{{ noti.local }}</span
+              >
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="noti.tipo === 'agregar-precio'">
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Adquisición</span
+              >
+              <span
+                class="text-[0.78rem] font-semibold text-red-600 dark:text-red-400"
+                >{{
+                  noti.precioVenta
+                    ? (noti.precioVenta | currency: "COP")
+                    : "No definido"
+                }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >P. Mínimo</span
+              >
+              <span
+                class="text-[0.78rem] font-semibold text-green-600 dark:text-green-400"
+                >{{
+                  noti.precioMinimo
+                    ? (noti.precioMinimo | currency: "COP")
+                    : "No definido"
+                }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Local</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white"
+                >{{ noti.local }}</span
+              >
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="noti.tipo === 'bono-redimido'">
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Bono</span
+              >
+              <span
+                class="text-[0.78rem] font-semibold text-purple-600 dark:text-purple-400"
+                >{{ noti.precioBono | currency: "COP" }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Excedente</span
+              >
+              <span
+                class="text-[0.78rem] font-semibold text-purple-600 dark:text-purple-400"
+                >{{ noti.precioVenta | currency: "COP" }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Vendedor</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white"
+                >{{ noti.vendedor }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Local</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white"
+                >{{ noti.local }}</span
+              >
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="noti.tipo === 'cambio-realizado'">
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Vendedor</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white"
+                >{{ noti.vendedor }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Local</span
+              >
+              <span
+                class="text-[0.78rem] font-medium text-black dark:text-white"
+                >{{ noti.local }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Anterior</span
+              >
+              <span
+                class="text-[0.78rem] font-semibold text-red-600 dark:text-red-400"
+                >{{ noti.precioBono | currency: "COP" }}</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[0.62rem] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-600 w-20 flex-shrink-0"
+                >Nuevo</span
+              >
+              <span
+                class="text-[0.78rem] font-semibold text-green-600 dark:text-green-400"
+                >{{ noti.precioVenta | currency: "COP" }}</span
+              >
+            </div>
+          </ng-container>
+        </div>
+
+        <div
+          *ngIf="
+            noti.tipo === 'venta-exhibicion' ||
+            noti.tipo === 'prestamo-exhibicion' ||
+            noti.tipo === 'cambio-exhibicion'
+          "
+          class="flex flex-col items-center gap-3 flex-shrink-0"
+        >
+          <img
+            *ngIf="noti.image"
+            [src]="noti.image"
+            [alt]="noti.producto.nombre"
+            class="noti-img border border-neutral-100 dark:border-neutral-800"
+          />
+          <button (click)="enviarExhibicion(noti)" class="noti-btn-send">
+            <svg
+              width="11"
+              height="11"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+            Enviar
+          </button>
+        </div>
+      </div>
+
+      <time
+        class="text-[0.65rem] font-medium text-neutral-400 dark:text-neutral-600 self-start"
+      >
+        {{ noti.fecha }}
+      </time>
+    </li>
+  </ul>
+</div>
